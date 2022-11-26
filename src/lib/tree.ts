@@ -38,7 +38,7 @@ export class Tree {
   __repr__(): string {
     return `Tree(${this.node})`;
   }
-  __str__(): string {
+  toString(): string {
     const s = _format(this.node, 2);
     return `Tree(\n  ${s})`;
   }

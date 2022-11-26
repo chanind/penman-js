@@ -43,11 +43,17 @@
   },
   "dependencies": {
     "@bitauth/libauth": "^1.17.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.differencewith": "^4.5.0",
+    "lodash.isequal": "^4.5.0",
     "string-format": "^2.0.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/lodash.clonedeep": "^4.5.7",
+    "@types/lodash.differencewith": "^4.5.7",
+    "@types/lodash.isequal": "^4.5.6",
     "@types/string-format": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
