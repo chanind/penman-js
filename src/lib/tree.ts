@@ -1,6 +1,6 @@
 /**
-Definitions of tree structures.
-*/
+ *Definitions of tree structures.
+ */
 
 import format from 'string-format';
 
@@ -9,15 +9,14 @@ import type { Branch, Node, Variable } from './types';
 type _Step = [number[], Branch]; // see Tree.walk()
 type VarMap = { [key: string]: string };
 
+/**
+ * A tree structure.
+ *
+ * A tree is essentially a node that contains other nodes, but this
+ * Tree class is useful to contain any metadata and to provide
+ * tree-based methods.
+ */
 export class Tree {
-  /**
-    A tree structure.
-
-    A tree is essentially a node that contains other nodes, but this
-    Tree class is useful to contain any metadata and to provide
-    tree-based methods.
-     */
-
   node: Node;
   metadata: { [key: string]: string };
 
@@ -42,44 +41,44 @@ export class Tree {
     const s = _format(this.node, 2);
     return `Tree(\n  ${s})`;
   }
+  /**
+   * Return the nodes in the tree as a flat list.
+   */
   nodes(): Node[] {
-    /**
-     Return the nodes in the tree as a flat list.
-     */
     return _nodes(this.node);
   }
 
+  /**
+   * Iterate over branches in the tree.
+   *
+   * This function yields pairs of (*path*, *branch*) where each
+   * *path* is a tuple of 0-based indices of branches to get to
+   * *branch*. For example, the path (2, 0) is the concept branch
+   * `('/', 'bark-01')` in the tree for the following PENMAN
+   * string, traversing first to the third (index 2) branch of the
+   * top node, then to the first (index 0) branch of that node::
+   *
+   *     (t / try-01
+   *         :ARG0 (d / dog)
+   *         :ARG1 (b / bark-01
+   *                 :ARG0 d))
+   *
+   * The (*path*, *branch*) pairs are yielded in depth-first order
+   * of the tree traversal.
+   */
   *walk(): Generator<_Step> {
-    /**
-        Iterate over branches in the tree.
-
-        This function yields pairs of (*path*, *branch*) where each
-        *path* is a tuple of 0-based indices of branches to get to
-        *branch*. For example, the path (2, 0) is the concept branch
-        `('/', 'bark-01')` in the tree for the following PENMAN
-        string, traversing first to the third (index 2) branch of the
-        top node, then to the first (index 0) branch of that node::
-
-            (t / try-01
-               :ARG0 (d / dog)
-               :ARG1 (b / bark-01
-                        :ARG0 d))
-
-        The (*path*, *branch*) pairs are yielded in depth-first order
-        of the tree traversal.
-         */
     yield* _walk(this.node, []);
   }
+  /**
+   * Recreate node variables formatted using *fmt*.
+   *
+   * The *fmt* string can be formatted with the following values:
+   *
+   * - ``prefix``: first alphabetic character in the node's concept
+   * - ``i``: 0-based index of the current occurrence of the prefix
+   * - ``j``: 1-based index starting from the second occurrence
+   */
   reset_variables(fmt = '{prefix}{j}'): void {
-    /**
-    Recreate node variables formatted using *fmt*.
-
-    The *fmt* string can be formatted with the following values:
-
-    - ``prefix``: first alphabetic character in the node's concept
-    - ``i``: 0-based index of the current occurrence of the prefix
-    - ``j``: 1-based index starting from the second occurrence
-     */
     const varmap: VarMap = {};
     const used: Set<Variable> = new Set();
     for (const node of this.nodes()) {
@@ -151,30 +150,30 @@ function* _walk(node: Node, path: number[]) {
   }
 }
 
+/**
+ * Return the variable prefix for *concept*.
+ *
+ * If *concept* is a non-empty string, the prefix is the first
+ * alphabetic character in the string, if there are any, downcased.
+ * Otherwise the prefix is ``'_'``.
+ *
+ * Examples:
+ *     >>> _default_variable_prefix('Alphabet')
+ *     'a'
+ *     >>> _default_variable_prefix('chase-01')
+ *     'c'
+ *     >>> _default_variable_prefix('"string"')
+ *     's'
+ *     >>> _default_variable_prefix('_predicate_n_1"')
+ *     'p'
+ *     >>> _default_variable_prefix(1)
+ *     '_'
+ *     >>> _default_variable_prefix(None)
+ *     '_'
+ *     >>> _default_variable_prefix('')
+ *     '_'
+ */
 export const _default_variable_prefix = (concept: any): Variable => {
-  /**
-    Return the variable prefix for *concept*.
-
-    If *concept* is a non-empty string, the prefix is the first
-    alphabetic character in the string, if there are any, downcased.
-    Otherwise the prefix is ``'_'``.
-
-    Examples:
-        >>> _default_variable_prefix('Alphabet')
-        'a'
-        >>> _default_variable_prefix('chase-01')
-        'c'
-        >>> _default_variable_prefix('"string"')
-        's'
-        >>> _default_variable_prefix('_predicate_n_1"')
-        'p'
-        >>> _default_variable_prefix(1)
-        '_'
-        >>> _default_variable_prefix(None)
-        '_'
-        >>> _default_variable_prefix('')
-        '_'
-     */
   let prefix = '_';
   if (concept && typeof concept === 'string') {
     for (const c of concept) {
@@ -208,21 +207,21 @@ const _map_vars = (node: Node, varmap: VarMap): Node => {
   return [varmap[variable], newbranches];
 };
 
+/**
+ * Return ``True`` if *x* is a valid atomic value.
+ *
+ * Examples:
+ *     >>> from penman.tree import is_atomic
+ *     >>> is_atomic('a')
+ *     True
+ *     >>> is_atomic(None)
+ *     True
+ *     >>> is_atomic(3.14)
+ *     True
+ *     >>> is_atomic(('a', [('/', 'alpha')]))
+ *     False
+ */
 export const is_atomic = (x: any): boolean => {
-  /**
-    Return ``True`` if *x* is a valid atomic value.
-
-    Examples:
-        >>> from penman.tree import is_atomic
-        >>> is_atomic('a')
-        True
-        >>> is_atomic(None)
-        True
-        >>> is_atomic(3.14)
-        True
-        >>> is_atomic(('a', [('/', 'alpha')]))
-        False
-     */
   return (
     x === null ||
     x === undefined ||
