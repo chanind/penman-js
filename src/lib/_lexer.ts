@@ -3,6 +3,7 @@
  */
 
 import { DecodeError } from './exceptions';
+import { debug } from './logger';
 
 // These are the regex patterns for parsing. They must not have any
 // capturing groups. They are used during lexing and will be
@@ -28,7 +29,7 @@ const _compile = (...names: string[]): RegExp => {
 
 // The order matters in these pattern lists as more permissive patterns
 // can short-circuit stricter patterns.
-const PENMAN_RE = _compile(
+export const PENMAN_RE = _compile(
   'COMMENT',
   'STRING',
   'LPAREN',
@@ -51,18 +52,13 @@ export const TRIPLE_RE = _compile(
 /**
  * A lexed token.
  */
-type Token = [
+export type Token = [
   type: string,
   text: string,
   lineno: number,
   offset: number,
   line: string
 ];
-
-// class TokenIterator(Iterator[Token]):
-//     """
-//     An iterator of Tokens with L1 lookahead.
-//     """
 
 /**
  * An iterator of Tokens with L1 lookahead.
@@ -108,7 +104,7 @@ export class TokenIterator {
    *    StopIteration
    *       If the iterator is already exhausted.
    */
-  next(): IteratorResult<Token> {
+  next(): IteratorResult<Token, Token> {
     const current = this._next;
     this._next = this.iterator.next();
     if (this._next.done) {
@@ -218,6 +214,7 @@ const _lex = function* (
   let i = 0;
   for (const line of lines) {
     if (i > 0) {
+      debug(`Line ${i}: ${line}`);
       const matches = [...line.matchAll(regex)];
       for (const m of matches) {
         const typ = m[m.length - 1];
@@ -229,6 +226,7 @@ const _lex = function* (
           );
         }
         const token: Token = [typ, val, i, m.index, line];
+        debug(token);
         yield token;
       }
       i += 1;

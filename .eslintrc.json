@@ -28,6 +28,8 @@
     "functional/immutable-data": "off",
     "functional/no-throw-statement": "off",
     "functional/functional-parameters": "off",
+    "functional/prefer-type-literal": "off",
+    "no-constant-condition": "off",
     "eslint-comments/disable-enable-pair": [
       "error",
       { "allowWholeFile": true }
