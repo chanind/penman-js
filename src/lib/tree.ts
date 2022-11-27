@@ -88,7 +88,7 @@ export class Tree {
         const pre = _default_variable_prefix(concept);
         let i = 0;
         let newvar: string | null = null;
-        while (newvar === null || used.has(newvar)) {
+        while (newvar == null || used.has(newvar)) {
           newvar = format(fmt, {
             prefix: pre,
             i: i,
@@ -223,7 +223,7 @@ const _map_vars = (node: Node, varmap: VarMap): Node => {
  */
 export const is_atomic = (x: any): boolean => {
   return (
-    x === null ||
+    x == null ||
     x === undefined ||
     typeof x === 'string' ||
     typeof x === 'number'

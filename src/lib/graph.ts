@@ -188,14 +188,14 @@ export class Graph {
   /** The top variable. */
   get top(): Variable | null {
     let top = this._top;
-    if (top === null && this.triples.length > 0) {
+    if (top == null && this.triples.length > 0) {
       top = this.triples[0][0]; // implicit top
     }
     return top;
   }
 
   set top(top: Variable | null) {
-    if (top !== null && !this.variables().has(top)) {
+    if (top != null && !this.variables().has(top)) {
       throw new GraphError('top must be a valid node');
     }
     this._top = top; // check if top is valid variable?
@@ -204,7 +204,7 @@ export class Graph {
   /** Return the set of variables (nonterminal node identifiers). */
   variables(): Set<Variable> {
     const vs = new Set(this.triples.map(([src]) => src));
-    if (this._top !== null) {
+    if (this._top != null) {
       vs.add(this._top);
     }
     return vs;
@@ -250,14 +250,14 @@ export class Graph {
     target: Constant | null = null
   ): BasicTriple[] {
     // TODO: check for undefined OR null
-    if (source === null && role === null && target === null) {
+    if (source == null && role == null && target == null) {
       return this.triples.slice();
     } else {
       return this.triples.filter(
         ([src, rel, dst]) =>
-          (source === null || source === src) &&
-          (role === null || role === rel) &&
-          (target === null || target === dst)
+          (source == null || source === src) &&
+          (role == null || role === rel) &&
+          (target == null || target === dst)
       );
     }
   }
@@ -272,7 +272,7 @@ export class Graph {
    * re-entrant. */
   reentrancies(): Map<Variable, number> {
     const entrancies = new Map<Variable, number>();
-    if (this.top !== null) {
+    if (this.top != null) {
       defaultdictPlusEqual(entrancies, this.top, 1); // implicit entrancy to top
     }
     for (const edge of this.edges()) {

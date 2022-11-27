@@ -35,24 +35,24 @@ export class DecodeError extends PenmanError {
 
   toString(): string {
     let parts: string[] = [];
-    if (this.filename !== null) {
+    if (this.filename != null) {
       parts.push(`File "${this.filename}"`);
     }
-    if (this.lineno !== null) {
+    if (this.lineno != null) {
       parts.push(`line ${this.lineno}`);
     }
     if (parts.length > 0) {
       parts = ['', '  ' + parts.join(', ')];
     }
-    if (this.text !== null) {
+    if (this.text != null) {
       parts.push('    ' + this.text);
-      if (this.offset !== null) {
+      if (this.offset != null) {
         parts.push('    ' + ' '.repeat(this.offset) + '^');
       }
     } else if (parts.length > 0) {
       parts[parts.length - 1] += `, character ${this.offset}`;
     }
-    if (this.message !== null) {
+    if (this.message != null) {
       parts.push(`${this.constructor.name}: ${this.message}`);
     }
     return parts.join('\n');
