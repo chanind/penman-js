@@ -9,22 +9,22 @@ import { debug } from './logger';
 // capturing groups. They are used during lexing and will be
 // checked by name during parsing.
 const PATTERNS = {
-  COMMENT: /#.*$/,
-  STRING: /"[^"\\]*(?:\\.[^"\\]*)*"/,
-  ALIGNMENT: /~(?:[a-z]\.?)?[0-9]+(?:,[0-9]+)*/,
+  COMMENT: '#.*$',
+  STRING: '"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"',
+  ALIGNMENT: '~(?:[a-z].?)?[0-9]+(?:,[0-9]+)*',
   // ROLE cannot be made up of COLON + SYMBOL because it then becomes
   // difficult to detect anonymous roles: (a : b) vs (a :b c)
-  ROLE: /:[^ \t\r\n\v\f()\/:~]*/,
-  SYMBOL: /[^ \t\r\n\v\f()\/:~]+/,
-  LPAREN: /\(/,
-  RPAREN: /\)/,
-  SLASH: /\//, // concept (node label) role
-  UNEXPECTED: /[^ \t\r\n\v\f]/,
+  ROLE: ':[^ \t\r\n\v\f()/:~]*',
+  SYMBOL: '[^ \t\r\n\v\f()/:~]+',
+  LPAREN: '\\(',
+  RPAREN: '\\)',
+  SLASH: '\\/', // concept (node label) role
+  UNEXPECTED: '[^ \t\r\n\v\f]',
 };
 
 const _compile = (...names: string[]): RegExp => {
-  const pat = names.map((name) => `(?<${name}>${PATTERNS[name]})`).join('\n|');
-  return new RegExp(pat, 'x');
+  const pat = names.map((name) => `(?<${name}>${PATTERNS[name]})`).join('|');
+  return new RegExp(pat, 'g');
 };
 
 // The order matters in these pattern lists as more permissive patterns
@@ -82,7 +82,7 @@ export class TokenIterator {
   }
 
   __bool__() {
-    return this._next !== null;
+    return this._next != null;
   }
 
   /**
@@ -108,7 +108,7 @@ export class TokenIterator {
     const current = this._next;
     this._next = this.iterator.next();
     if (this._next.done) {
-      if (current.value == null) {
+      if (current == null || current.value == null) {
         return this._next;
       }
       this._next = null;
@@ -211,25 +211,25 @@ const _lex = function* (
   lines: Iterable<string>,
   regex: RegExp
 ): IterableIterator<Token> {
-  let i = 0;
+  let i = 1;
   for (const line of lines) {
-    if (i > 0) {
-      debug(`Line ${i}: ${line}`);
-      const matches = [...line.matchAll(regex)];
-      for (const m of matches) {
-        const typ = m[m.length - 1];
-        const val = m[0];
-        if (typ == null) {
-          throw new Error(
-            'Lexer pattern generated a match without a named ' +
-              `capturing group:\n${regex.source}`
-          );
-        }
-        const token: Token = [typ, val, i, m.index, line];
-        debug(token);
-        yield token;
+    debug(`Line ${i}: ${line}`);
+    const matches = line.matchAll(regex);
+    for (const m of matches) {
+      const typ = Object.entries(m.groups || {}).find(
+        ([, v]) => v != null
+      )?.[0];
+      const val = m[0];
+      if (typ == null) {
+        throw new Error(
+          'Lexer pattern generated a match without a named ' +
+            `capturing group:\n${regex.source}`
+        );
       }
-      i += 1;
+      const token: Token = [typ, val, i, m.index, line];
+      debug(`${token}`);
+      yield token;
     }
+    i += 1;
   }
 };

@@ -1,7 +1,7 @@
 import { lex, PENMAN_RE, Token, TokenIterator, TRIPLE_RE } from './_lexer';
+import { debug, warn } from './logger';
 import { Tree } from './tree';
 import { BasicTriple, Branch, Node, Target } from './types';
-import { debug, warn } from './logger';
 
 // def parse(s: str) -> Tree:
 //     """
