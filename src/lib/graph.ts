@@ -6,7 +6,7 @@ import cloneDeep from 'lodash.clonedeep';
 import differenceWith from 'lodash.differencewith';
 import isEqual from 'lodash.isequal';
 
-import type { Epidata } from './epigraph';
+import { EpidataMap } from './epigraph';
 import { GraphError } from './exceptions';
 import type {
   BasicTriple,
@@ -81,7 +81,7 @@ export class Graph {
   constructor(
     public triples: Triples = [],
     private _top: Variable = null,
-    public epidata: Map<BasicTriple, Epidata> = new Map(),
+    public epidata: EpidataMap = new EpidataMap(),
     public metadata: Record<string, string> = {}
   ) {
     // the following (a) creates a new list (b) validates that
@@ -144,7 +144,7 @@ export class Graph {
           this.epidata.set(t, other.epidata.get(t));
         }
       }
-      this.epidata = new Map([...this.epidata, ...other.epidata]);
+      this.epidata = new EpidataMap([...this.epidata, ...other.epidata]);
       return this;
     } else {
       throw new Error('NotImplemented');

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { format, format_triples } from './_format';
+import { format, formatTriples } from './_format';
 import { BasicTriple, Node } from './types';
 
 test('format', (t) => {
@@ -22,5 +22,5 @@ test('format_triples', (t) => {
     ['d', 'instance', 'dog'],
   ];
   const expected = 'instance(b, bark-01) ^\nARG0(b, d) ^\ninstance(d, dog)';
-  t.is(format_triples(triples), expected);
+  t.is(formatTriples(triples), expected);
 });

@@ -2,6 +2,7 @@
  *Definitions of tree structures.
  */
 
+import isEqual from 'lodash.isequal';
 import format from 'string-format';
 
 import type { Branch, Node, Variable } from './types';
@@ -32,8 +33,12 @@ export class Tree {
     if (other instanceof Tree) {
       other = other.node;
     }
-    return this.node === other;
+    return isEqual(this.node, other);
   }
+  equals(other: any): boolean {
+    return this.__eq__(other);
+  }
+
   __repr__(): string {
     return `Tree(${this.node})`;
   }

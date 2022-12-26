@@ -115,7 +115,7 @@ export function* iterparse(
  *   ('b', ':ARG0', 'd')
  *   ('d', ':instance', 'dog')
  */
-export const parse_triples = (s: string): BasicTriple[] => {
+export const parseTriples = (s: string): BasicTriple[] => {
   const tokens = lex(s, TRIPLE_RE);
   return _parse_triples(tokens);
 };
@@ -367,7 +367,7 @@ const _parse_triples = (tokens: TokenIterator): BasicTriple[] => {
     triples.push([source, role, target]);
 
     // continue only if triple is followed by ^
-    if (tokens) {
+    if (tokens.hasNext()) {
       const _next = tokens.peek();
       if (_next[0] !== 'SYMBOL' || !_next[1].startsWith('^')) {
         break;

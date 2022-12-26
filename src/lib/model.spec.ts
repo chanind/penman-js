@@ -1,32 +1,9 @@
 import test from 'ava';
 
+import { miniAmr } from './fixtures';
 import { Graph } from './graph';
 import { Model } from './model';
 import { BasicTriple } from './types';
-
-const miniAmr = (): {
-  roles: { [key: string]: { type: string } };
-  normalizations: { [key: string]: string };
-  reifications: [string, string, string, string][];
-} => ({
-  roles: {
-    ':ARG0': { type: 'frame' },
-    ':ARG1': { type: 'frame' },
-    ':accompanier': { type: 'general' },
-    ':domain': { type: 'general' },
-    ':consist-of': { type: 'general' },
-    ':mod': { type: 'general' },
-    ':op[0-9]+': { type: 'op' },
-  },
-  normalizations: {
-    ':mod-of': ':domain',
-    ':domain-of': ':mod',
-  },
-  reifications: [
-    [':accompanier', 'accompany-01', ':ARG0', ':ARG1'],
-    [':mod', 'have-mod-91', ':ARG1', ':ARG2'],
-  ],
-});
 
 test('init', (t) => {
   const m = new Model();

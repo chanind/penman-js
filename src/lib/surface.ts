@@ -84,7 +84,7 @@ export class AlignmentMarker extends Epidatum {
    *    >>> surface.RoleAlignment.from_string('e.2,3')
    *    RoleAlignment((2, 3), prefix='e.')
    */
-  static from_string(s: string): AlignmentMarker {
+  static from_string<T extends AlignmentMarker>(s: string): T {
     let _s = lstrip(s, '~');
     let prefix: string | null = null;
     try {
@@ -109,7 +109,8 @@ export class AlignmentMarker extends Epidatum {
       throw new SurfaceError(`invalid alignments: ${s}`);
     }
 
-    return new AlignmentMarker(indices, prefix);
+    const obj = new this(indices, prefix);
+    return <T>obj;
   }
 
   //     def __repr__(self):
@@ -273,12 +274,12 @@ export function role_alignments(g: Graph): _Alignments {
 
 const _get_alignments = (
   g: Graph,
-  alignment_type: typeof AlignmentMarker
+  alignmentType: typeof AlignmentMarker
 ): _Alignments => {
   const alns = new Map<BasicTriple, AlignmentMarker>();
   for (const [triple, epidata] of g.epidata) {
     for (const epidatum of epidata) {
-      if (epidatum instanceof alignment_type) {
+      if (epidatum instanceof alignmentType) {
         alns.set(triple, epidatum);
       }
     }

@@ -85,6 +85,10 @@ export class TokenIterator {
     return this._next != null;
   }
 
+  hasNext() {
+    return this.__bool__();
+  }
+
   /**
    * Return the next token but do not advance the iterator.
    *

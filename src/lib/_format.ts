@@ -51,7 +51,7 @@ export const format = (
  *     ARG0(b, d) ^
  *     instance(d, dog)
  */
-export const format_triples = (
+export const formatTriples = (
   triples: BasicTriple[],
   indent = true
 ): string => {
