@@ -6,7 +6,7 @@ import { ModelError } from './exceptions';
 import { CONCEPT_ROLE, Graph } from './graph';
 import { BasicTriple, Constant, Role, Target, Variable } from './types';
 
-type _ReificationSpec = [Role, Constant, Role, Role];
+export type _ReificationSpec = [Role, Constant, Role, Role];
 type _Reified = [Constant, Role, Role];
 type _Dereified = [Role, Role, Role];
 type _Reification = [BasicTriple, BasicTriple, BasicTriple];

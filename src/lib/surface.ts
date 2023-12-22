@@ -15,7 +15,7 @@ import { Epidatum } from './epigraph';
 import { SurfaceError } from './exceptions';
 import { Graph } from './graph';
 import { BasicTriple } from './types';
-import { lstrip } from './utils';
+import { ArrayKeysMap, lstrip } from './utils';
 
 // T = TypeVar('T', bound='AlignmentMarker')  # for classmethods
 
@@ -166,7 +166,7 @@ export class RoleAlignment extends AlignmentMarker {
 
 // _Alignments = Mapping[BasicTriple, AlignmentMarker]
 
-type _Alignments = Map<BasicTriple, AlignmentMarker>;
+type _Alignments = ArrayKeysMap<BasicTriple, AlignmentMarker>;
 
 // def alignments(g: Graph) -> _Alignments:
 //     """
@@ -276,7 +276,7 @@ const _get_alignments = (
   g: Graph,
   alignmentType: typeof AlignmentMarker,
 ): _Alignments => {
-  const alns = new Map<BasicTriple, AlignmentMarker>();
+  const alns = new ArrayKeysMap<BasicTriple, AlignmentMarker>();
   for (const [triple, epidata] of g.epidata) {
     for (const epidatum of epidata) {
       if (epidatum instanceof alignmentType) {

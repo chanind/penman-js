@@ -95,7 +95,7 @@
       "rewritePaths": {
         "src/": "build/main/"
       },
-      "compile": false
+      "compile": "tsc"
     },
     "files": [
       "!build/module/**"

@@ -7,6 +7,7 @@ import { Graph } from './graph';
 import * as layout from './layout';
 import * as surface from './surface';
 import { Node, Triples } from './types';
+import { ArrayKeysMap } from './utils';
 
 const codec = new PENMANCodec();
 
@@ -146,13 +147,13 @@ test('decode_atoms', (t) => {
 test('decode_alignments', (t) => {
   const g = codec.decode('(a / alpha~1)');
   t.deepEqual(g.triples, [['a', ':instance', 'alpha']]);
-  const expectedAlignments = new Map();
+  const expectedAlignments = new ArrayKeysMap();
   expectedAlignments.set(
     ['a', ':instance', 'alpha'],
     new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g), expectedAlignments);
-  t.deepEqual(surface.role_alignments(g), new Map());
+  t.deepEqual(surface.role_alignments(g), new ArrayKeysMap());
 
   t.true(codec.decode('(a / alpha~1)').equals(codec.decode('(a / alpha ~1)')));
 
@@ -161,8 +162,8 @@ test('decode_alignments', (t) => {
     ['a', ':instance', null],
     ['a', ':ARG', 'b'],
   ]);
-  t.deepEqual(surface.alignments(g2), new Map());
-  const expectedRoleAlignments = new Map();
+  t.deepEqual(surface.alignments(g2), new ArrayKeysMap());
+  const expectedRoleAlignments = new ArrayKeysMap();
   expectedRoleAlignments.set(
     ['a', ':ARG', 'b'],
     new surface.RoleAlignment([1, 2], 'e.'),
@@ -176,13 +177,13 @@ test('decode_alignments', (t) => {
     ['a', ':ARG1', '"str~ing"'],
     ['a', ':ARG2', '"str~ing"'],
   ]);
-  const expectedAlignments2 = new Map();
+  const expectedAlignments2 = new ArrayKeysMap();
   expectedAlignments2.set(
     ['a', ':ARG2', '"str~ing"'],
     new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g3), expectedAlignments2);
-  t.deepEqual(surface.role_alignments(g3), new Map());
+  t.deepEqual(surface.role_alignments(g3), new ArrayKeysMap());
 });
 
 test('decode_invalid_graphs', (t) => {
