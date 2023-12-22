@@ -23,7 +23,7 @@ export class DecodeError extends PenmanError {
     filename: string = null,
     lineno: number = null,
     offset: number = null,
-    text: string = null
+    text: string = null,
   ) {
     super(message);
     this.message = message;

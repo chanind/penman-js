@@ -135,7 +135,7 @@ export const POP = new Pop();
  */
 export function interpret(
   t: Tree | null,
-  model: Model = _default_model
+  model: Model = _default_model,
 ): Graph {
   if (t == null) {
     model = _default_model;
@@ -158,7 +158,7 @@ export function interpret(
 const _interpret_node = (
   t: Node,
   variables: Set<Variable>,
-  model: Model
+  model: Model,
 ): [string, Triples, [BasicTriple, Epidata][]] => {
   let hasConcept = false;
   const triples: Triples = [];
@@ -287,7 +287,7 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
 export function configure(
   g: Graph,
   top: Variable = null,
-  model: Model = null
+  model: Model = null,
 ): Tree {
   if (model == null) {
     model = _default_model;
@@ -343,7 +343,7 @@ export function configure(
 function _configure(
   g: Graph,
   top: Variable,
-  model: Model
+  model: Model,
 ): [Node, ([BasicTriple, boolean, Epidata] | Pop)[], _Nodemap] {
   if (g.triples.length === 0) {
     return [[g.top, []], [], {}];
@@ -420,7 +420,7 @@ function _configureNode(
   variable: Variable,
   data: ([BasicTriple, boolean, Epidata] | Pop)[],
   nodemap: { [key: Constant]: Node | null },
-  model: Model
+  model: Model,
 ): [Node, boolean] {
   const node = nodemap[variable];
   const edges = node[1];
@@ -479,11 +479,11 @@ function _configureNode(
  */
 function _findNext(
   data: ([BasicTriple, boolean, Epidata] | Pop)[],
-  nodemap: { [key: Constant]: Node | null }
+  nodemap: { [key: Constant]: Node | null },
 ): [
   ([BasicTriple, boolean, Epidata] | Pop)[],
   Variable,
-  ([BasicTriple, boolean, Epidata] | Pop)[]
+  ([BasicTriple, boolean, Epidata] | Pop)[],
 ] {
   let variable = null;
   let pivot = data.length;
@@ -513,7 +513,7 @@ function _findNext(
  */
 function _getOrEstablishSite(
   variable: Variable,
-  nodemap: { [key: Constant]: Node | null }
+  nodemap: { [key: Constant]: Node | null },
 ): boolean {
   // first check if the var is available at all
   if (nodemap[variable] != null) {
@@ -577,7 +577,7 @@ export function reconfigure(
   graph: Graph,
   top: Variable = null,
   model: Model = null,
-  key: (role: Role) => any = null
+  key: (role: Role) => any = null,
 ): Tree {
   const p = cloneDeep(graph);
   for (const entry of p.epidata.entries()) {
@@ -646,7 +646,7 @@ export function reconfigure(
 export function rearrange(
   t: Tree,
   key: (role: Role) => any = null,
-  attributesFirst = false
+  attributesFirst = false,
 ): void {
   let variables = new Set();
   if (attributesFirst) {
@@ -692,7 +692,7 @@ const _rearrange = (node: Node, key: (branch: Branch) => any) => {
  */
 export function getPushedVariable(
   g: Graph,
-  triple: BasicTriple
+  triple: BasicTriple,
 ): Variable | null {
   for (const epi of g.epidata.get(triple) ?? []) {
     if (epi instanceof Push) {
@@ -773,7 +773,7 @@ export function nodeContexts(g: Graph): Array<Variable | null> {
   const variables = g.variables();
   const stack = [g.top];
   const contexts: Array<Variable | null> = new Array(g.triples.length).fill(
-    null
+    null,
   );
   for (let i = 0; i < g.triples.length; i++) {
     const triple = g.triples[i];

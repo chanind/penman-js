@@ -274,7 +274,7 @@ export function role_alignments(g: Graph): _Alignments {
 
 const _get_alignments = (
   g: Graph,
-  alignmentType: typeof AlignmentMarker
+  alignmentType: typeof AlignmentMarker,
 ): _Alignments => {
   const alns = new Map<BasicTriple, AlignmentMarker>();
   for (const [triple, epidata] of g.epidata) {

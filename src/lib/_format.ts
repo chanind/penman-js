@@ -22,14 +22,14 @@ import { lstrip } from './utils';
 export const format = (
   tree: Tree | Node,
   indent: number | null | undefined = -1,
-  compact = false
+  compact = false,
 ): string => {
   if (!(tree instanceof Tree)) {
     tree = new Tree(tree);
   }
   const vars = compact ? tree.nodes().map(([variable]) => variable) : [];
   const parts = Object.entries(tree.metadata).map(
-    ([key, value]) => `# ::${key}${value ? ' ' + value : value}`
+    ([key, value]) => `# ::${key}${value ? ' ' + value : value}`,
   );
   parts.push(_format_node(tree.node, indent, 0, new Set(vars)));
   return parts.join('\n');
@@ -53,12 +53,12 @@ export const format = (
  */
 export const formatTriples = (
   triples: BasicTriple[],
-  indent = true
+  indent = true,
 ): string => {
   const delim = indent ? ' ^\n' : ' ^ ';
   // need to remove initial : on roles for triples
   const conjunction = triples.map(
-    ([source, role, target]) => `${lstrip(role, ':')}(${source}, ${target})`
+    ([source, role, target]) => `${lstrip(role, ':')}(${source}, ${target})`,
   );
   return conjunction.join(delim);
 };
@@ -70,7 +70,7 @@ const _format_node = (
   node: Node,
   indent: number | null | undefined,
   column: number,
-  vars: Set<string>
+  vars: Set<string>,
 ): string => {
   const [variable, edges] = node;
   if (!variable) {
@@ -120,7 +120,7 @@ const _format_edge = (
   edge: Branch,
   indent: number | null,
   column: number,
-  vars: Set<string>
+  vars: Set<string>,
 ): string => {
   let [role, target] = edge;
   if (role !== '/' && !role.startsWith(':')) {

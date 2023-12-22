@@ -114,13 +114,13 @@ const _format = (node: Node, level: number): string => {
   const next_level = level + 2;
   const indent = '\n' + ' '.repeat(next_level);
   const branch_strings = branches.map((branch) =>
-    _format_branch(branch, next_level)
+    _format_branch(branch, next_level),
   );
   return format(
     '({}, [{}{}])',
     variable,
     indent,
-    branch_strings.join(',' + indent)
+    branch_strings.join(',' + indent),
   );
 };
 

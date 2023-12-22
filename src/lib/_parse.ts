@@ -74,7 +74,7 @@ export const parse = (s: string): Tree => {
  *   Tree(('b', [('/', 'beta')]))
  */
 export function* iterparse(
-  lines: Iterable<string> | string
+  lines: Iterable<string> | string,
 ): IterableIterator<Tree> {
   const tokens = lex(lines, PENMAN_RE);
   while (['COMMENT', 'LPAREN'].includes(tokens && tokens.peek()[0])) {
@@ -413,7 +413,7 @@ const _parse_triples = (tokens: TokenIterator): BasicTriple[] => {
 
 const _parse_triple = (
   symbol: Token,
-  tokens: TokenIterator
+  tokens: TokenIterator,
 ): [string, Target] => {
   // SYMBOL may contain commas, so handle it here. If there
   // is no space between the comma and the next SYMBOL, they

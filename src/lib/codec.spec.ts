@@ -149,7 +149,7 @@ test('decode_alignments', (t) => {
   const expectedAlignments = new Map();
   expectedAlignments.set(
     ['a', ':instance', 'alpha'],
-    new surface.Alignment([1])
+    new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g), expectedAlignments);
   t.deepEqual(surface.role_alignments(g), new Map());
@@ -165,7 +165,7 @@ test('decode_alignments', (t) => {
   const expectedRoleAlignments = new Map();
   expectedRoleAlignments.set(
     ['a', ':ARG', 'b'],
-    new surface.RoleAlignment([1, 2], 'e.')
+    new surface.RoleAlignment([1, 2], 'e.'),
   );
   t.deepEqual(surface.role_alignments(g2), expectedRoleAlignments);
 
@@ -179,7 +179,7 @@ test('decode_alignments', (t) => {
   const expectedAlignments2 = new Map();
   expectedAlignments2.set(
     ['a', ':ARG2', '"str~ing"'],
-    new surface.Alignment([1])
+    new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g3), expectedAlignments2);
   t.deepEqual(surface.role_alignments(g3), new Map());
@@ -303,7 +303,7 @@ test('encode issue 61', (t) => {
       ['i', ':instance', 'i'],
       ['i2', ':ARG0', 'i'],
     ],
-    'i2'
+    'i2',
   );
   t.is(codec.encode(g, undefined, null), '(i2 / i :ARG0 (i / i))');
 });
@@ -320,12 +320,12 @@ test('encode issue 67', (t) => {
     codec.encode(new Graph(triples, 'a')),
     `(a / activist
    :ARG0-of (h / have-org-role-91)
-   :ARG2-of h)`
+   :ARG2-of h)`,
   );
   t.is(
     codec.encode(new Graph(triples, 'h')),
     `(h / have-org-role-91
    :ARG0 (a / activist)
-   :ARG2 a)`
+   :ARG2 a)`,
   );
 });

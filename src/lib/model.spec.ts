@@ -21,8 +21,8 @@ test('from_dict', (t) => {
       undefined,
       miniAmr().roles,
       miniAmr().normalizations,
-      miniAmr().reifications
-    )
+      miniAmr().reifications,
+    ),
   );
 });
 

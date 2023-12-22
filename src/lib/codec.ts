@@ -116,7 +116,7 @@ export class PENMANCodec {
     g: Graph,
     top?: Variable,
     indent: number | null | undefined = -1,
-    compact = false
+    compact = false,
   ): string {
     const tree = layout.configure(g, top, this.model);
     return this.format(tree, indent, compact);
@@ -128,7 +128,7 @@ export class PENMANCodec {
   format(
     tree: Tree | Node,
     indent: number | null | undefined = -1,
-    compact = false
+    compact = false,
   ): string {
     return format(tree, indent, compact);
   }
@@ -191,7 +191,7 @@ export function _decode(s: string, model?: Model): Graph {
  */
 export function* _iterdecode(
   lines: string | string[],
-  model?: Model
+  model?: Model,
 ): IterableIterator<Graph> {
   const codec = new PENMANCodec(model);
   yield* codec.iterdecode(lines);
@@ -219,7 +219,7 @@ export function _encode(
   top?: Variable,
   model?: Model,
   indent: number | null | undefined = -1,
-  compact = false
+  compact = false,
 ): string {
   const codec = new PENMANCodec(model);
   return codec.encode(g, top, indent, compact);
@@ -237,7 +237,7 @@ export function _encode(
 export function _load(
   source: string,
   model?: Model,
-  encoding?: string
+  encoding?: string,
 ): Graph[] {
   // importing fs here because it's only valid in node
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -276,7 +276,7 @@ export function _dump(
   model?: Model,
   indent: number | null | undefined = -1,
   compact = false,
-  encoding?: string
+  encoding?: string,
 ): void {
   const codec = new PENMANCodec(model);
   _dumpStream(file, graphs, codec, indent, compact, encoding);
@@ -289,7 +289,7 @@ export function _dumpStream(
   codec: PENMANCodec,
   indent: number | null | undefined,
   compact: boolean,
-  encoding?: string
+  encoding?: string,
 ): void {
   // importing fs here because it's only valid in node
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -318,11 +318,11 @@ export function _dumps(
   graphs: Graph[],
   model?: Model,
   indent: number | null | undefined = -1,
-  compact = false
+  compact = false,
 ): string {
   const codec = new PENMANCodec(model);
   const strings = graphs.map((g) =>
-    codec.encode(g, undefined, indent, compact)
+    codec.encode(g, undefined, indent, compact),
   );
   return strings.join('\n\n');
 }

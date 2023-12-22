@@ -59,7 +59,7 @@ test('lexing_issue_50', (t) => {
   // https://github.com/goodmami/penman/issues/50
   t.deepEqual(
     Array.from(lex('(a :ROLE "a~b"~1)')).map((tok) => tok[0]),
-    ['LPAREN', 'SYMBOL', 'ROLE', 'STRING', 'ALIGNMENT', 'RPAREN']
+    ['LPAREN', 'SYMBOL', 'ROLE', 'STRING', 'ALIGNMENT', 'RPAREN'],
   );
 });
 
@@ -147,26 +147,26 @@ test('nonbreaking_space_issue_99', (t) => {
   // https://github.com/goodmami/penman/issues/99
   t.deepEqual(
     Array.from(lex('1 2')).map((tok) => tok[0]),
-    ['SYMBOL', 'SYMBOL']
+    ['SYMBOL', 'SYMBOL'],
   );
   t.deepEqual(
     Array.from(lex('1\t2')).map((tok) => tok[0]),
-    ['SYMBOL', 'SYMBOL']
+    ['SYMBOL', 'SYMBOL'],
   );
   t.deepEqual(
     Array.from(lex('1\n2')).map((tok) => tok[0]),
-    ['SYMBOL', 'SYMBOL']
+    ['SYMBOL', 'SYMBOL'],
   );
   t.deepEqual(
     Array.from(lex('1\r2')).map((tok) => tok[0]),
-    ['SYMBOL', 'SYMBOL']
+    ['SYMBOL', 'SYMBOL'],
   );
   t.deepEqual(
     Array.from(lex('1\u00a02')).map((tok) => tok[0]),
-    ['SYMBOL']
+    ['SYMBOL'],
   );
   t.deepEqual(
     Array.from(lex('あ　い')).map((tok) => tok[0]),
-    ['SYMBOL']
+    ['SYMBOL'],
   );
 });

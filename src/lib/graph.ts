@@ -82,7 +82,7 @@ export class Graph {
     public triples: Triples = [],
     private _top: Variable = null,
     public epidata: EpidataMap = new EpidataMap(),
-    public metadata: Record<string, string> = {}
+    public metadata: Record<string, string> = {},
   ) {
     // the following (a) creates a new list (b) validates that
     // they are triples, and (c) ensures roles begin with :
@@ -134,10 +134,10 @@ export class Graph {
       const new_: Triples = differenceWith(
         other.triples,
         this.triples,
-        isEqual
+        isEqual,
       );
       this.triples.push(
-        ...other.triples.filter((t) => new_.find((n) => isEqual(t, n)))
+        ...other.triples.filter((t) => new_.find((n) => isEqual(t, n))),
       );
       for (const t of new_) {
         if (other.epidata.has(t)) {
@@ -164,7 +164,7 @@ export class Graph {
     if (other instanceof Graph) {
       const removed = other.triples;
       this.triples = this.triples.filter(
-        (t) => !removed.find((r) => isEqual(t, r))
+        (t) => !removed.find((r) => isEqual(t, r)),
       );
       for (const t of removed) {
         if (this.epidata.has(t)) {
@@ -174,7 +174,7 @@ export class Graph {
       const possible_sources = this.triples.map((t) => t[0]);
       const possible_targets = this.triples.map((t) => t[2]);
       const possible_variables = new Set(
-        possible_targets.concat(possible_sources)
+        possible_targets.concat(possible_sources),
       );
       if (!possible_variables.has(this._top)) {
         this._top = null;
@@ -220,11 +220,11 @@ export class Graph {
   edges(
     source: Variable | null = null,
     role: Role | null = null,
-    target: Variable | null = null
+    target: Variable | null = null,
   ): Edge[] {
     const variables = this.variables();
     return this._filter_triples(source, role, target).filter(
-      ([_, rel, tgt]) => rel !== CONCEPT_ROLE && variables.has(tgt as any)
+      ([_, rel, tgt]) => rel !== CONCEPT_ROLE && variables.has(tgt as any),
     ) as Edge[];
   }
 
@@ -234,11 +234,11 @@ export class Graph {
   attributes(
     source: Variable | null = null,
     role: Role | null = null,
-    target: Constant | null = null
+    target: Constant | null = null,
   ): Attribute[] {
     const variables = this.variables();
     return this._filter_triples(source, role, target).filter(
-      ([_, rel, tgt]) => rel !== CONCEPT_ROLE && !variables.has(tgt as any)
+      ([_, rel, tgt]) => rel !== CONCEPT_ROLE && !variables.has(tgt as any),
     );
   }
 
@@ -247,7 +247,7 @@ export class Graph {
     // TODO: use proper typescript optional types instead of 'null'
     source: Variable | null = null,
     role: Role | null = null,
-    target: Constant | null = null
+    target: Constant | null = null,
   ): BasicTriple[] {
     // TODO: check for undefined OR null
     if (source == null && role == null && target == null) {
@@ -257,7 +257,7 @@ export class Graph {
         ([src, rel, dst]) =>
           (source == null || source === src) &&
           (role == null || role === rel) &&
-          (target == null || target === dst)
+          (target == null || target === dst),
       );
     }
   }

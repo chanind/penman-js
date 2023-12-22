@@ -11,22 +11,27 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:import/typescript",
     "plugin:functional/lite",
-    "prettier",
-    "prettier/@typescript-eslint"
+    "prettier"
   ],
   "globals": { "BigInt": true, "console": true, "WebAssembly": true },
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+
     "functional/prefer-readonly-type": "off",
     "functional/no-this-expression": "off",
-    "functional/no-loop-statement": "off",
+    "functional/no-loop-statements": "off",
     "functional/no-let": "off",
-    "functional/no-class": "off",
+    "functional/no-classes": "off",
     "functional/no-return-void": "off",
     "functional/immutable-data": "off",
-    "functional/no-throw-statement": "off",
+    "functional/prefer-immutable-types": "off",
+    "functional/no-throw-statements": "off",
     "functional/functional-parameters": "off",
     "functional/prefer-type-literal": "off",
     "no-constant-condition": "off",
@@ -34,7 +39,7 @@
       "error",
       { "allowWholeFile": true }
     ],
-    "eslint-comments/no-unused-disable": "error",
+    "no-unused-vars": "off",
     "import/order": [
       "error",
       { "newlines-between": "always", "alphabetize": { "order": "asc" } }

@@ -251,7 +251,7 @@ test('reset_variables', (t) => {
           ],
         ],
       ],
-    ])
+    ]),
   );
 
   t2.reset_variables();
@@ -270,7 +270,7 @@ test('reset_variables', (t) => {
         ['/', 'alpha'],
         [':ARG0', ['a1', [['/', 'b']]]],
       ],
-    ])
+    ]),
   );
 
   t3.reset_variables();

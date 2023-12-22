@@ -36,9 +36,9 @@ test('interpret', (t) => {
           ['b', ':consist', 'a'],
           ['b', ':instance', 'B'],
         ],
-        'a'
-      )
-    )
+        'a',
+      ),
+    ),
   );
   t.true(
     interpret(t2, amrModel()).equals(
@@ -48,9 +48,9 @@ test('interpret', (t) => {
           ['a', ':consist-of', 'b'],
           ['b', ':instance', 'B'],
         ],
-        'a'
-      )
-    )
+        'a',
+      ),
+    ),
   );
 });
 
@@ -70,7 +70,7 @@ test('rearrange', (t) => {
             :ARG0 (g / gamma)
             :ARG1 (d / delta))
    :ARG0-of d
-   :ARG1 (e / epsilon))`
+   :ARG1 (e / epsilon))`,
   );
 
   rearrange(t1, model.canonicalOrder.bind(model));
@@ -81,7 +81,7 @@ test('rearrange', (t) => {
             :ARG0 (g / gamma)
             :ARG1 (d / delta))
    :ARG1 (e / epsilon)
-   :ARG0-of d)`
+   :ARG0-of d)`,
   );
 });
 test('configure', (t) => {
@@ -98,7 +98,7 @@ test('configure', (t) => {
         ['/', 'A'],
         [':consist-of', ['b', [['/', 'B']]]],
       ],
-    ])
+    ]),
   );
   t.deepEqual(
     configure(g1, 'b'),
@@ -108,7 +108,7 @@ test('configure', (t) => {
         ['/', 'B'],
         [':consist', ['a', [['/', 'A']]]],
       ],
-    ])
+    ]),
   );
 
   const amrCodec = new PENMANCodec(amrModel());
@@ -121,7 +121,7 @@ test('configure', (t) => {
         ['/', 'A'],
         [':consist-of', ['b', [['/', 'B']]]],
       ],
-    ])
+    ]),
   );
   t.deepEqual(
     configure(g2, 'b', amrModel()),
@@ -131,7 +131,7 @@ test('configure', (t) => {
         ['/', 'B'],
         [':consist-of-of', ['a', [['/', 'A']]]],
       ],
-    ])
+    ]),
   );
 });
 
@@ -175,8 +175,8 @@ test('issue 34', (t) => {
             ],
           ],
         ],
-      ])
-    )
+      ]),
+    ),
   );
 });
 
@@ -217,7 +217,7 @@ test('reconfigure', (t) => {
           ],
         ],
       ],
-    ])
+    ]),
   );
   // canonical order reconfiguration can also shift things like
   // inverted arguments
@@ -239,7 +239,7 @@ test('reconfigure', (t) => {
         ],
         [':ARG1', 'g'],
       ],
-    ])
+    ]),
   );
 });
 
@@ -251,7 +251,7 @@ test('issue 90', (t) => {
       ['i2', ':instance', 'i'],
       ['i', ':ARG0', 'i2'],
     ],
-    'i'
+    'i',
   );
   t.deepEqual(
     reconfigure(g),
@@ -261,7 +261,7 @@ test('issue 90', (t) => {
         ['/', 'iota'],
         [':ARG0', ['i2', [['/', 'i']]]],
       ],
-    ])
+    ]),
   );
 });
 
@@ -331,7 +331,7 @@ test('node_contexts', (t) => {
 
 test('issue 92', (t) => {
   // https://github.com/goodmami/penman/issues/92
-  let g = codec.decode('(a / alpha :ARG0~e.0 (b / beta))');
+  const g = codec.decode('(a / alpha :ARG0~e.0 (b / beta))');
   t.deepEqual(
     configure(g),
     new Tree([
@@ -340,7 +340,7 @@ test('issue 92', (t) => {
         ['/', 'alpha'],
         [':ARG0~e.0', ['b', [['/', 'beta']]]],
       ],
-    ])
+    ]),
   );
   t.deepEqual(
     configure(g, 'b'),
@@ -350,13 +350,13 @@ test('issue 92', (t) => {
         ['/', 'beta'],
         [':ARG0-of~e.0', ['a', [['/', 'alpha']]]],
       ],
-    ])
+    ]),
   );
 });
 
 test('issue 93', (t) => {
   // https://github.com/goodmami/penman/issues/93
-  let g = codec.decode('(a / alpha :ARG0 b~1)');
+  const g = codec.decode('(a / alpha :ARG0 b~1)');
   g.triples.push(['b', ':instance', 'beta']);
   t.deepEqual(
     configure(g),
@@ -366,6 +366,6 @@ test('issue 93', (t) => {
         ['/', 'alpha'],
         [':ARG0', ['b', [['/', 'beta']]]],
       ],
-    ])
+    ]),
   );
 });

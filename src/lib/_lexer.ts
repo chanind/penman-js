@@ -38,7 +38,7 @@ export const PENMAN_RE = _compile(
   'ROLE',
   'SYMBOL',
   'ALIGNMENT',
-  'UNEXPECTED'
+  'UNEXPECTED',
 );
 export const TRIPLE_RE = _compile(
   'COMMENT',
@@ -46,7 +46,7 @@ export const TRIPLE_RE = _compile(
   'LPAREN',
   'RPAREN',
   'SYMBOL',
-  'UNEXPECTED'
+  'UNEXPECTED',
 );
 
 /**
@@ -57,7 +57,7 @@ export type Token = [
   text: string,
   lineno: number,
   offset: number,
-  line: string
+  line: string,
 ];
 
 /**
@@ -191,7 +191,7 @@ export class TokenIterator {
  */
 export const lex = (
   lines: Iterable<string> | string,
-  pattern: RegExp | string = PENMAN_RE
+  pattern: RegExp | string = PENMAN_RE,
 ): TokenIterator => {
   if (typeof lines === 'string') {
     // from https://stackoverflow.com/a/68114825/245362
@@ -200,7 +200,7 @@ export const lex = (
   let regex: RegExp;
   if (pattern != null) {
     if (typeof pattern === 'string') {
-      regex = new RegExp(pattern, 'x');
+      regex = new RegExp(pattern);
     } else {
       regex = pattern;
     }
@@ -213,7 +213,7 @@ export const lex = (
 
 const _lex = function* (
   lines: Iterable<string>,
-  regex: RegExp
+  regex: RegExp,
 ): IterableIterator<Token> {
   let i = 1;
   for (const line of lines) {
@@ -221,13 +221,13 @@ const _lex = function* (
     const matches = line.matchAll(regex);
     for (const m of matches) {
       const typ = Object.entries(m.groups || {}).find(
-        ([, v]) => v != null
+        ([, v]) => v != null,
       )?.[0];
       const val = m[0];
       if (typ == null) {
         throw new Error(
           'Lexer pattern generated a match without a named ' +
-            `capturing group:\n${regex.source}`
+            `capturing group:\n${regex.source}`,
         );
       }
       const token: Token = [typ, val, i, m.index, line];

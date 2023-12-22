@@ -50,7 +50,7 @@ test('__or__', (t) => {
       ['a', ':ARG', 'b'],
       ['b', ':instance', 'beta'],
     ],
-    'b'
+    'b',
   );
   const g2 = q.__or__(r);
 
@@ -118,7 +118,7 @@ test('__isub__', (t) => {
     new Graph([
       ['a', ':instance', 'alpha'],
       ['a', ':ARG', 'b'],
-    ])
+    ]),
   );
   t.deepEqual(g1.triples, [['b', ':instance', 'beta']]);
   t.is(g1.top, 'b');
@@ -132,7 +132,7 @@ test('top', (t) => {
       ['b', ':instance', null],
       ['a', ':ARG', 'b'],
     ]).top,
-    'b'
+    'b',
   );
   t.is(new Graph(x1()[1]).top, 'e2');
 });
@@ -141,11 +141,11 @@ test('variables', (t) => {
   t.deepEqual(new Graph([['a', ':ARG', 'b']]).variables(), new Set(['a']));
   t.deepEqual(
     new Graph(x1()[1]).variables(),
-    new Set(['e2', 'x1', '_1', 'e3'])
+    new Set(['e2', 'x1', '_1', 'e3']),
   );
   t.deepEqual(
     new Graph([['a', ':ARG', 'b']], 'b').variables(),
-    new Set(['a', 'b'])
+    new Set(['a', 'b']),
   );
 });
 

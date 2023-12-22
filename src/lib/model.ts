@@ -40,7 +40,7 @@ export class Model {
     conceptRole: Role = CONCEPT_ROLE,
     roles: { [key: Role]: any } | null = null,
     normalizations: { [key: Role]: Role } | null = null,
-    reifications: Array<_ReificationSpec> | null = null
+    reifications: Array<_ReificationSpec> | null = null,
   ) {
     this.topVariable = topVariable;
     this.topRole = topRole;
@@ -53,7 +53,7 @@ export class Model {
     this._roleRe = new RegExp(
       '^(' +
         Object.keys(this.roles).concat([topRole, conceptRole]).join('|') +
-        ')$'
+        ')$',
     );
 
     if (normalizations) {
@@ -103,7 +103,7 @@ export class Model {
       d.conceptRole,
       d.roles,
       d.normalizations,
-      d.reifications
+      d.reifications,
     );
   }
 
@@ -344,7 +344,7 @@ export class Model {
   dereify(
     instanceTriple: BasicTriple,
     sourceTriple: BasicTriple,
-    targetTriple: BasicTriple
+    targetTriple: BasicTriple,
   ): BasicTriple {
     if (instanceTriple[1] !== CONCEPT_ROLE) {
       throw new Error('second argument is not an instance triple');
@@ -372,7 +372,7 @@ export class Model {
     }
 
     throw new ModelError(
-      `${sourceRole} and ${targetRole} are not valid roles to dereify ${concept}`
+      `${sourceRole} and ${targetRole} are not valid roles to dereify ${concept}`,
     );
   }
 
@@ -473,7 +473,7 @@ function _dfs(g: { [key: string]: BasicTriple[] }, top: string): Set<string> {
   const q: { [key: string]: Set<string> } = {};
   for (const [variable, triples] of Object.entries(g)) {
     q[variable] = new Set(
-      triples.map(([, , tgt]) => `${tgt}`).filter((tgt) => tgt in g)
+      triples.map(([, , tgt]) => `${tgt}`).filter((tgt) => tgt in g),
     );
   }
   // make edges bidirectional
