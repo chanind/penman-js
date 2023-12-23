@@ -1,6 +1,4 @@
-/**
-Basic types used by various Penman modules.
-*/
+/** Basic types used by various Penman modules. */
 
 export type Variable = string;
 export type Constant = string | number | null; // null for missing values

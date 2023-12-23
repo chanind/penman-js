@@ -1,6 +1,4 @@
-/**
- *Definitions of tree structures.
- */
+/** Definitions of tree structures. */
 
 import isEqual from 'lodash.isequal';
 import format from 'string-format';

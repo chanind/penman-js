@@ -10,7 +10,7 @@ import { Model } from './model';
 import { Tree } from './tree';
 import { BasicTriple, Node, Variable } from './types';
 
-// # "Utility" types; not Penman-specific
+// "Utility" types; not Penman-specific
 
 /**
  * An encoder/decoder for PENMAN-serialized graphs.
