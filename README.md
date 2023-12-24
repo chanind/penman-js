@@ -3,7 +3,7 @@
 [![ci](https://img.shields.io/github/actions/workflow/status/chanind/penman-js/ci.yaml?branch=main)](https://github.com/chanind/penman-js)
 [![Npm](https://img.shields.io/npm/v/penman-js)](https://www.npmjs.com/package/penman-js)
 
-Javascript port of [Penman Python library](https://github.com/goodmami/penman) for AMR.
+Javascript port of [Penman Python library](https://github.com/goodmami/penman) for Abstract Meaning Representation (AMR).
 
 ## About
 
