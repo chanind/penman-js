@@ -6,4 +6,4 @@ export {
   DecodeError,
   SurfaceError,
   ModelError,
-} from "./lib/exceptions";
+} from './lib/exceptions';
