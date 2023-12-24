@@ -7,7 +7,7 @@ Javascript port of [Penman Python library](https://github.com/goodmami/penman) f
 
 ## About
 
-This library is a direct port of the Python library, with identical method names and import structure. However, as Python and Javascript do have some differences, this port has the following changes:
+This library is a manual port of the Penman Python library, with identical method names and import structure. However, as Python and Javascript do have some differences, this port has the following changes:
 
 - all snake-case function names from the Python library are renamed using camel-case to fit Javascript naming conventions. For example, the function `get_pushed_variable` from Python is renamed to `getPushedVariable` in Javascript.
 - Python tuples are replaced with Javascript arrays
