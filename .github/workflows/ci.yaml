@@ -1,0 +1,13 @@
+name: CI
+on: [push]
+jobs:
+  lint_test_and_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - run: yarn install
+      - run: yarn test
+      - run: yarn build
