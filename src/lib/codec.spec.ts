@@ -153,7 +153,7 @@ test('decode_alignments', (t) => {
     new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g), expectedAlignments);
-  t.deepEqual(surface.role_alignments(g), new ArrayKeysMap());
+  t.deepEqual(surface.roleAlignments(g), new ArrayKeysMap());
 
   t.true(codec.decode('(a / alpha~1)').equals(codec.decode('(a / alpha ~1)')));
 
@@ -168,7 +168,7 @@ test('decode_alignments', (t) => {
     ['a', ':ARG', 'b'],
     new surface.RoleAlignment([1, 2], 'e.'),
   );
-  t.deepEqual(surface.role_alignments(g2), expectedRoleAlignments);
+  t.deepEqual(surface.roleAlignments(g2), expectedRoleAlignments);
 
   // https://github.com/goodmami/penman/issues/50
   const g3 = codec.decode('(a :ARG1 "str~ing" :ARG2 "str~ing"~1)');
@@ -183,7 +183,7 @@ test('decode_alignments', (t) => {
     new surface.Alignment([1]),
   );
   t.deepEqual(surface.alignments(g3), expectedAlignments2);
-  t.deepEqual(surface.role_alignments(g3), new ArrayKeysMap());
+  t.deepEqual(surface.roleAlignments(g3), new ArrayKeysMap());
 });
 
 test('decode_invalid_graphs', (t) => {

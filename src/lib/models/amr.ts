@@ -153,7 +153,7 @@ const reifications: _ReificationSpec[] = [
 
 //: The AMR model is an instance of :class:`~penman.model.Model` using
 //: the roles, normalizations, and reifications defined in this module.
-const model = new Model(
+export const model = new Model(
   'top',
   ':TOP',
   ':instance',

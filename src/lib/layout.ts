@@ -59,7 +59,7 @@ import { CONCEPT_ROLE, Graph } from './graph';
 import { debug, log, warn } from './logger';
 import { Model } from './model';
 import { Alignment, RoleAlignment } from './surface';
-import { is_atomic, Tree } from './tree';
+import { isAtomic, Tree } from './tree';
 import {
   BasicTriple,
   Branch,
@@ -141,7 +141,7 @@ export function interpret(
     model = _default_model;
   }
   const variables = new Set(t.nodes().map((node) => node[0]));
-  const [top, triples, epidata] = _interpret_node(t.node, variables, model);
+  const [top, triples, epidata] = _interpretNode(t.node, variables, model);
   const epimap = new EpidataMap();
   for (const [triple, epis] of epidata) {
     if (epimap.has(triple)) {
@@ -155,7 +155,7 @@ export function interpret(
   return g;
 }
 
-const _interpret_node = (
+const _interpretNode = (
   t: Node,
   variables: Set<Variable>,
   model: Model,
@@ -176,7 +176,7 @@ const _interpret_node = (
     hasConcept ||= role === CONCEPT_ROLE;
 
     // atomic targets
-    if (is_atomic(target)) {
+    if (isAtomic(target)) {
       const [target_, target_epis] = _processAtomic(target);
       epis.push(...target_epis);
       let triple: BasicTriple = [variable, role, target_];
@@ -199,7 +199,7 @@ const _interpret_node = (
       epidata.push([triple, epis]);
 
       // recurse to nested nodes
-      const [, _triples, _epis] = _interpret_node(target, variables, model);
+      const [, _triples, _epis] = _interpretNode(target, variables, model);
       triples.push(..._triples);
       _epis[_epis.length - 1][1].push(POP); // POP from last triple of nested node
       epidata.push(..._epis);
@@ -222,7 +222,7 @@ const _processRole = (role: string): [string, Epidatum[]] => {
   } else if (role.includes('~')) {
     const [role_, alignment] = role.split('~');
     role = role_;
-    epis.push(RoleAlignment.from_string<RoleAlignment>(alignment));
+    epis.push(RoleAlignment.fromString<RoleAlignment>(alignment));
   }
   return [role, epis];
 };
@@ -236,13 +236,13 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
       // because strings may contain ~ inside the quotes (e.g., URIs)
       const pivot = target.lastIndexOf('"') + 1;
       if (pivot < target.length) {
-        epis.push(Alignment.from_string<Alignment>(target.slice(pivot)));
+        epis.push(Alignment.fromString<Alignment>(target.slice(pivot)));
         target = target.slice(0, pivot);
       }
     } else {
       const [target_, alignment] = target.split('~');
       target = target_;
-      epis.push(Alignment.from_string<Alignment>(alignment));
+      epis.push(Alignment.fromString<Alignment>(alignment));
     }
   }
   return [target, epis];
@@ -549,7 +549,7 @@ function _processEpigraph(node: any): void {
     let role = edges[i][0];
     let target = edges[i][1];
     const epis = edges[i][2];
-    const atomicTarget = is_atomic(target);
+    const atomicTarget = isAtomic(target);
     for (let j = 0; j < epis.length; j++) {
       const epi = epis[j];
       if (epi.mode === 1) {
@@ -654,7 +654,7 @@ export function rearrange(
   }
   const sortKey = (branch: Branch) => {
     const [role, target] = branch;
-    const criterion1 = is_atomic(target)
+    const criterion1 = isAtomic(target)
       ? variables.has(target)
       : variables.has(target[0]);
     const criterion2 = key === null ? true : key(role);
@@ -672,7 +672,7 @@ const _rearrange = (node: Node, key: (branch: Branch) => any) => {
     rest = branches.slice(1);
   }
   for (const [, target] of rest) {
-    if (!is_atomic(target)) {
+    if (!isAtomic(target)) {
       _rearrange(target, key);
     }
   }

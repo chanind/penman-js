@@ -17,6 +17,6 @@ class NoOpModel extends Model {
   }
 }
 
-const model = new NoOpModel();
+export const model = new NoOpModel();
 
 export default model;

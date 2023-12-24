@@ -8,6 +8,20 @@
   "repository": "https://github.com/chanind/penman-js",
   "license": "MIT",
   "keywords": [],
+  "exports": {
+    ".": {
+      "import": "./build/module/index.js",
+      "require": "./build/main/index.js"
+    },
+    "./*": {
+      "import": "./build/module/*.js",
+      "require": "./build/main/*.js"
+    },
+    "./models/*": {
+      "import": "./build/module/lib/models/*.js",
+      "require": "./build/main/lib/models/*.js"
+    }
+  },
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",

@@ -60,12 +60,12 @@ export function* iterparse(
  */
 export const parseTriples = (s: string): BasicTriple[] => {
   const tokens = lex(s, TRIPLE_RE);
-  return _parse_triples(tokens);
+  return _parseTriples(tokens);
 };
 
 const _parse = (tokens: TokenIterator): Tree => {
-  const metadata = _parse_comments(tokens);
-  const node = _parse_node(tokens);
+  const metadata = _parseComments(tokens);
+  const node = _parseNode(tokens);
   const tree = new Tree(node, metadata);
   debug(`Parsed: ${tree}`);
   return tree;
@@ -74,7 +74,7 @@ const _parse = (tokens: TokenIterator): Tree => {
 /**
  * Parse PENMAN comments from *tokens* and return any metadata.
  */
-const _parse_comments = (tokens: TokenIterator): { [key: string]: string } => {
+const _parseComments = (tokens: TokenIterator): { [key: string]: string } => {
   const metadata: { [key: string]: string } = {};
   while (tokens.peek()[0] === 'COMMENT') {
     let comment = tokens.next().value[1];
@@ -100,7 +100,7 @@ const _parse_comments = (tokens: TokenIterator): { [key: string]: string } => {
  *
  *    Node := '(' ID ('/' Concept)? Edge* ')'
  */
-const _parse_node = (tokens: TokenIterator): Node => {
+const _parseNode = (tokens: TokenIterator): Node => {
   tokens.expect('LPAREN');
 
   let variable: string | null = null;
@@ -124,7 +124,7 @@ const _parse_node = (tokens: TokenIterator): Node => {
       edges.push(['/', concept]);
     }
     while (tokens.peek()[0] !== 'RPAREN') {
-      edges.push(_parse_edge(tokens));
+      edges.push(_parseEdge(tokens));
     }
   }
 
@@ -139,7 +139,7 @@ const _parse_node = (tokens: TokenIterator): Node => {
  *
  *   Edge := Role (Constant | Node)
  */
-const _parse_edge = (tokens: TokenIterator): Branch => {
+const _parseEdge = (tokens: TokenIterator): Branch => {
   const roleToken = tokens.expect('ROLE');
   let role = roleToken[1];
   if (tokens.peek()[0] === 'ALIGNMENT') {
@@ -155,7 +155,7 @@ const _parse_edge = (tokens: TokenIterator): Branch => {
       target += tokens.next().value[1];
     }
   } else if (nextType === 'LPAREN') {
-    target = _parse_node(tokens);
+    target = _parseNode(tokens);
   } else if (!['ROLE', 'RPAREN'].includes(nextType)) {
     throw tokens.error('Expected: SYMBOL, STRING, LPAREN', _next);
   } else {
@@ -164,7 +164,7 @@ const _parse_edge = (tokens: TokenIterator): Branch => {
   return [role, target];
 };
 
-const _parse_triples = (tokens: TokenIterator): BasicTriple[] => {
+const _parseTriples = (tokens: TokenIterator): BasicTriple[] => {
   let target: Target;
   const triples = [];
   let stripCaret = false;
@@ -178,7 +178,7 @@ const _parse_triples = (tokens: TokenIterator): BasicTriple[] => {
     }
     tokens.expect('LPAREN');
     const symbol = tokens.expect('SYMBOL');
-    const parsedTriple = _parse_triple(symbol, tokens);
+    const parsedTriple = _parseTriple(symbol, tokens);
     const source = parsedTriple[0];
     target = parsedTriple[1];
     tokens.expect('RPAREN');
@@ -207,7 +207,7 @@ const _parse_triples = (tokens: TokenIterator): BasicTriple[] => {
   return triples;
 };
 
-const _parse_triple = (
+const _parseTriple = (
   symbol: Token,
   tokens: TokenIterator,
 ): [string, Target] => {

@@ -7,7 +7,7 @@ import { appearsInverted, getPushedVariable, Pop, POP, Push } from './layout';
 import { log } from './logger';
 import { Model } from './model';
 import { Alignment, alignments, RoleAlignment } from './surface';
-import { is_atomic, Tree } from './tree';
+import { isAtomic, Tree } from './tree';
 import { BasicTriple, Branch, Node, Target, Variable } from './types';
 import { partition } from './utils';
 
@@ -55,7 +55,7 @@ const _canonicalizeNode = (node: Node, model: Model): Node => {
     let tgt = edge[1];
     // alignments aren't parsed off yet, so handle them superficially
     const [role, tilde, alignment] = partition(rawRole, '~');
-    if (!is_atomic(tgt)) {
+    if (!isAtomic(tgt)) {
       tgt = _canonicalizeNode(tgt, model);
     }
     const canonicalRole = model.canonicalizeRole(role) + tilde + alignment;

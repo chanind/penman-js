@@ -88,7 +88,7 @@ export class Graph {
     // they are triples, and (c) ensures roles begin with :
     this.triples = triples.map(([src, role, tgt]) => [
       src,
-      _ensure_colon(role),
+      _ensureColon(role),
       tgt,
     ]);
 
@@ -98,6 +98,9 @@ export class Graph {
   __repr__() {
     const name = this.constructor.name;
     return `<${name} object (top=${this.top}) at ${this._id}>`;
+  }
+  repr() {
+    return this.__repr__();
   }
 
   toString() {
@@ -128,6 +131,9 @@ export class Graph {
       throw new Error('NotImplemented');
     }
   }
+  or(other: any) {
+    return this.__or__(other);
+  }
 
   __ior__(other: any) {
     if (other instanceof Graph) {
@@ -150,6 +156,10 @@ export class Graph {
       throw new Error('NotImplemented');
     }
   }
+  ior(other: any) {
+    return this.__ior__(other);
+  }
+
   __sub__(other: any) {
     if (other instanceof Graph) {
       const g = cloneDeep(this);
@@ -158,6 +168,9 @@ export class Graph {
     } else {
       throw new Error('NotImplemented');
     }
+  }
+  sub(other: any) {
+    return this.__sub__(other);
   }
 
   __isub__(other: any) {
@@ -183,6 +196,9 @@ export class Graph {
     } else {
       throw new Error('NotImplemented');
     }
+  }
+  isub(other: any) {
+    return this.__isub__(other);
   }
 
   /** The top variable. */
@@ -212,7 +228,7 @@ export class Graph {
 
   /** Return instances (concept triples). */
   instances(): Instance[] {
-    return this._filter_triples(null, CONCEPT_ROLE, null);
+    return this._filterTriples(null, CONCEPT_ROLE, null);
   }
 
   /** Return edges filtered by their *source*, *role*, or *target*.
@@ -223,7 +239,7 @@ export class Graph {
     target: Variable | null = null,
   ): Edge[] {
     const variables = this.variables();
-    return this._filter_triples(source, role, target).filter(
+    return this._filterTriples(source, role, target).filter(
       ([_, rel, tgt]) => rel !== CONCEPT_ROLE && variables.has(tgt as any),
     ) as Edge[];
   }
@@ -237,13 +253,13 @@ export class Graph {
     target: Constant | null = null,
   ): Attribute[] {
     const variables = this.variables();
-    return this._filter_triples(source, role, target).filter(
+    return this._filterTriples(source, role, target).filter(
       ([_, rel, tgt]) => rel !== CONCEPT_ROLE && !variables.has(tgt as any),
     );
   }
 
   /** Filter triples based on their source, role, and/or target. */
-  _filter_triples(
+  _filterTriples(
     // TODO: use proper typescript optional types instead of 'null'
     source: Variable | null = null,
     role: Role | null = null,
@@ -289,7 +305,7 @@ export class Graph {
   }
 }
 
-function _ensure_colon(role: Role): Role {
+function _ensureColon(role: Role): Role {
   if (!role.startsWith(':')) {
     return ':' + role;
   }

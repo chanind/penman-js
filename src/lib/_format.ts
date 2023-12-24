@@ -1,4 +1,4 @@
-import { is_atomic, Tree } from './tree';
+import { isAtomic, Tree } from './tree';
 import { BasicTriple, Branch, Node } from './types';
 import { lstrip } from './utils';
 
@@ -31,7 +31,7 @@ export const format = (
   const parts = Object.entries(tree.metadata).map(
     ([key, value]) => `# ::${key}${value ? ' ' + value : value}`,
   );
-  parts.push(_format_node(tree.node, indent, 0, new Set(vars)));
+  parts.push(_formatNode(tree.node, indent, 0, new Set(vars)));
   return parts.join('\n');
 };
 
@@ -66,7 +66,7 @@ export const formatTriples = (
 /**
  * Format tree *node* into a PENMAN string.
  */
-const _format_node = (
+const _formatNode = (
   node: Node,
   indent: number | null | undefined,
   column: number,
@@ -98,13 +98,13 @@ const _format_node = (
   let compact = !!vars.size;
   for (const edge of edges) {
     const target = edge[1];
-    if (compact && (!is_atomic(target) || vars.has(target))) {
+    if (compact && (!isAtomic(target) || vars.has(target))) {
       compact = false;
       if (parts.length) {
         parts = [parts.join(' ')];
       }
     }
-    parts.push(_format_edge(edge, indent, column, vars));
+    parts.push(_formatEdge(edge, indent, column, vars));
   }
   // check if all edges can be compactly written
   if (compact) {
@@ -116,7 +116,7 @@ const _format_node = (
 /**
  * Format tree *edge* into a PENMAN string.
  */
-const _format_edge = (
+const _formatEdge = (
   edge: Branch,
   indent: number | null,
   column: number,
@@ -132,8 +132,8 @@ const _format_edge = (
   let sep = ' ';
   if (!target) {
     target = sep = '';
-  } else if (!is_atomic(target)) {
-    target = _format_node(target, indent, column, vars);
+  } else if (!isAtomic(target)) {
+    target = _formatNode(target, indent, column, vars);
   }
   return `${role}${sep}${target}`;
 };

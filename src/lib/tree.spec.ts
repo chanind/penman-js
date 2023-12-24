@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { _default_variable_prefix, is_atomic, Tree } from './tree';
+import { _defaultVariablePrefix, isAtomic, Tree } from './tree';
 import { Node } from './types';
 
 const empty_node = (): Node => ['a'];
@@ -219,19 +219,19 @@ test('reset_variables', (t) => {
   const t1 = new Tree(one_arg_node());
   t.deepEqual(_vars(t1), ['a', 'b']);
 
-  t1.reset_variables('a{i}');
+  t1.resetVariables('a{i}');
   t.deepEqual(_vars(t1), ['a0', 'a1']);
 
-  t1.reset_variables('a{j}');
+  t1.resetVariables('a{j}');
   t.deepEqual(_vars(t1), ['a', 'a2']);
 
-  t1.reset_variables();
+  t1.resetVariables();
   t.deepEqual(_vars(t1), ['a', 'b']);
 
   const t2 = new Tree(reentrant());
   t.deepEqual(_vars(t2), ['a', 'b', 'g']);
 
-  t2.reset_variables('a{i}');
+  t2.resetVariables('a{i}');
   t.deepEqual(_vars(t2), ['a0', 'a1', 'a2']);
   t.deepEqual(
     t2,
@@ -254,13 +254,13 @@ test('reset_variables', (t) => {
     ]),
   );
 
-  t2.reset_variables();
+  t2.resetVariables();
   t.deepEqual(_vars(t2), ['a', 'b', 'g']);
 
   const t3 = new Tree(var_instance());
   t.deepEqual(_vars(t3), ['a', 'b']);
 
-  t3.reset_variables('a{i}');
+  t3.resetVariables('a{i}');
   t.deepEqual(_vars(t3), ['a0', 'a1']);
   t.deepEqual(
     t3,
@@ -273,7 +273,7 @@ test('reset_variables', (t) => {
     ]),
   );
 
-  t3.reset_variables();
+  t3.resetVariables();
   t.deepEqual(_vars(t3), ['a', 'b']);
 });
 
@@ -284,10 +284,10 @@ test('reset_variables', (t) => {
 //     assert not tree.is_atomic(('a', [('/', 'alpha')]))
 
 test('is_atomic', (t) => {
-  t.true(is_atomic('a'));
-  t.true(is_atomic(null));
-  t.true(is_atomic(3.14));
-  t.false(is_atomic(['a', [['/', 'alpha']]]));
+  t.true(isAtomic('a'));
+  t.true(isAtomic(null));
+  t.true(isAtomic(3.14));
+  t.false(isAtomic(['a', [['/', 'alpha']]]));
 });
 
 // def test_default_variable_prefix():
@@ -300,11 +300,11 @@ test('is_atomic', (t) => {
 //     assert tree._default_variable_prefix('') == '_'
 
 test('default_variable_prefix', (t) => {
-  t.is(_default_variable_prefix('Alphabet'), 'a');
-  t.is(_default_variable_prefix('chase-01'), 'c');
-  t.is(_default_variable_prefix('"string"'), 's');
-  t.is(_default_variable_prefix('_predicate_n_1"'), 'p');
-  t.is(_default_variable_prefix(1), '_');
-  t.is(_default_variable_prefix(null), '_');
-  t.is(_default_variable_prefix(''), '_');
+  t.is(_defaultVariablePrefix('Alphabet'), 'a');
+  t.is(_defaultVariablePrefix('chase-01'), 'c');
+  t.is(_defaultVariablePrefix('"string"'), 's');
+  t.is(_defaultVariablePrefix('_predicate_n_1"'), 'p');
+  t.is(_defaultVariablePrefix(1), '_');
+  t.is(_defaultVariablePrefix(null), '_');
+  t.is(_defaultVariablePrefix(''), '_');
 });

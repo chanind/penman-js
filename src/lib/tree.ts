@@ -40,6 +40,10 @@ export class Tree {
   __repr__(): string {
     return `Tree(${this.node})`;
   }
+  repr(): string {
+    return this.__repr__();
+  }
+
   toString(): string {
     const s = _format(this.node, 2);
     return `Tree(\n  ${s})`;
@@ -81,14 +85,14 @@ export class Tree {
    * - ``i``: 0-based index of the current occurrence of the prefix
    * - ``j``: 1-based index starting from the second occurrence
    */
-  reset_variables(fmt = '{prefix}{j}'): void {
+  resetVariables(fmt = '{prefix}{j}'): void {
     const varmap: VarMap = {};
     const used: Set<Variable> = new Set();
     for (const node of this.nodes()) {
       const [variable, branches] = node;
       if (!(variable in varmap)) {
         const concept = branches.find((branch) => branch[0] === '/')?.[1];
-        const pre = _default_variable_prefix(concept);
+        const pre = _defaultVariablePrefix(concept);
         let i = 0;
         let newvar: string | null = null;
         while (newvar == null || used.has(newvar)) {
@@ -103,7 +107,7 @@ export class Tree {
         varmap[variable] = newvar;
       }
     }
-    this.node = _map_vars(this.node, varmap);
+    this.node = _mapVars(this.node, varmap);
   }
 }
 
@@ -112,7 +116,7 @@ const _format = (node: Node, level: number): string => {
   const next_level = level + 2;
   const indent = '\n' + ' '.repeat(next_level);
   const branch_strings = branches.map((branch) =>
-    _format_branch(branch, next_level),
+    _formatBranch(branch, next_level),
   );
   return format(
     '({}, [{}{}])',
@@ -122,9 +126,9 @@ const _format = (node: Node, level: number): string => {
   );
 };
 
-const _format_branch = (branch: Branch, level: number): string => {
+const _formatBranch = (branch: Branch, level: number): string => {
   const [role, target] = branch;
-  const target_str = is_atomic(target) ? `${target}` : _format(target, level);
+  const target_str = isAtomic(target) ? `${target}` : _format(target, level);
   return `(${role}, ${target_str})`;
 };
 
@@ -134,7 +138,7 @@ const _nodes = (node: Node): Node[] => {
   for (const branch of branches) {
     const target = branch[1];
     // if target is not atomic, assume it's a valid tree node
-    if (!is_atomic(target)) {
+    if (!isAtomic(target)) {
       ns = ns.concat(_nodes(target));
     }
   }
@@ -147,7 +151,7 @@ function* _walk(node: Node, path: number[]) {
     const curpath = path.concat([i]);
     yield [curpath, branch];
     const target = branch[1];
-    if (!is_atomic(target)) {
+    if (!isAtomic(target)) {
       yield* _walk(target, curpath);
     }
   }
@@ -176,7 +180,7 @@ function* _walk(node: Node, path: number[]) {
  *     >>> _default_variable_prefix('')
  *     '_'
  */
-export const _default_variable_prefix = (concept: any): Variable => {
+export const _defaultVariablePrefix = (concept: any): Variable => {
   let prefix = '_';
   if (concept && typeof concept === 'string') {
     for (const c of concept) {
@@ -193,15 +197,15 @@ function isalpha(c: string): boolean {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-const _map_vars = (node: Node, varmap: VarMap): Node => {
+const _mapVars = (node: Node, varmap: VarMap): Node => {
   const [variable, branches] = node;
 
   const newbranches: Branch[] = [];
   for (const branch of branches) {
     const [role, target] = branch;
     let tgt = target;
-    if (!is_atomic(tgt)) {
-      tgt = _map_vars(tgt, varmap);
+    if (!isAtomic(tgt)) {
+      tgt = _mapVars(tgt, varmap);
     } else if (role !== '/' && tgt in varmap) {
       tgt = varmap[tgt];
     }
@@ -224,7 +228,7 @@ const _map_vars = (node: Node, varmap: VarMap): Node => {
  *     >>> is_atomic(('a', [('/', 'alpha')]))
  *     False
  */
-export const is_atomic = (x: any): boolean => {
+export const isAtomic = (x: any): boolean => {
   return (
     x == null ||
     x === undefined ||
