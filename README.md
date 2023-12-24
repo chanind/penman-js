@@ -53,3 +53,7 @@ Contributions are welcome! If you notice any bugs or have ideas for improvements
 ## Development
 
 This project is written in Typescript, using yarn for dependency management, eslint for linting, and ava for tests. Install dependencies with `yarn install`. To run linting and tests, run `yarn test`.
+
+## Acknowledgements
+
+This library is a manual port of the Penman Python library, and as such, all credit for the original code goes to [github.com/goodmami/penman](https://github.com/goodmami/penman).
