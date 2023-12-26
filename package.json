@@ -58,7 +58,6 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@bitauth/libauth": "^1.17.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.differencewith": "^4.5.0",
     "lodash.isequal": "^4.5.0",
@@ -122,11 +121,6 @@
     "files": [
       "!build/module/**"
     ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   },
   "prettier": {
     "singleQuote": true
