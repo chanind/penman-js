@@ -4,37 +4,40 @@ import { Tree } from './tree';
 import { BasicTriple, Branch, Node, Target } from './types';
 
 /**
- * Parse PENMAN-notation string *s* into its tree structure.
+ * Parse a PENMAN-notation string `s` into its tree structure.
  *
- * Args:
- *    s: a string containing a single PENMAN-serialized graph
- * Returns:
- *   The tree structure described by *s*.
- * Example:
- *  >>> import penman
- *  >>> penman.parse('(b / bark-01 :ARG0 (d / dog))')  // noqa
- *  Tree(('b', [('/', 'bark-01'), (':ARG0', ('d', [('/', 'dog')]))]))
+ * @param s - A string containing a single PENMAN-serialized graph.
+ * @returns The tree structure described by `s`.
+ * @example
+ * import { parse } from 'penman-js';
+ *
+ * const tree = parse('(b / bark-01 :ARG0 (d / dog))');
+ * console.log(tree);
+ *
+ * // Tree(['b', [['/', 'bark-01'], [':ARG0', ['d', [['/', 'dog']]]]])
  */
+
 export const parse = (s: string): Tree => {
   const tokens = lex(s, PENMAN_RE);
   return _parse(tokens);
 };
 
 /**
- * Yield trees parsed from *lines*.
+ * Yield trees parsed from `lines`.
  *
- * Args:
- *   lines: a string or open file with PENMAN-serialized graphs
- * Returns:
- *   The :class:`~penman.tree.Tree` object described in *lines*.
- * Example:
- *   >>> import penman
- *   >>> for t in penman.iterparse('(a / alpha) (b / beta)'):
- *   ...     print(repr(t))
- *   ...
- *   Tree(('a', [('/', 'alpha')]))
- *   Tree(('b', [('/', 'beta')]))
+ * @param lines - A string or open file with PENMAN-serialized graphs.
+ * @returns The `Tree` object described in `lines`.
+ * @example
+ * import { iterparse } from 'penman-js';
+ *
+ * for (const t of iterparse('(a / alpha) (b / beta)')) {
+ *   console.log(t);
+ * }
+ *
+ * // Tree(['a', [['/', 'alpha']]])
+ * // Tree(['b', [['/', 'beta']]])
  */
+
 export function* iterparse(
   lines: Iterable<string> | string,
 ): IterableIterator<Tree> {
@@ -45,19 +48,24 @@ export function* iterparse(
 }
 
 /**
- * Parse a triple conjunction from *s*.
+ * Parse a triple conjunction from `s`.
  *
- * Example:
- *   >>> import penman
- *   >>> for triple in penman.parse_triples('''
- *   ...         instance(b, bark) ^
- *   ...         ARG0(b, d) ^
- *   ...         instance(d, dog)'''):
- *   ...     print(triple)
- *   ('b', ':instance', 'bark')
- *   ('b', ':ARG0', 'd')
- *   ('d', ':instance', 'dog')
+ * @param s - A string containing the triple conjunction.
+ * @returns An iterator yielding triples.
+ * @example
+ * import { parseTriples } from 'penman-js';
+ *
+ * for (const triple of parseTriples(`
+ *          instance(b, bark) ^
+ *          ARG0(b, d) ^
+ *          instance(d, dog)`)) {
+ *   console.log(triple);
+ *   // ['b', ':instance', 'bark']
+ *   // ['b', ':ARG0', 'd']
+ *   // ['d', ':instance', 'dog']
+ * }
  */
+
 export const parseTriples = (s: string): BasicTriple[] => {
   const tokens = lex(s, TRIPLE_RE);
   return _parseTriples(tokens);

@@ -19,15 +19,20 @@ export class AlignmentMarker extends Epidatum {
   }
 
   /**
-   * Instantiate the alignment marker from its string *s*.
+   * Instantiate the alignment marker from its string `s`.
    *
-   * Examples:
-   *    >>> from penman import surface
-   *    >>> surface.Alignment.from_string('1')
-   *    Alignment((1,))
-   *    >>> surface.RoleAlignment.from_string('e.2,3')
-   *    RoleAlignment((2, 3), prefix='e.')
+   * @param s - The string representation of the alignment marker.
+   * @returns An instance of Alignment or RoleAlignment based on the provided string.
+   * @example
+   * import { Alignment, RoleAlignment } from 'penman-js/surface';
+   *
+   * Alignment.fromString('1');
+   * // Alignment([1])
+   *
+   * RoleAlignment.fromString('e.2,3');
+   * // RoleAlignment([2, 3], 'e.')
    */
+
   static fromString<T extends AlignmentMarker>(s: string): T {
     let _s = lstrip(s, '~');
     let prefix: string | null = null;
@@ -90,49 +95,51 @@ export class RoleAlignment extends AlignmentMarker {
 type _Alignments = ArrayKeysMap<BasicTriple, AlignmentMarker>;
 
 /**
- * Return a mapping of triples to alignments in graph *g*.
+ * Return a mapping of triples to alignments in graph `g`.
  *
- * Args:
- *    g: a :class:`~penman.graph.Graph` containing alignment data
- * Returns:
- *    A :class:`dict` mapping :class:`~penman.graph.Triple` objects
- *    to their corresponding :class:`Alignment` objects, if any.
- * Example:
- *    >>> from penman import decode
- *    >>> from penman import surface
- *    >>> g = decode(
- *     ...   '(c / chase-01~4'
- *    ...   '   :ARG0~5 (d / dog~7)'
- *    ...   '   :ARG0~3 (c / cat~2))')
- *    >>> surface.alignments(g)  // doctest: +NORMALIZE_WHITESPACE
- *    {('c', ':instance', 'chase-01'): Alignment((4,)),
- *    ('d', ':instance', 'dog'): Alignment((7,)),
- *    ('c', ':instance', 'cat'): Alignment((2,))}
+ * @param g - A `Graph` object containing alignment data.
+ * @returns An object mapping `Triple` objects to their corresponding `Alignment` objects, if any.
+ * @example
+ * import { decode } from 'penman-js';
+ * import { alignments } from 'penman-js/surface';
+ *
+ * const g = decode(
+ *   `(c / chase-01~4
+ *      :ARG0~5 (d / dog~7)
+ *      :ARG0~3 (c / cat~2))`
+ * );
+ * alignments(g);
+ * // ArrayKeysMap({
+ * //   ['c', ':instance', 'chase-01']: Alignment([4]),
+ * //   ['d', ':instance', 'dog']: Alignment([7]),
+ * //   ['c', ':instance', 'cat']: Alignment([2])
+ * // })
  */
 export function alignments(g: Graph): _Alignments {
   return _getAlignments(g, Alignment);
 }
 
 /**
- * Return a mapping of triples to role alignments in graph *g*.
+ * Return a mapping of triples to role alignments in graph `g`.
  *
- * Args:
- *   g: a :class:`~penman.graph.Graph` containing role alignment
- *   data
- * Returns:
- *   A :class:`dict` mapping :class:`~penman.graph.Triple` objects
- *   to their corresponding :class:`RoleAlignment` objects, if any.
- *   Example:
- *    >>> from penman import decode
- *   >>> from penman import surface
- *   >>> g = decode(
- *   ...   '(c / chase-01~4'
- *   ...   '   :ARG0~5 (d / dog~7)'
- *   ...   '   :ARG0~3 (c / cat~2))')
- *   >>> surface.role_alignments(g)  // doctest: +NORMALIZE_WHITESPACE
- *   {('c', ':ARG0', 'd'): RoleAlignment((5,)),
- *   ('c', ':ARG0', 'c'): RoleAlignment((3,))}
+ * @param g - A `Graph` object containing role alignment data.
+ * @returns An object mapping `Triple` objects to their corresponding `RoleAlignment` objects, if any.
+ * @example
+ * import { decode } from 'penman-js';
+ * import { roleAlignments } from 'penman-js/surface';
+ *
+ * const g = decode(
+ *   `(c / chase-01~4
+ *      :ARG0~5 (d / dog~7)
+ *      :ARG0~3 (c / cat~2))`
+ * );
+ * roleAlignments(g);
+ * // ArrayKeysMap({
+ * //   ['c', ':ARG0', 'd']: RoleAlignment([5]),
+ * //   ['c', ':ARG0', 'c']: RoleAlignment([3])
+ * // })
  */
+
 export function roleAlignments(g: Graph): _Alignments {
   return _getAlignments(g, RoleAlignment);
 }

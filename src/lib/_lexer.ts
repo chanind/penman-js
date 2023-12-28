@@ -108,9 +108,7 @@ export class TokenIterator {
   /**
    * Advance the iterator and return the next token.
    *
-   * Raises:
-   *    StopIteration
-   *       If the iterator is already exhausted.
+   * @throws {Error} If the iterator is already exhausted.
    */
   next(): IteratorResult<Token, Token> {
     const current = this._next;
@@ -126,14 +124,13 @@ export class TokenIterator {
   }
 
   /**
-   * Return the next token if its type is in *choices*.
+   * Return the next token if its type is in `choices`.
    *
    * The iterator is advanced if successful.
    *
-   * Raises:
-   *   ~penman.exceptions.DecodeError
-   *      If the next token type is not in *choices*.
+   * @throws {DecodeError} If the next token type is not in `choices`.
    */
+
   expect(...choices: string[]): Token {
     const token = this.next();
     if (token.done) {
@@ -180,18 +177,14 @@ export class TokenIterator {
 }
 
 /**
- * Yield PENMAN tokens matched in *lines*.
+ * Yield PENMAN tokens matched in `lines`.
  *
- * By default, this lexes strings in *lines* using the basic pattern
- * for PENMAN graphs. If *pattern* is given, it is used for lexing
- * instead.
+ * By default, this function lexes strings in `lines` using the basic pattern
+ * for PENMAN graphs. If `pattern` is provided, it is used for lexing instead.
  *
- * Args:
- *   lines: iterable of lines to lex
- *   pattern: pattern to use for lexing instead of the default ones
- *
- * Returns:
- *   A :class:`TokenIterator` object
+ * @param lines - An iterable of lines to lex.
+ * @param pattern - The pattern to use for lexing instead of the default ones.
+ * @returns A `TokenIterator` object.
  */
 export const lex = (
   lines: Iterable<string> | string,

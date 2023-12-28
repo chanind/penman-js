@@ -3,21 +3,22 @@ import { BasicTriple, Branch, Node } from './types';
 import { lstrip } from './utils';
 
 /**
- * Format *tree* into a PENMAN string.
+ * Format a `Tree` object into a PENMAN string.
  *
- * Args:
- *    tree: a Tree object
- *    indent: how to indent formatted strings
- *    compact: if ``True``, put initial attributes on the first line
- * Returns:
- *    the PENMAN-serialized string of the Tree *t*
- * Example:
- *     >>> import penman
- *     >>> print(penman.format(
- *     ...     ('b', [('/', 'bark-01'),
- *     ...            (':ARG0', ('d', [('/', 'dog')]))])))
- *     (b / bark-01
- *       :ARG0 (d / dog))
+ * @param tree - A Tree object.
+ * @param indent - How to indent formatted strings.
+ * @param compact - If `true`, put initial attributes on the first line.
+ * @returns The PENMAN-serialized string of the `Tree` object.
+ * @example
+ * import { format } from 'penman-js';
+ *
+ * console.log(format(
+ *   ['b', [['/', 'bark-01'],
+ *          [':ARG0', ['d', [['/', 'dog']]]]]
+ *   ]
+ * ));
+ * // (b / bark-01
+ * //   :ARG0 (d / dog))
  */
 export const format = (
   tree: Tree | Node,
@@ -36,21 +37,21 @@ export const format = (
 };
 
 /**
- * Return the formatted triple conjunction of *triples*.
+ * Return the formatted triple conjunction of `triples`.
  *
- * Args:
- *     triples: an iterable of triples
- *     indent: how to indent formatted strings
- * Returns:
- *     the serialized triple conjunction of *triples*
- * Example:
- *     >>> import penman
- *     >>> g = penman.decode('(b / bark-01 :ARG0 (d / dog))')
- *     >>> print(penman.format_triples(g.triples))
- *     instance(b, bark-01) ^
- *     ARG0(b, d) ^
- *     instance(d, dog)
+ * @param triples - An iterable of triples.
+ * @param indent - How to indent formatted strings.
+ * @returns The serialized triple conjunction of `triples`.
+ * @example
+ * import { decode, formatTriples } from 'penman-js';
+ *
+ * const g = decode('(b / bark-01 :ARG0 (d / dog))');
+ * console.log(formatTriples(g.triples));
+ * // instance(b, bark-01) ^
+ * // ARG0(b, d) ^
+ * // instance(d, dog)
  */
+
 export const formatTriples = (
   triples: BasicTriple[],
   indent = true,
