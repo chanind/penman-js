@@ -48,8 +48,9 @@
     "cov:send": "run-s cov:lcov && codecov",
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
-    "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
-    "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
+    "doc:html": "typedoc src --out build/docs",
+    "doc:md": "typedoc src --plugin typedoc-plugin-markdown --plugin ./typedoc-md-theme/theme.js --theme simple-md --out build/docs",
+    "doc:json": "typedoc src --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish"
@@ -98,6 +99,7 @@
     "semantic-release": "^22.0.12",
     "ts-node": "^10.9.2",
     "typedoc": "^0.25.4",
+    "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "^5.3.0"
   },
   "files": [
@@ -130,6 +132,10 @@
     "exclude": [
       "**/*.spec.js"
     ]
+  },
+  "typedocOptions": {
+    "entryPointStrategy": "expand",
+    "exclude": "**/*.spec.ts"
   },
   "release": {
     "branches": [
