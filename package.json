@@ -49,7 +49,7 @@
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
     "doc:html": "typedoc src --out build/docs",
-    "doc:md": "typedoc src --plugin typedoc-plugin-markdown --plugin ./typedoc-md-theme/theme.js --theme simple-md --out build/docs",
+    "doc:md": "typedoc src --plugin typedoc-plugin-markdown --plugin ./typedoc-md-theme/theme.js --theme simple-md --out docs/generated",
     "doc:json": "typedoc src --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",

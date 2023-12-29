@@ -1,47 +1,27 @@
 ---
 sidebar_position: 1
+slug: /
 ---
 
-# Tutorial Intro
+# Penman JS
 
-Let's discover **Docusaurus in less than 5 minutes**.
+[![ci](https://img.shields.io/github/actions/workflow/status/chanind/penman-js/ci.yaml?branch=main)](https://github.com/chanind/penman-js)
+[![Npm](https://img.shields.io/npm/v/penman-js)](https://www.npmjs.com/package/penman-js)
 
-## Getting Started
+PENMAN notation (e.g. AMR) parser and generator for JavaScript
 
-Get started by **creating a new site**.
+## About
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+This library is a manual port of the Penman Python library, with identical method names and import structure. However, as Python and Javascript do have some differences, this port has the following changes:
 
-### What you'll need
+- all snake-case function names from the Python library are renamed using camel-case to fit Javascript naming conventions. For example, the function `get_pushed_variable` from Python is renamed to `getPushedVariable` in Javascript.
+- Python tuples are replaced with Javascript arrays
+- Python dictionaries are replaced with Javascript `Map`
+- functions only support positional arguments, since Javascript doesn't support keyword arguments like Python
+- All imports use `penman-js` as the base instead of `penman`. For instance, `from penman.graph import Graph` in Python is replaced with `import { Graph } from "penman-js/graph";` in Javascript.
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Otherwise, refer to the [Penman Python library docs](https://penman.readthedocs.io/en/latest/index.html) for full documentation.
 
-## Generate a new site
+## Disclaimer
 
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+This project is not officially affiliated with [AMR](http://amr.isi.edu/) or the [Penman Python library](https://github.com/goodmami/penman).
