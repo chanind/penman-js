@@ -26,17 +26,17 @@ export class PENMANCodec {
   }
 
   /**
-   * Deserialize PENMAN-notation string *s* into its Graph object.
+   * Deserialize a PENMAN-notation string `s` into its Graph object.
    *
-   * Args:
-   *     s: a string containing a single PENMAN-serialized graph
-   * Returns:
-   *     The :class:`~penman.graph.Graph` object described by *s*.
-   * Example:
-   *     >>> from penman.codec import PENMANCodec
-   *     >>> codec = PENMANCodec()
-   *     >>> codec.decode('(b / bark-01 :ARG0 (d / dog))')
-   *     <Graph object (top=b) at ...>
+   * @param s - A string containing a single PENMAN-serialized graph.
+   * @returns The `Graph` object described by `s`.
+   * @example
+   * import { PENMANCodec } from 'penman-js/codec';
+   *
+   * const codec = new PENMANCodec();
+   * const graph = codec.decode('(b / bark-01 :ARG0 (d / dog))');
+   * console.log(graph);
+   * // Outputs: Graph object with top node 'b'
    */
   decode(s: string): Graph {
     const tree = parse(s);
@@ -44,13 +44,10 @@ export class PENMANCodec {
   }
 
   /**
-   * Yield graphs parsed from *lines*.
+   * Yield graphs parsed from `lines`.
    *
-   * Args:
-   *     lines: a string or open file with PENMAN-serialized graphs
-   * Returns:
-   *     The :class:`~penman.graph.Graph` objects described in
-   *     *lines*.
+   * @param lines - A string or open file containing PENMAN-serialized graphs.
+   * @returns An iterator yielding `Graph` objects described in `lines`.
    */
   *iterdecode(lines: string | string[]): IterableIterator<Graph> {
     for (const tree of iterparse(lines)) {
@@ -59,30 +56,20 @@ export class PENMANCodec {
   }
 
   /**
-   * Yield trees parsed from *lines*.
+   * Yield trees parsed from `lines`.
    *
-   * Args:
-   *     lines: a string or open file with PENMAN-serialized graphs
-   * Returns:
-   *     The :class:`~penman.tree.Tree` object described in
-   *     *lines*.
+   * @param lines - A string or open file containing PENMAN-serialized graphs.
+   * @returns An iterator yielding `Tree` objects described in `lines`.
    */
   *iterparse(lines: string | string[]): IterableIterator<Tree> {
     yield* iterparse(lines);
   }
 
   /**
-   * Parse PENMAN-notation string *s* into its tree structure.
+   * Parse a PENMAN-notation string `s` into its tree structure.
    *
-   * Args:
-   *     s: a string containing a single PENMAN-serialized graph
-   * Returns:
-   *     The tree structure described by *s*.
-   * Example:
-   *     >>> from penman.codec import PENMANCodec
-   *     >>> codec = PENMANCodec()
-   *     >>> codec.parse('(b / bark-01 :ARG0 (d / dog))')  # noqa
-   *     Tree(('b', [('/', 'bark-01'), (':ARG0', ('d', [('/', 'dog')]))]))
+   * @param s - A string containing a single PENMAN-serialized graph.
+   * @returns The tree structure described by `s`.
    */
   parse(s: string): Tree {
     return parse(s);
@@ -96,22 +83,22 @@ export class PENMANCodec {
   }
 
   /**
-   * Serialize the graph *g* into PENMAN notation.
+   * Serialize the graph `g` into PENMAN notation.
    *
-   * Args:
-   *     g: the Graph object
-   *     top: if given, the node to use as the top in serialization
-   *     indent: how to indent formatted strings
-   *     compact: if ``True``, put initial attributes on the first line
-   * Returns:
-   *     the PENMAN-serialized string of the Graph *g*
-   * Example:
-   *     >>> from penman.graph import Graph
-   *     >>> from penman.codec import PENMANCodec
-   *     >>> codec = PENMANCodec()
-   *     >>> codec.encode(Graph([('h', 'instance', 'hi')]))
-   *     '(h / hi)'
+   * @param g - The Graph object.
+   * @param top - If given, the node to use as the top in serialization.
+   * @param indent - How to indent formatted strings.
+   * @param compact - If `true`, put initial attributes on the first line.
+   * @returns The PENMAN-serialized string of the Graph `g`.
+   * @example
+   * import { Graph } from 'penman-js/graph';
+   * import { PENMANCodec } from 'penman-js/codec';
+   *
+   * const codec = new PENMANCodec();
+   * console.log(codec.encode(new Graph([['h', 'instance', 'hi']])));
+   * // '(h / hi)'
    */
+
   encode(
     g: Graph,
     top?: Variable,
@@ -134,21 +121,22 @@ export class PENMANCodec {
   }
 
   /**
-   * Return the formatted triple conjunction of *triples*.
+   * Return the formatted triple conjunction of `triples`.
    *
-   * Args:
-   *     triples: an iterable of triples
-   *     indent: how to indent formatted strings
-   * Returns:
-   *     the serialized triple conjunction of *triples*
-   * Example:
-   *     >>> from penman.codec import PENMANCodec
-   *     >>> codec = PENMANCodec()
-   *     >>> codec.format_triples([('a', ':instance', 'alpha'),
-   *     ...                       ('a', ':ARG0', 'b'),
-   *     ...                       ('b', ':instance', 'beta')])
-   *     ...
-   *     'instance(a, alpha) ^\\nARG0(a, b) ^\\ninstance(b, beta)'
+   * @param triples - An iterable of triples.
+   * @param indent - How to indent formatted strings.
+   * @returns The serialized triple conjunction of `triples`.
+   * @example
+   * import { PENMANCodec } from 'penman-js/codec';
+   *
+   * const codec = new PENMANCodec();
+   * console.log(codec.formatTriples([
+   *   ['a', ':instance', 'alpha'],
+   *   ['a', ':ARG0', 'b'],
+   *   ['b', ':instance', 'beta']
+   * ]));
+   * // Expected output:
+   * // 'instance(a, alpha) ^\\nARG0(a, b) ^\\ninstance(b, beta)'
    */
   formatTriples(triples: BasicTriple[], indent = true): string {
     return formatTriples(triples, indent);
@@ -156,17 +144,15 @@ export class PENMANCodec {
 }
 
 /**
- * Deserialize PENMAN-serialized *s* into its Graph object
+ * Deserialize PENMAN-serialized string `s` into its Graph object.
  *
- * Args:
- *     s: a string containing a single PENMAN-serialized graph
- *     model: the model used for interpreting the graph
- * Returns:
- *     the Graph object described by *s*
- * Example:
- *     >>> import penman
- *     >>> penman.decode('(b / bark-01 :ARG0 (d / dog))')
- *     <Graph object (top=b) at ...>
+ * @param s - A string containing a single PENMAN-serialized graph.
+ * @param model - The model used for interpreting the graph.
+ * @returns The Graph object described by `s`.
+ * @example
+ * import { decode } from 'penman-js';
+ *
+ * const graph = decode('(b / bark-01 :ARG0 (d / dog))');
  */
 export function _decode(s: string, model?: Model): Graph {
   const codec = new PENMANCodec(model);
@@ -174,21 +160,19 @@ export function _decode(s: string, model?: Model): Graph {
 }
 
 /**
- * Yield graphs parsed from *lines*.
+ * Yield graphs parsed from `lines`.
  *
- * Args:
- *     lines: a string or open file with PENMAN-serialized graphs
- *     model: the model used for interpreting the graph
- * Returns:
- *     The :class:`~penman.graph.Graph` objects described in
- *     *lines*.
- * Example:
- *     >>> import penman
- *     >>> for g in penman.iterdecode('(a / alpha) (b / beta)'):
- *     ...     print(repr(g))
- *     <Graph object (top=a) at ...>
- *     <Graph object (top=b) at ...>
+ * @param lines - A string or open file containing PENMAN-serialized graphs.
+ * @param model - The model used for interpreting the graph.
+ * @returns An iterator yielding `Graph` objects described in `lines`.
+ * @example
+ * import { iterdecode } from 'penman-js';
+ *
+ * for (const g of iterdecode('(a / alpha) (b / beta)')) {
+ *   // ...
+ * }
  */
+
 export function* _iterdecode(
   lines: string | string[],
   model?: Model,
@@ -198,22 +182,21 @@ export function* _iterdecode(
 }
 
 /**
- * Serialize the graph *g* from *top* to PENMAN notation.
+ * Serialize the graph `g` from `top` to PENMAN notation.
  *
- * Args:
- *     g: the Graph object
- *     top: if given, the node to use as the top in serialization
- *     model: the model used for interpreting the graph
- *     indent: how to indent formatted strings
- *     compact: if ``True``, put initial attributes on the first line
- * Returns:
- *     the PENMAN-serialized string of the Graph *g*
- * Example:
- *     >>> import penman
- *     >>> from penman.graph import Graph
- *     >>> penman.encode(Graph([('h', 'instance', 'hi')]))
- *     '(h / hi)'
+ * @param g - The Graph object.
+ * @param top - If given, the node to use as the top in serialization.
+ * @param model - The model used for interpreting the graph.
+ * @param indent - How to indent formatted strings.
+ * @param compact - If `true`, put initial attributes on the first line.
+ * @returns The PENMAN-serialized string of the Graph `g`.
+ * @example
+ * import { encode, Graph } from 'penman-js';
+ *
+ * console.log(encode(new Graph([['h', 'instance', 'hi']])));
+ * // '(h / hi)'
  */
+
 export function _encode(
   g: Graph,
   top?: Variable,
