@@ -60,11 +60,6 @@ let graphIdCounter = 0;
  * are concept relations, relations between nodes, or relations between
  * a node and a constant, respectively.
  *
- * @param triples - An iterable of triples (either `Triple` objects or 3-tuples).
- * @param top - The variable of the top node; if unspecified, the source
- *              of the first triple is used.
- * @param epidata - A mapping of triples to epigraphical markers.
- * @param metadata - A mapping of metadata types to descriptions.
  * @example
  * import { Graph } from 'penman-js';
  *
@@ -74,10 +69,16 @@ let graphIdCounter = 0;
  *   ['b', ':ARG0', 'd']
  * ]);
  */
-
 export class Graph {
   _id: number;
 
+  /**
+   * @param triples - An iterable of triples (either `Triple` objects or 3-tuples).
+   * @param top - The variable of the top node; if unspecified, the source
+   *              of the first triple is used.
+   * @param epidata - A mapping of triples to epigraphical markers.
+   * @param metadata - A mapping of metadata types to descriptions.
+   */
   constructor(
     public triples: Triples = [],
     private _top: Variable = null,
