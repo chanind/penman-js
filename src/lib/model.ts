@@ -15,15 +15,7 @@ type _Reification = [BasicTriple, BasicTriple, BasicTriple];
  * Represents a semantic model for Penman graphs.
  *
  * The model defines elements such as valid roles and transformations.
- *
- * @param topVariable - The variable of the graph's top.
- * @param topRole - The role linking the graph's top to the top node.
- * @param conceptRole - The role associated with node concepts.
- * @param roles - A mapping of roles to associated data.
- * @param normalizations - A mapping of roles to normalized roles.
- * @param reifications - An array of 4-tuples used to define reifications.
  */
-
 export class Model {
   reifications: { [key: Role]: Array<_Reified> };
   dereifications: { [key: Constant]: Array<_Dereified> };
@@ -32,8 +24,16 @@ export class Model {
   conceptRole: Role;
   roles: { [key: Role]: any };
   normalizations: { [key: Role]: Role };
-  _roleRe: RegExp;
+  private _roleRe: RegExp;
 
+  /**
+   * @param topVariable - The variable of the graph's top.
+   * @param topRole - The role linking the graph's top to the top node.
+   * @param conceptRole - The role associated with node concepts.
+   * @param roles - A mapping of roles to associated data.
+   * @param normalizations - A mapping of roles to normalized roles.
+   * @param reifications - An array of 4-tuples used to define reifications.
+   */
   constructor(
     topVariable: Variable = 'top',
     topRole: Role = ':TOP',
@@ -125,7 +125,7 @@ export class Model {
     );
   }
 
-  _hasRole(role: Role): boolean {
+  private _hasRole(role: Role): boolean {
     return this._roleRe.test(role);
   }
 
@@ -158,7 +158,6 @@ export class Model {
    * @param triple - The triple to invert.
    * @returns The inverted or deinverted triple.
    */
-
   invert(triple: BasicTriple): BasicTriple {
     const [source, role, target] = triple;
     const inverse = this.invertRole(role);
@@ -179,7 +178,6 @@ export class Model {
    * @param triple - The triple to de-invert if necessary.
    * @returns The de-inverted triple, or the original triple if it wasn't inverted.
    */
-
   deinvert(triple: BasicTriple): BasicTriple {
     if (this.isRoleInverted(triple[1])) {
       triple = this.invert(triple);
@@ -201,7 +199,6 @@ export class Model {
    * @param role - The role to be canonicalized.
    * @returns The canonicalized role.
    */
-
   canonicalizeRole(role: Role): Role {
     if (role !== '/' && !role.startsWith(':')) {
       role = ':' + role;
@@ -211,7 +208,7 @@ export class Model {
     return role;
   }
 
-  _canonicalizeInversion(role: Role): Role {
+  private _canonicalizeInversion(role: Role): Role {
     if (!this._hasRole(role)) {
       while (true) {
         const prev = role;
@@ -411,7 +408,6 @@ export class Model {
    * // ['a', ':foo', 'bar'] ['invalid role']
    * // ['b', ':instance', 'beta'] ['unreachable']
    */
-
   errors(graph: Graph): { [key: string]: string[] } {
     const err: { [key: string]: string[] } = {};
     if (graph.triples.length === 0) {

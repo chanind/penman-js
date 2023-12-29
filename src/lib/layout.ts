@@ -6,39 +6,46 @@
  * choosing the order of the edges from a node and the paths to get to a
  * node definition (the position in the tree where a node's concept and
  * edges are specified). For instance, the following graphs for "The dog
- * barked loudly" have different edge orders on the ``b`` node::
+ * barked loudly" have different edge orders on the ``b`` node:
  *
+ * ```
  * (b / bark-01           (b / bark-01
  *     :ARG0 (d / dog)        :mod (l / loud)
  *     :mod (l / loud))       :ARG0 (d / dog))
+ * ```
  *
  * With re-entrancies, there are choices about which location of a
  * re-entrant node gets the full definition with its concept (node
  * label), etc. For instance, the following graphs for "The dog tried to
- * bark" have different locations for the definition of the ``d`` node::
+ * bark" have different locations for the definition of the ``d`` node:
  *
+ * ```
  * (t / try-01              (t / try-01
  *     :ARG0 (d / dog)          :ARG0 d
  *     :ARG1 (b / bark-01       :ARG1 (b / bark-01
  *         :ARG0 d))                :ARG0 (d / dog))
+ * ```
  *
- * With inverted edges, there are even more possibilities, such as::
+ * With inverted edges, there are even more possibilities, such as:
  *
+ * ```
  * (t / try-01                (t / try-01
  *     :ARG0 (d / dog             :ARG1 (b / bark-01
  *         :ARG0-of b)                :ARG0 (d / dog
  *     :ARG1 (b / bark-01))             :ARG0-of t)))
+ * ```
  *
  * This module introduces two epigraphical markers so that a pure graph
  * parsed from PENMAN can retain information about its tree layout
  * without altering its graph properties. The first marker type is
- * :class:`Push`, which is put on a triple to indicate that the triple
- * introduces a new node context, while the sentinel :data:`POP`
+ * `Push`, which is put on a triple to indicate that the triple
+ * introduces a new node context, while the sentinel `POP`
  * indicates that a triple is at the end of one or more node contexts.
  * These markers only work if the triples in the graph's data are
  * ordered. For instance, one of the graphs above (repeated here) has the
- * following data::
+ * following data:
  *
+ * ```
  * PENMAN                 Graph                            Epigraph
  * (t / try-01            [('t', ':instance', 'try-01'),   :
  *    :ARG0 (d / dog)      ('t', ':ARG0', 'd'),            : Push('d')
@@ -46,6 +53,7 @@
  *       :ARG0 d))         ('t', ':ARG1', 'b'),            : Push('b')
  *                         ('b', ':instance', 'bark-01'),  :
  *                         ('b', ':ARG0', 'd')]            : POP
+ * ```
  */
 
 import cloneDeep from 'lodash.clonedeep';
@@ -93,7 +101,7 @@ export class Push extends LayoutMarker {
   }
 }
 
-/**Epigraph marker to indicate the end of a node context.*/
+/** Epigraph marker to indicate the end of a node context. */
 export class Pop extends LayoutMarker {
   toString() {
     return 'POP';
@@ -133,7 +141,6 @@ export const POP = new Pop();
  * // ['b', ':ARG0', 'd']
  * // ['d', ':instance', 'dog']
  */
-
 export function interpret(
   t: Tree | null,
   model: Model = _default_model,
@@ -281,7 +288,6 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
  * console.log(t);
  * // Tree('b', [['/', 'bark-01'], [':ARG0', new Tree('d', [['/', 'dog']])]])
  */
-
 export function configure(
   g: Graph,
   top: Variable = null,
@@ -624,7 +630,6 @@ export function reconfigure(
  * //    :ARG0 (d / dog)
  * //    :ARG1 (c / cat))
  */
-
 export function rearrange(
   t: Tree,
   key: (role: Role) => any = null,
@@ -675,7 +680,6 @@ const _rearrange = (node: Node, key: (branch: Branch) => any) => {
  * console.log(getPushedVariable(g, ['a', ':instance', 'alpha'])); // Outputs: null
  * console.log(getPushedVariable(g, ['a', ':ARG0', 'b'])); // Outputs: 'b'
  */
-
 export function getPushedVariable(
   g: Graph,
   triple: BasicTriple,
@@ -704,7 +708,6 @@ export function getPushedVariable(
  * @param triple - The triple that does or does not appear inverted.
  * @returns `true` if `triple` appears inverted in graph `g`.
  */
-
 export function appearsInverted(g: Graph, triple: BasicTriple): boolean {
   const variables = g.variables();
   if (triple[1] === CONCEPT_ROLE || !variables.has(triple[2] as string)) {

@@ -1,12 +1,13 @@
 /** AMR semantic model definition. */
 
 import { _ReificationSpec, Model } from '../model';
-
-//: The roles are the edge labels of reifications. The purpose of roles
-//: in a :class:`~penman.model.Model` is mainly to define the set of
-//: valid roles, but they map to arbitrary data which is not used by
-//: the :class:`~penman.model.Model` but may be inspected or used by
-//: client code.
+/**
+ * The roles are the edge labels of reifications. The purpose of roles
+ * in a `Model` is mainly to define the set of
+ * valid roles, but they map to arbitrary data which is not used by
+ * the `Model` but may be inspected or used by
+ * client code.
+ */
 const roles = {
   // role                  arbitrary data
   ':ARG[0-9]': { type: 'frame' },
@@ -97,19 +98,23 @@ const roles = {
   ':range': { type: 'ordinal' },
 };
 
-//: Normalizations are like role aliases. If the left side of the
-//: normalization is encountered by
-//: :meth:`penman.model.Model.canonicalize_role` then it is replaced
-//: with the right side.
+/**
+ * Normalizations are like role aliases. If the left side of the
+ * normalization is encountered by
+ * `Model.canonicalizeRole` then it is replaced
+ * with the right side.
+ */
 const normalizations = {
   ':mod-of': ':domain',
   ':domain-of': ':mod',
 };
 
-//: Reifications are a particular kind of transformation that replaces
-//: an edge relation with a new node and two outgoing edge relations,
-//: one inverted. They are used when the edge needs to behave as a node,
-//: e.g., to be modified or focused.
+/**
+ * Reifications are a particular kind of transformation that replaces
+ * an edge relation with a new node and two outgoing edge relations,
+ * one inverted. They are used when the edge needs to behave as a node,
+ * e.g., to be modified or focused.
+ */
 const reifications: _ReificationSpec[] = [
   // role           concept                source   target
   [':accompanier', 'accompany-01', ':ARG1', ':ARG0'],
@@ -151,8 +156,10 @@ const reifications: _ReificationSpec[] = [
   [':quant', 'have-quant-91', ':ARG1', ':ARG2'],
 ];
 
-//: The AMR model is an instance of :class:`~penman.model.Model` using
-//: the roles, normalizations, and reifications defined in this module.
+/**
+ * The AMR model is an instance of `Model` using
+ * the roles, normalizations, and reifications defined in this module.
+ */
 export const model = new Model(
   'top',
   ':TOP',

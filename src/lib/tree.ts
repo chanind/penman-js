@@ -27,6 +27,7 @@ export class Tree {
     this.metadata = metadata ?? {};
   }
 
+  /** @ignore */
   __eq__(other: any): boolean {
     if (other instanceof Tree) {
       other = other.node;
@@ -37,6 +38,7 @@ export class Tree {
     return this.__eq__(other);
   }
 
+  /** @ignore */
   __repr__(): string {
     return `Tree(${this.node})`;
   }
@@ -48,12 +50,14 @@ export class Tree {
     const s = _format(this.node, 2);
     return `Tree(\n  ${s})`;
   }
+
   /**
    * Return the nodes in the tree as a flat list.
    */
   nodes(): Node[] {
     return _nodes(this.node);
   }
+
   /**
    * Iterate over branches in the tree.
    *
@@ -77,6 +81,7 @@ export class Tree {
   *walk(): Generator<_Step> {
     yield* _walk(this.node, []);
   }
+
   /**
    * Recreate node variables formatted using `fmt`.
    *
@@ -176,7 +181,6 @@ function* _walk(node: Node, path: number[]) {
  * console.log(defaultVariablePrefix(null)); // Outputs: '_'
  * console.log(defaultVariablePrefix('')); // Outputs: '_'
  */
-
 export const _defaultVariablePrefix = (concept: any): Variable => {
   let prefix = '_';
   if (concept && typeof concept === 'string') {
@@ -222,7 +226,6 @@ const _mapVars = (node: Node, varmap: VarMap): Node => {
  * console.log(isAtomic(3.14)); // Outputs: true
  * console.log(isAtomic(['a', [['/', 'alpha']]])); // Outputs: false
  */
-
 export const isAtomic = (x: any): boolean => {
   return (
     x == null ||

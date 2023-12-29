@@ -32,7 +32,6 @@ export class AlignmentMarker extends Epidatum {
    * RoleAlignment.fromString('e.2,3');
    * // RoleAlignment([2, 3], 'e.')
    */
-
   static fromString<T extends AlignmentMarker>(s: string): T {
     let _s = lstrip(s, '~');
     let prefix: string | null = null;
@@ -62,6 +61,7 @@ export class AlignmentMarker extends Epidatum {
     return <T>obj;
   }
 
+  /** @ignore */
   __repr__(): string {
     let args = this.indices.toString();
     if (this.prefix) {
@@ -139,7 +139,6 @@ export function alignments(g: Graph): _Alignments {
  * //   ['c', ':ARG0', 'c']: RoleAlignment([3])
  * // })
  */
-
 export function roleAlignments(g: Graph): _Alignments {
   return _getAlignments(g, RoleAlignment);
 }

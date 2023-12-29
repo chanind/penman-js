@@ -5,12 +5,12 @@ export { Tree } from './lib/tree';
 export { Graph, Triple } from './lib/graph';
 export {
   PENMANCodec,
-  _decode as decode,
-  _dump as dump,
-  _dumps as dumps,
-  _encode as encode,
-  _iterdecode as iterdecode,
-  _load as load,
-  _loads as loads,
+  decode,
+  dump,
+  dumps,
+  encode,
+  iterdecode,
+  load,
+  loads,
 } from './lib/codec';
 export { DecodeError, PenmanError } from './lib/exceptions';

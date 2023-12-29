@@ -80,7 +80,6 @@ export const type = (constant_string: string | null | undefined): Type => {
  * console.log(evaluate('1.2')); // Outputs: 1.2
  * console.log(evaluate('') === null); // Outputs: true
  */
-
 export const evaluate = (
   constantString: string | null | undefined,
 ): Constant => {

@@ -33,7 +33,6 @@ import { partition } from './utils';
  * // (c / chapter
  * //    :mod 7)
  */
-
 export const canonicalizeRoles = (
   t: Tree,
   model: Model | null = null,
@@ -140,7 +139,6 @@ export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
  * // (c / chapter
  * //    :mod 7)
  */
-
 export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
   if (model == null) {
     model = new Model();
@@ -187,7 +185,6 @@ export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
  * // (c / chapter
  * //    :mod (_ / 7))
  */
-
 export const reifyAttributes = (g: Graph): Graph => {
   const variables = g.variables();
   const newEpidata = new EpidataMap(g.epidata.entries());
@@ -251,7 +248,6 @@ export const reifyAttributes = (g: Graph): Graph => {
  * //    :ARG1 (g / go-02
  * //             :ARG0 b))
  */
-
 export const indicateBranches = (g: Graph, model: Model): Graph => {
   const newTriples: BasicTriple[] = [];
   for (const t of g.triples) {
@@ -282,19 +278,22 @@ type _SplitMarkers = [Push | null, Pop[], Epidata, Epidata];
  * epigraphical data needs to be moved and sometimes altered. For example,
  * consider a case with surface alignment markers:
  *
- *     (a :role~1 b~2)
+ * ```
+ * (a :role~1 b~2)
+ * ```
  *
  * Under edge reification, the desired outcome is:
  *
- *     (a :ARG1-of (_ / role-label~1 :ARG2 b~2))
+ * ```
+ * (a :ARG1-of (_ / role-label~1 :ARG2 b~2))
+ * ```
  *
  * Under attribute reification, it is:
  *
- *     (a :role~1 (_ / b~2))
- *
- * @returns Epigraphical markers categorized by their function.
+ * ```
+ * (a :role~1 (_ / b~2))
+ * ```
  */
-
 const _reifiedMarkers = (epidata: Epidata): _SplitMarkers => {
   let push: Push | null = null;
   const pops: Pop[] = [];

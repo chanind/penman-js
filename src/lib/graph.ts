@@ -22,10 +22,6 @@ export const CONCEPT_ROLE = ':instance';
 
 /**
  * Represents a relation between nodes or between a node and a constant.
- *
- * @param source - The source variable of the triple.
- * @param role - The edge label between the source and target.
- * @param target - The target variable or constant.
  */
 export type Triple = [source: Variable, role: Role, target: Target];
 
@@ -70,21 +66,22 @@ let graphIdCounter = 0;
  * ]);
  */
 export class Graph {
-  _id: number;
+  private _id: number;
+  private _top: Variable | null;
 
   /**
    * @param triples - An iterable of triples (either `Triple` objects or 3-tuples).
-   * @param top - The variable of the top node; if unspecified, the source
-   *              of the first triple is used.
+   * @param top - The variable of the top node; if unspecified, the source of the first triple is used.
    * @param epidata - A mapping of triples to epigraphical markers.
    * @param metadata - A mapping of metadata types to descriptions.
    */
   constructor(
     public triples: Triples = [],
-    private _top: Variable = null,
+    top: Variable = null,
     public epidata: EpidataMap = new EpidataMap(),
     public metadata: Record<string, string> = {},
   ) {
+    this._top = top;
     // the following (a) creates a new list (b) validates that
     // they are triples, and (c) ensures roles begin with :
     this.triples = triples.map(([src, role, tgt]) => [
@@ -96,6 +93,7 @@ export class Graph {
     this._id = graphIdCounter++;
   }
 
+  /** @ignore */
   __repr__() {
     const name = this.constructor.name;
     return `<${name} object (top=${this.top}) at ${this._id}>`;
@@ -123,6 +121,7 @@ export class Graph {
     );
   }
 
+  /** @ignore */
   __or__(other: any) {
     if (other instanceof Graph) {
       const g = cloneDeep(this);
@@ -136,6 +135,7 @@ export class Graph {
     return this.__or__(other);
   }
 
+  /** @ignore */
   __ior__(other: any) {
     if (other instanceof Graph) {
       const new_: Triples = differenceWith(
@@ -161,6 +161,7 @@ export class Graph {
     return this.__ior__(other);
   }
 
+  /** @ignore */
   __sub__(other: any) {
     if (other instanceof Graph) {
       const g = cloneDeep(this);
@@ -174,6 +175,7 @@ export class Graph {
     return this.__sub__(other);
   }
 
+  /** @ignore */
   __isub__(other: any) {
     if (other instanceof Graph) {
       const removed = other.triples;
@@ -264,7 +266,7 @@ export class Graph {
   }
 
   /** Filter triples based on their source, role, and/or target. */
-  _filterTriples(
+  private _filterTriples(
     // TODO: use proper typescript optional types instead of 'null'
     source: Variable | null = null,
     role: Role | null = null,

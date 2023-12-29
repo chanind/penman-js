@@ -98,7 +98,6 @@ export class PENMANCodec {
    * console.log(codec.encode(new Graph([['h', 'instance', 'hi']])));
    * // '(h / hi)'
    */
-
   encode(
     g: Graph,
     top?: Variable,
@@ -154,7 +153,7 @@ export class PENMANCodec {
  *
  * const graph = decode('(b / bark-01 :ARG0 (d / dog))');
  */
-export function _decode(s: string, model?: Model): Graph {
+export function decode(s: string, model?: Model): Graph {
   const codec = new PENMANCodec(model);
   return codec.decode(s);
 }
@@ -172,8 +171,7 @@ export function _decode(s: string, model?: Model): Graph {
  *   // ...
  * }
  */
-
-export function* _iterdecode(
+export function* iterdecode(
   lines: string | string[],
   model?: Model,
 ): IterableIterator<Graph> {
@@ -196,8 +194,7 @@ export function* _iterdecode(
  * console.log(encode(new Graph([['h', 'instance', 'hi']])));
  * // '(h / hi)'
  */
-
-export function _encode(
+export function encode(
   g: Graph,
   top?: Variable,
   model?: Model,
@@ -215,7 +212,7 @@ export function _encode(
  * @param model - The model used for interpreting the graph.
  * @returns A list of `Graph` objects.
  */
-export function _load(
+export function load(
   source: string,
   model?: Model,
   encoding?: string,
@@ -234,7 +231,7 @@ export function _load(
  * @param model - The model used for interpreting the graph.
  * @returns A list of `Graph` objects.
  */
-export function _loads(string: string, model?: Model): Graph[] {
+export function loads(string: string, model?: Model): Graph[] {
   const codec = new PENMANCodec(model);
   return Array.from(codec.iterdecode(string));
 }
@@ -248,7 +245,7 @@ export function _loads(string: string, model?: Model): Graph[] {
  * @param indent - How to indent formatted strings.
  * @param compact - If `true`, put initial attributes on the first line.
  */
-export function _dump(
+export function dump(
   graphs: Graph[],
   file: string,
   model?: Model,
@@ -261,7 +258,7 @@ export function _dump(
 }
 
 /** Helper method for dump() for incremental printing. */
-export function _dumpStream(
+function _dumpStream(
   file: string,
   gs: Graph[],
   codec: PENMANCodec,
@@ -290,7 +287,7 @@ export function _dumpStream(
  * @param compact - If `true`, put initial attributes on the first line.
  * @returns The string of serialized graphs.
  */
-export function _dumps(
+export function dumps(
   graphs: Graph[],
   model?: Model,
   indent: number | null | undefined = -1,
