@@ -145,8 +145,7 @@ export class TokenIterator {
   /**
    * Return the next token if its type is in *choices*.
    *
-   * The iterator is advanced if successful. If unsuccessful,
-   * ``None`` is returned.
+   * The iterator is advanced if successful. If unsuccessful, `None` is returned.
    */
   accept(...choices: string[]): Token | null {
     if (this._next != null && choices.includes(this._next.value[0])) {
