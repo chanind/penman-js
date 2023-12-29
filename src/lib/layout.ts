@@ -41,9 +41,9 @@
  *
  * PENMAN                 Graph                            Epigraph
  * (t / try-01            [('t', ':instance', 'try-01'),   :
- *     :ARG0 (d / dog)      ('t', ':ARG0', 'd'),            : Push('d')
- *     :ARG1 (b / bark-01   ('d', ':instance', 'dog'),      : POP
- *         :ARG0 d))         ('t', ':ARG1', 'b'),            : Push('b')
+ *    :ARG0 (d / dog)      ('t', ':ARG0', 'd'),            : Push('d')
+ *    :ARG1 (b / bark-01   ('d', ':instance', 'dog'),      : POP
+ *       :ARG0 d))         ('t', ':ARG1', 'b'),            : Push('b')
  *                         ('b', ':instance', 'bark-01'),  :
  *                         ('b', ':ARG0', 'd')]            : POP
  */
@@ -100,39 +100,40 @@ export class Pop extends LayoutMarker {
   }
 }
 
-//: A singleton instance of :class:`Pop`.
+/** A singleton instance of `Pop`. */
 export const POP = new Pop();
 
 /**
- * Interpret tree *t* as a graph using *model*.
-
+ * Interpret tree `t` as a graph using `model`.
+ *
  * Tree interpretation is the process of transforming the nodes and
  * edges of a tree into a directed graph. A semantic model determines
- * which edges are inverted and how to deinvert them. If *model* is
+ * which edges are inverted and how to deinvert them. If `model` is
  * not provided, the default model will be used.
-
- * Args:
- *     t: the :class:`~penman.tree.Tree` to interpret
- *     model: the :class:`~penman.model.Model` used to interpret *t*
- * Returns:
- *     The interpreted :class:`~penman.graph.Graph`.
- * Example:
  *
- *     >>> from penman.tree import Tree
- *     >>> from penman import layout
- *     >>> t = Tree(
- *     ...   ('b', [
- *     ...     ('/', 'bark-01'),
- *     ...     ('ARG0', ('d', [
- *     ...       ('/', 'dog')]))]))
- *     >>> g = layout.interpret(t)
- *     >>> for triple in g.triples:
- *     ...     print(triple)
- *     ...
- *     ('b', ':instance', 'bark-01')
- *     ('b', ':ARG0', 'd')
- *     ('d', ':instance', 'dog')
+ * @param t - The `Tree` object to interpret.
+ * @param model - The `Model` used to interpret `t`.
+ * @returns The interpreted `Graph` object.
+ * @example
+ * import { Tree } from 'penman-js/tree';
+ * import { interpret } from 'penman-js/layout';
+ *
+ * const t = new Tree('b', [
+ *   ['/', 'bark-01'],
+ *   ['ARG0', new Tree('d', [
+ *     ['/', 'dog']
+ *   ])]
+ * ]);
+ *
+ * const g = interpret(t);
+ * for (const triple of g.triples) {
+ *   console.log(triple);
+ * }
+ * // ['b', ':instance', 'bark-01']
+ * // ['b', ':ARG0', 'd']
+ * // ['d', ':instance', 'dog']
  */
+
 export function interpret(
   t: Tree | null,
   model: Model = _default_model,
@@ -251,7 +252,7 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
 /**
  * Create a tree from a graph by making as few decisions as possible.
  *
- * A graph interpreted from a valid tree using :func:`interpret` will
+ * A graph interpreted from a valid tree using `interpret` will
  * contain epigraphical markers that describe how the triples of a
  * graph are to be expressed in a tree, and thus configuring this
  * tree requires only a single pass through the list of triples. If
@@ -261,29 +262,26 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
  * deterministic, but may result in a tree different than the one
  * expected.
  *
- * Args:
- *     g: the :class:`~penman.graph.Graph` to configure
- *     top: the variable to use as the top of the graph; if ``None``,
- *         the top of *g* will be used
- *     model: the :class:`~penman.model.Model` used to configure the
- *         tree
- * Returns:
- *     The configured :class:`~penman.tree.Tree`.
- * Example:
+ * @param g - The `Graph` object to configure.
+ * @param top - The variable to use as the top of the graph; if `null`,
+ *              the top of `g` will be used.
+ * @param model - The `Model` used to configure the tree.
+ * @returns The configured `Tree` object.
+ * @example
+ * import { Graph } from 'penman-js/graph';
+ * import { configure } from 'penman-js/layout';
  *
- *     >>> from penman.graph import Graph
- *     >>> from penman import layout
- *     >>> g = Graph([('b', ':instance', 'bark-01'),
- *     ...            ('b', ':ARG0', 'd'),
- *     ...            ('d', ':instance', 'dog')])
- *     >>> t = layout.configure(g)
- *     >>> print(t)
- *     Tree(
- *       ('b', [
- *         ('/', 'bark-01'),
- *         (':ARG0', ('d', [
- *           ('/', 'dog')]))]))
+ * const g = new Graph([
+ *   ['b', ':instance', 'bark-01'],
+ *   ['b', ':ARG0', 'd'],
+ *   ['d', ':instance', 'dog']
+ * ]);
+ *
+ * const t = configure(g);
+ * console.log(t);
+ * // Tree('b', [['/', 'bark-01'], [':ARG0', new Tree('d', [['/', 'dog']])]])
  */
+
 export function configure(
   g: Graph,
   top: Variable = null,
@@ -413,8 +411,8 @@ function _preconfigure(g: Graph, model: Model) {
  * Configure a node and any descendants.
  *
  * Side-effects:
- *   * *data* is modified
- *   * *nodemap* is modified
+ *   - `data` is modified
+ *   - `nodemap` is modified
  */
 function _configureNode(
   variable: Variable,
@@ -571,7 +569,7 @@ function _processEpigraph(node: any): void {
 
 /**
  * Create a tree from a graph after any discarding layout markers.
- * If *key* is provided, triples are sorted according to the key.
+ * If `key` is provided, triples are sorted according to the key.
  */
 export function reconfigure(
   graph: Graph,
@@ -596,53 +594,37 @@ export function reconfigure(
 }
 
 /**
- * Sort the branches at each node in tree *t* according to *key*.
- * Sort the branches at each node in tree *t* according to *key*.
-
- * Each node in a tree contains a list of branches. This function
- * Each node in a tree contains a list of branches. This function
- * sorts those lists in-place using the *key* function, which accepts
- * sorts those lists in-place using the *key* function, which accepts
- * a role and returns some sortable criterion.
- * a role and returns some sortable criterion.
+ * Sort the branches at each node in tree `t` according to `key`.
  *
- * If the *attributes_first* argument is ``True``, attribute branches
- * If the *attributes_first* argument is ``True``, attribute branches
- * are appear before any edges.
- * are appear before any edges.
+ * Each node in a tree contains a list of branches. This function sorts
+ * those lists in-place using the `key` function, which accepts a role and
+ * returns some sortable criterion.
  *
- * Instance branches (``/``) always appear before any other branches.
- * Instance branches (``/``) always appear before any other branches.
+ * If the `attributesFirst` argument is `true`, attribute branches will
+ * appear before any edges.
  *
- * Example:
- * Example:
- *     >>> from penman import layout
- *     >>> from penman import layout
- *     >>> from penman.model import Model
- *     >>> from penman.model import Model
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.codec import PENMANCodec
- *     >>> c = PENMANCodec()
- *     >>> c = PENMANCodec()
- *     >>> t = c.parse(
- *     >>> t = c.parse(
- *     ...   '(s / see-01'
- *     ...   '(s / see-01'
- *     ...   '   :ARG1 (c / cat)'
- *     ...   '   :ARG1 (c / cat)'
- *     ...   '   :ARG0 (d / dog))')
- *     ...   '   :ARG0 (d / dog))')
- *     >>> layout.rearrange(t, key=Model().canonical_order)
- *     >>> layout.rearrange(t, key=Model().canonical_order)
- *     >>> print(c.format(t))
- *     >>> print(c.format(t))
- *     (s / see-01
- *     (s / see-01
- *        :ARG0 (d / dog)
- *        :ARG0 (d / dog)
- *        :ARG1 (c / cat))
- *        :ARG1 (c / cat))
+ * Instance branches (`/`) always appear before any other branches.
+ *
+ * @param t - The tree to rearrange.
+ * @param key - The function used for sorting branches.
+ * @param attributesFirst - If `true`, attribute branches appear before edges.
+ * @example
+ * import { rearrange } from 'penman-js/layout';
+ * import { Model } from 'penman-js/model';
+ * import { PENMANCodec } from 'penman-js/codec';
+ *
+ * const c = new PENMANCodec();
+ * const t = c.parse(`
+ *   (s / see-01
+ *      :ARG1 (c / cat)
+ *      :ARG0 (d / dog))`);
+ * rearrange(t, Model().canonicalOrder, true);
+ * console.log(c.format(t));
+ * // (s / see-01
+ * //    :ARG0 (d / dog)
+ * //    :ARG1 (c / cat))
  */
+
 export function rearrange(
   t: Tree,
   key: (role: Role) => any = null,
@@ -679,17 +661,21 @@ const _rearrange = (node: Node, key: (branch: Branch) => any) => {
   branches.splice(0, branches.length, ...first, ...sortBy(rest, key));
 };
 
-/*
- * Return the variable pushed by *triple*, if any, otherwise ``None``.
-
- * Example:
- *     >>> from penman import decode
- *     >>> from penman.layout import get_pushed_variable
- *     >>> g = decode('(a / alpha :ARG0 (b / beta))')
- *     >>> get_pushed_variable(g, ('a', ':instance', 'alpha'))  # None
- *     >>> get_pushed_variable(g, ('a', ':ARG0', 'b'))
- *     'b'
+/**
+ * Return the variable pushed by `triple`, if any, otherwise `null`.
+ *
+ * @param g - A graph object.
+ * @param triple - The triple to check for a pushed variable.
+ * @returns The variable pushed by `triple`, or `null` if none.
+ * @example
+ * import { decode } from 'penman-js';
+ * import { getPushedVariable } from 'penman-js/layout';
+ *
+ * const g = decode('(a / alpha :ARG0 (b / beta))');
+ * console.log(getPushedVariable(g, ['a', ':instance', 'alpha'])); // Outputs: null
+ * console.log(getPushedVariable(g, ['a', ':ARG0', 'b'])); // Outputs: 'b'
  */
+
 export function getPushedVariable(
   g: Graph,
   triple: BasicTriple,
@@ -703,24 +689,22 @@ export function getPushedVariable(
 }
 
 /**
- * Return ``True`` if *triple* appears inverted in serialization.
+ * Return `true` if `triple` appears inverted in serialization.
  *
- * More specifically, this function returns ``True`` if *triple* has
- * a :class:`Push` epigraphical marker in graph *g* whose associated
- * variable is the source variable of *triple*. This should be
+ * More specifically, this function returns `true` if `triple` has
+ * a `Push` epigraphical marker in graph `g` whose associated
+ * variable is the source variable of `triple`. This should be
  * accurate when testing a triple in a graph interpreted using
- * :func:`interpret` (including :meth:`PENMANCodec.decode
- * <penman.codec.PENMANCodec.decode>`, etc.), but it does not
- * guarantee that a new serialization of *g* will express *triple* as
- * inverted as it can change if the graph or its epigraphical markers
- * are modified, if a new top is chosen, etc.
+ * `interpret` (including `PENMANCodec.decode` and similar methods),
+ * but it does not guarantee that a new serialization of `g` will
+ * express `triple` as inverted as it can change if the graph or its
+ * epigraphical markers are modified, if a new top is chosen, etc.
  *
- * Args:
- *     g: a :class:`~penman.graph.Graph` containing *triple*
- *     triple: the triple that does or does not appear inverted
- * Returns:
- *     ``True`` if *triple* appears inverted in graph *g*.
+ * @param g - A `Graph` object containing `triple`.
+ * @param triple - The triple that does or does not appear inverted.
+ * @returns `true` if `triple` appears inverted in graph `g`.
  */
+
 export function appearsInverted(g: Graph, triple: BasicTriple): boolean {
   const variables = g.variables();
   if (triple[1] === CONCEPT_ROLE || !variables.has(triple[2] as string)) {
@@ -747,28 +731,33 @@ export function appearsInverted(g: Graph, triple: BasicTriple): boolean {
 }
 
 /**
- * Return the list of node contexts corresponding to triples in *g*.
+ * Return the list of node contexts corresponding to triples in `g`.
  *
- * If a node context is unknown, the value ``None`` is substituted.
+ * If a node context is unknown, the value `null` is substituted.
  *
- * Example:
- *     >>> from penman import decode, layout
- *     >>> g = decode('''
- *     ...   (a / alpha
- *     ...      :attr val
- *     ...      :ARG0 (b / beta :ARG0 (g / gamma))
- *     ...      :ARG0-of g)''')
- *     >>> for ctx, trp in zip(layout.node_contexts(g), g.triples):
- *     ...     print(ctx, ':', trp)
- *     ...
- *     a : ('a', ':instance', 'alpha')
- *     a : ('a', ':attr', 'val')
- *     a : ('a', ':ARG0', 'b')
- *     b : ('b', ':instance', 'beta')
- *     b : ('b', ':ARG0', 'g')
- *     g : ('g', ':instance', 'gamma')
- *     a : ('g', ':ARG0', 'a')
+ * @param g - A graph object.
+ * @returns An array of node contexts corresponding to triples in `g`.
+ * @example
+ * import { decode, nodeContexts } from 'penman-js';
+ *
+ * const g = decode(`
+ *   (a / alpha
+ *      :attr val
+ *      :ARG0 (b / beta :ARG0 (g / gamma))
+ *      :ARG0-of g)`);
+ * for (const [ctx, trp] of zip(nodeContexts(g), g.triples)) {
+ *   console.log(ctx, ':', trp);
+ * }
+ *
+ * // a : ['a', ':instance', 'alpha']
+ * // a : ['a', ':attr', 'val']
+ * // a : ['a', ':ARG0', 'b']
+ * // b : ['b', ':instance', 'beta']
+ * // b : ['b', ':ARG0', 'g']
+ * // g : ['g', ':instance', 'gamma']
+ * // a : ['g', ':ARG0', 'a']
  */
+
 export function nodeContexts(g: Graph): Array<Variable | null> {
   const variables = g.variables();
   const stack = [g.top];

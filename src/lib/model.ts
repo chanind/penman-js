@@ -12,18 +12,18 @@ type _Dereified = [Role, Role, Role];
 type _Reification = [BasicTriple, BasicTriple, BasicTriple];
 
 /**
- * A semantic model for Penman graphs.
-
- * The model defines things like valid roles and transformations.
-
- * Args:
- *     top_variable: the variable of the graph's top
- *     top_role: the role linking the graph's top to the top node
- *     concept_role: the role associated with node concepts
- *     roles: a mapping of roles to associated data
- *     normalizations: a mapping of roles to normalized roles
- *     reifications: a list of 4-tuples used to define reifications
+ * Represents a semantic model for Penman graphs.
+ *
+ * The model defines elements such as valid roles and transformations.
+ *
+ * @param topVariable - The variable of the graph's top.
+ * @param topRole - The role linking the graph's top to the top node.
+ * @param conceptRole - The role associated with node concepts.
+ * @param roles - A mapping of roles to associated data.
+ * @param normalizations - A mapping of roles to normalized roles.
+ * @param reifications - An array of 4-tuples used to define reifications.
  */
+
 export class Model {
   reifications: { [key: Role]: Array<_Reified> };
   dereifications: { [key: Constant]: Array<_Dereified> };
@@ -108,12 +108,15 @@ export class Model {
   }
 
   /**
-   * Return ``True`` if *role* is defined by the model.
+   * Return `true` if `role` is defined by the model.
    *
-   * If *role* is not in the model but a single deinversion of
-   * *role* is in the model, then ``True`` is returned. Otherwise
-   * ``False`` is returned, even if something like
-   * :meth:`canonicalize_role` could return a valid role.
+   * If `role` is not in the model but a single deinversion of
+   * `role` is in the model, then `true` is returned. Otherwise,
+   * `false` is returned, even if a method like `canonicalizeRole`
+   * could return a valid role.
+   *
+   * @param role - The role to check in the model.
+   * @returns `true` if the role is defined by the model, otherwise `false`.
    */
   hasRole(role: Role): boolean {
     return (
@@ -127,14 +130,14 @@ export class Model {
   }
 
   /**
-   * Return ``True`` if *role* is inverted.
+   * Return `true` if `role` is inverted.
    */
   isRoleInverted(role: Role): boolean {
     return !this._hasRole(role) && role.endsWith('-of');
   }
 
   /**
-   * Invert *role*.
+   * Invert `role`.
    */
   invertRole(role: Role): Role {
     if (!this._hasRole(role) && role.endsWith('-of')) {
@@ -144,14 +147,18 @@ export class Model {
   }
 
   /**
-   * Invert *triple*.
+   * Invert `triple`.
    *
    * This will invert or deinvert a triple regardless of its
-   * current state. :meth:`deinvert` will deinvert a triple only if
-   * it is already inverted. Unlike :meth:`canonicalize`, this will
+   * current state. A method like `deinvert` will deinvert a triple only if
+   * it is already inverted. Unlike a method like `canonicalize`, this will
    * not perform multiple inversions or replace the role with a
    * normalized form.
+   *
+   * @param triple - The triple to invert.
+   * @returns The inverted or deinverted triple.
    */
+
   invert(triple: BasicTriple): BasicTriple {
     const [source, role, target] = triple;
     const inverse = this.invertRole(role);
@@ -161,14 +168,18 @@ export class Model {
   }
 
   /**
-   * De-invert *triple* if it is inverted.
+   * De-invert `triple` if it is inverted.
    *
-   * Unlike :meth:`invert`, this only inverts a triple if the model
+   * Unlike a method such as `invert`, this only inverts a triple if the model
    * considers it to be already inverted, otherwise it is left
-   * alone. Unlike :meth:`canonicalize`, this will not normalize
+   * unchanged. Unlike a method such as `canonicalize`, this will not normalize
    * multiple inversions or replace the role with a normalized
    * form.
+   *
+   * @param triple - The triple to de-invert if necessary.
+   * @returns The de-inverted triple, or the original triple if it wasn't inverted.
    */
+
   deinvert(triple: BasicTriple): BasicTriple {
     if (this.isRoleInverted(triple[1])) {
       triple = this.invert(triple);
@@ -176,39 +187,21 @@ export class Model {
     return triple;
   }
 
-  //     def canonicalize_role(self, role: Role) -> Role:
-  //         """
-  //         Canonicalize *role*.
-
-  //         Role canonicalization will do the following:
-
-  //         * Ensure the role starts with `':'`
-
-  //         * Normalize multiple inversions (e.g., ``ARG0-of-of`` becomes
-  //           ``ARG0``), but it does *not* change the direction of the role
-
-  //         * Replace the resulting role with a normalized form if one is
-  //           defined in the model
-  //         """
-  //         if role != '/' and not role.startswith(':'):
-  //             role = ':' + role
-  //         role = self._canonicalize_inversion(role)
-  //         role = self.normalizations.get(role, role)
-  //         return role
-
   /**
-   * Canonicalize *role*.
+   * Canonicalize `role`.
    *
-   * Role canonicalization will do the following:
+   * Role canonicalization will perform the following actions:
    *
-   * * Ensure the role starts with `':'`
-   *
-   * * Normalize multiple inversions (e.g., ``ARG0-of-of`` becomes
-   *   ``ARG0``), but it does *not* change the direction of the role
-   *
-   * * Replace the resulting role with a normalized form if one is
+   * - Ensure the role starts with `':'`
+   * - Normalize multiple inversions (e.g., `ARG0-of-of` becomes `ARG0`),
+   *   but it does not change the direction of the role
+   * - Replace the resulting role with a normalized form if one is
    *   defined in the model
+   *
+   * @param role - The role to be canonicalized.
+   * @returns The canonicalized role.
    */
+
   canonicalizeRole(role: Role): Role {
     if (role !== '/' && !role.startsWith(':')) {
       role = ':' + role;
@@ -217,17 +210,6 @@ export class Model {
     role = this.normalizations[role] || role;
     return role;
   }
-
-  //     def _canonicalize_inversion(self, role: Role) -> Role:
-  //         invert = self.invert_role
-  //         if not self._has_role(role):
-  //             while True:
-  //                 prev = role
-  //                 inverse = invert(role)
-  //                 role = invert(inverse)
-  //                 if prev == role:
-  //                     break
-  //         return role
 
   _canonicalizeInversion(role: Role): Role {
     if (!this._hasRole(role)) {
@@ -243,24 +225,15 @@ export class Model {
     return role;
   }
 
-  //     def canonicalize(self, triple: BasicTriple) -> BasicTriple:
-  //         """
-  //         Canonicalize *triple*.
-
-  //         See :meth:`canonicalize_role` for a description of how the
-  //         role is canonicalized. Unlike :meth:`invert`, this does not
-  //         swap the source and target of *triple*.
-  //         """
-  //         source, role, target = triple
-  //         canonical = self.canonicalize_role(role)
-  //         return (source, canonical, target)
-
   /**
-   * Canonicalize *triple*.
+   * Canonicalize `triple`.
    *
-   * See :meth:`canonicalize_role` for a description of how the
-   * role is canonicalized. Unlike :meth:`invert`, this does not
-   * swap the source and target of *triple*.
+   * The role in the triple is canonicalized following the procedure
+   * described in the `canonicalizeRole` method. Unlike a method such as `invert`,
+   * this function does not swap the source and target of `triple`.
+   *
+   * @param triple - The triple to be canonicalized.
+   * @returns The canonicalized triple.
    */
   canonicalize(triple: BasicTriple): BasicTriple {
     const [source, role, target] = triple;
@@ -269,30 +242,30 @@ export class Model {
   }
 
   /**
-   * Return ``True`` if *role* can be reified.
+   * Return `true` if `role` can be reified.
    */
   isRoleReifiable(role: Role): boolean {
     return role in this.reifications;
   }
 
   /**
-   * Return the three triples that reify *triple*.
+   * Return the three triples that reify `triple`.
    *
-   * Note that, unless *variables* is given, the node variable
+   * Note that, unless `variables` is provided, the node variable
    * for the reified node is not necessarily valid for the target
    * graph. When incorporating the reified triples, this variable
    * should then be replaced.
- 
-   * If the role of *triple* does not have a defined reification, a
-   * :exc:`~penman.exceptions.ModelError` is raised.
    *
-   * Args:
-   *     triple: the triple to reify
-   *     variables: a set of variables that should not be used for
-   *         the reified node's variable
-   * Returns:
-   *     The 3-tuple of triples that reify *triple*.
+   * If the role of `triple` does not have a defined reification,
+   * a `ModelError` exception is raised.
+   *
+   * @param triple - The triple to reify.
+   * @param variables - A set of variables that should not be used for
+   *                    the reified node's variable.
+   * @returns The 3-tuple of triples that reify `triple`.
+   * @throws {ModelError} - If the role of `triple` does not have a defined reification.
    */
+
   reify(triple: BasicTriple, variables?: Set<Variable>): _Reification {
     const [source, role, target] = triple;
     if (!(role in this.reifications)) {
@@ -326,20 +299,19 @@ export class Model {
   /**
    * Return the triple that dereifies the three argument triples.
    *
-   * If the target of *instance_triple* does not have a defined
-   * dereification, or if the roles of *source_triple* and
-   * *target_triple* do not match those for the dereification of
-   * the concept, a :exc:`~penman.exceptions.ModelError` is
-   * raised. A :exc:`ValueError` is raised if *instance_triple* is
-   * not an instance triple or any triple does not have the same
-   * source variable as the others.
+   * If the target of `instanceTriple` does not have a defined
+   * dereification, or if the roles of `sourceTriple` and
+   * `targetTriple` do not match those for the dereification of
+   * the concept, a `ModelError` exception is raised. A `ValueError` is raised if
+   * `instanceTriple` is not an instance triple or any triple does not have the
+   * same source variable as the others.
    *
-   * Args:
-   *     instance_triple: the triple containing the node's concept
-   *     source_triple: the source triple from the node
-   *     target_triple: the target triple from the node
-   * Returns:
-   *     The triple that dereifies the three argument triples.
+   * @param instanceTriple - The triple containing the node's concept.
+   * @param sourceTriple - The source triple from the node.
+   * @param targetTriple - The target triple from the node.
+   * @returns The triple that dereifies the three argument triples.
+   * @throws {ModelError} - If dereification conditions are not met.
+   * @throws {ValueError} - If `instanceTriple` is not valid or if any triple has a different source.
    */
   dereify(
     instanceTriple: BasicTriple,
@@ -414,25 +386,32 @@ export class Model {
   }
 
   /**
-   * Return a description of model errors detected in *graph*.
-
-   * The description is a dictionary mapping a context to a list of
+   * Return a description of model errors detected in `graph`.
+   *
+   * The description is an object mapping a context to a list of
    * errors. A context is a triple if the error is relevant for the
-   * triple, or ``None`` for general graph errors.
-
-   * Example:
-
-   *     >>> from penman.models.amr import model
-   *     >>> from penman.graph import Graph
-   *     >>> g = Graph([('a', ':instance', 'alpha'),
-   *     ...            ('a', ':foo', 'bar'),
-   *     ...            ('b', ':instance', 'beta')])
-   *     >>> for context, errors in model.errors(g).items():
-   *     ...     print(context, errors)
-   *     ...
-   *     ('a', ':foo', 'bar') ['invalid role']
-   *     ('b', ':instance', 'beta') ['unreachable']
+   * triple, or `null` for general graph errors.
+   *
+   * @param graph - The graph to check for errors.
+   * @returns An object describing detected model errors in the graph.
+   * @example
+   * import { model } from 'penman-js/models/amr';
+   * import { Graph } from 'penman-js/graph';
+   *
+   * const g = new Graph([
+   *   ['a', ':instance', 'alpha'],
+   *   ['a', ':foo', 'bar'],
+   *   ['b', ':instance', 'beta']
+   * ]);
+   *
+   * for (const [context, errors] of Object.entries(model.errors(g))) {
+   *   console.log(context, errors);
+   * }
+   *
+   * // ['a', ':foo', 'bar'] ['invalid role']
+   * // ['b', ':instance', 'beta'] ['unreachable']
    */
+
   errors(graph: Graph): { [key: string]: string[] } {
     const err: { [key: string]: string[] } = {};
     if (graph.triples.length === 0) {

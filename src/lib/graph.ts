@@ -21,12 +21,11 @@ import { defaultdictPlusEqual } from './utils';
 export const CONCEPT_ROLE = ':instance';
 
 /**
- * A relation between nodes or between a node and an constant.
+ * Represents a relation between nodes or between a node and a constant.
  *
- * Args:
- *    source: the source variable of the triple
- *    role: the edge label between the source and target
- *    target: the target variable or constant
+ * @param source - The source variable of the triple.
+ * @param role - The edge label between the source and target.
+ * @param target - The target variable or constant.
  */
 export type Triple = [source: Variable, role: Role, target: Target];
 
@@ -47,34 +46,35 @@ export type Attribute = [source: Variable, role: Role, target: Constant];
 
 // hacky way to get a unique id for each graph
 // since JS has no id() function like Python
-let graph_id_counter = 0;
+let graphIdCounter = 0;
 
 /**
- * A basic class for modeling a rooted, directed acyclic graph.
-
- * A Graph is defined by a list of triples, which can be divided into
+ * Represents a basic class for modeling a rooted, directed acyclic graph.
+ *
+ * A `Graph` is defined by a list of triples, which can be divided into
  * two parts: a list of graph edges where both the source and target
  * are variables (node identifiers), and a list of node attributes
- * where only the source is a variable and the target is a
- * constant. The raw triples are available via the :attr:`triples`
- * attribute, while the :meth:`instances`, :meth:`edges` and
- * :meth:`attributes` methods return only those that are concept
- * relations, relations between nodes, or relations between a node
- * and a constant, respectively.
-
- * Args:
- *     triples: an iterable of triples (:class:`Triple` or 3-tuples)
- *     top: the variable of the top node; if unspecified, the source
- *         of the first triple is used
- *     epidata: a mapping of triples to epigraphical markers
- *     metadata: a mapping of metadata types to descriptions
- * Example:
- *     >>> from penman.graph import Graph
- *     >>> Graph([('b', ':instance', 'bark-01'),
- *     ...        ('d', ':instance', 'dog'),
- *     ...        ('b', ':ARG0', 'd')])
- *     <Graph object (top=b) at ...>
+ * where only the source is a variable and the target is a constant.
+ * The raw triples are available via the `triples` property, while the
+ * `instances`, `edges`, and `attributes` methods return only those that
+ * are concept relations, relations between nodes, or relations between
+ * a node and a constant, respectively.
+ *
+ * @param triples - An iterable of triples (either `Triple` objects or 3-tuples).
+ * @param top - The variable of the top node; if unspecified, the source
+ *              of the first triple is used.
+ * @param epidata - A mapping of triples to epigraphical markers.
+ * @param metadata - A mapping of metadata types to descriptions.
+ * @example
+ * import { Graph } from 'penman-js';
+ *
+ * const graph = new Graph([
+ *   ['b', ':instance', 'bark-01'],
+ *   ['d', ':instance', 'dog'],
+ *   ['b', ':ARG0', 'd']
+ * ]);
  */
+
 export class Graph {
   _id: number;
 
@@ -92,7 +92,7 @@ export class Graph {
       tgt,
     ]);
 
-    this._id = graph_id_counter++;
+    this._id = graphIdCounter++;
   }
 
   __repr__() {
@@ -231,8 +231,10 @@ export class Graph {
     return this._filterTriples(null, CONCEPT_ROLE, null);
   }
 
-  /** Return edges filtered by their *source*, *role*, or *target*.
-   * Edges don't include terminal triples (concepts or attributes). */
+  /**
+   * Return edges filtered by their *source*, *role*, or *target*.
+   * Edges don't include terminal triples (concepts or attributes).
+   */
   edges(
     source: Variable | null = null,
     role: Role | null = null,
@@ -244,9 +246,11 @@ export class Graph {
     ) as Edge[];
   }
 
-  /** Return attributes filtered by their *source*, *role*, or *target*.
+  /**
+   * Return attributes filtered by their *source*, *role*, or *target*.
    * Attributes don't include concept triples or those where the
-   * target is a nonterminal. */
+   * target is a nonterminal.
+   */
   attributes(
     source: Variable | null = null,
     role: Role | null = null,
@@ -278,14 +282,16 @@ export class Graph {
     }
   }
 
-  /** Return a mapping of variables to their re-entrancy count.
+  /**
+   * Return a mapping of variables to their re-entrancy count.
    * A re-entrancy is when more than one edge selects a node as its
    * target. These graphs are rooted, so the top node always has an
    * implicit entrancy. Only nodes with re-entrancies are reported,
    * and the count is only for the entrant edges beyond the first.
    * Also note that these counts are for the interpreted graph, not
    * for the linearized form, so inverted edges are always
-   * re-entrant. */
+   * re-entrant.
+   */
   reentrancies(): Map<Variable, number> {
     const entrancies = new Map<Variable, number>();
     if (this.top != null) {

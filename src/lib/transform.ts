@@ -12,29 +12,28 @@ import { BasicTriple, Branch, Node, Target, Variable } from './types';
 import { partition } from './utils';
 
 /**
- * Normalize roles in *t* so they are canonical according to *model*.
+ * Normalize roles in `t` so they are canonical according to `model`.
  *
- * This is a tree transformation instead of a graph transformation
+ * This is a tree transformation rather than a graph transformation
  * because the orientation of the pure graph's triples is not decided
  * until the graph is configured into a tree.
  *
- * Args:
- *    t: a :class:`~penman.tree.Tree` object
- *    model: a model defining role normalizations
- * Returns:
- *    A new :class:`~penman.tree.Tree` object with canonicalized
- *    roles.
- * Example:
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.models.amr import model
- *     >>> from penman.transform import canonicalize_roles
- *     >>> codec = PENMANCodec()
- *     >>> t = codec.parse('(c / chapter :domain-of 7)')
- *     >>> t = canonicalize_roles(t, model)
- *     >>> print(codec.format(t))
- *     (c / chapter
- *        :mod 7)
+ * @param t - A `Tree` object.
+ * @param model - A model defining role normalizations.
+ * @returns A new `Tree` object with canonicalized roles.
+ * @example
+ * import { PENMANCodec } from 'penman-js/codec';
+ * import { model } from 'penman-js/models/amr';
+ * import { canonicalizeRoles } from 'penman-js/transform';
+ *
+ * const codec = new PENMANCodec();
+ * const t = codec.parse('(c / chapter :domain-of 7)');
+ * const canonicalizedTree = canonicalizeRoles(t, model);
+ * console.log(codec.format(canonicalizedTree));
+ * // (c / chapter
+ * //    :mod 7)
  */
+
 export const canonicalizeRoles = (
   t: Tree,
   model: Model | null = null,
@@ -65,24 +64,23 @@ const _canonicalizeNode = (node: Node, model: Model): Node => {
 };
 
 /**
- * Reify all edges in *g* that have reifications in *model*.
+ * Reify all edges in `g` that have reifications in `model`.
  *
- * Args:
- *     g: a :class:`~penman.graph.Graph` object
- *     model: a model defining reifications
- * Returns:
- *     A new :class:`~penman.graph.Graph` object with reified edges.
- * Example:
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.models.amr import model
- *     >>> from penman.transform import reify_edges
- *     >>> codec = PENMANCodec(model=model)
- *     >>> g = codec.decode('(c / chapter :mod 7)')
- *     >>> g = reify_edges(g, model)
- *     >>> print(codec.encode(g))
- *     (c / chapter
- *        :ARG1-of (_ / have-mod-91
- *                    :ARG2 7))
+ * @param g - A `Graph` object.
+ * @param model - A model defining reifications.
+ * @returns A new `Graph` object with reified edges.
+ * @example
+ * import { PENMANCodec } from 'penman-js/codec';
+ * import { model } from 'penman-js/models/amr';
+ * import { reifyEdges } from 'penman-js/transform';
+ *
+ * const codec = new PENMANCodec(model);
+ * const g = codec.decode('(c / chapter :mod 7)');
+ * const reifiedGraph = reifyEdges(g, model);
+ * console.log(codec.encode(reifiedGraph));
+ * // (c / chapter
+ * //    :ARG1-of (_ / have-mod-91
+ * //                :ARG2 7))
  */
 export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
   const vars = g.variables();
@@ -121,27 +119,28 @@ export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
 };
 
 /**
- * Dereify edges in *g* that have reifications in *model*.
+ * Dereify edges in `g` that have reifications in `model`.
  *
- * Args:
- *     g: a :class:`~penman.graph.Graph` object
- * Returns:
- *     A new :class:`~penman.graph.Graph` object with dereified
- *     edges.
- * Example:
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.models.amr import model
- *     >>> from penman.transform import dereify_edges
- *     >>> codec = PENMANCodec(model=model)
- *     >>> g = codec.decode(
- *     ...   '(c / chapter'
- *     ...   '   :ARG1-of (_ / have-mod-91'
- *     ...   '               :ARG2 7))')
- *     >>> g = dereify_edges(g, model)
- *     >>> print(codec.encode(g))
- *     (c / chapter
- *        :mod 7)
+ * @param g - A `Graph` object.
+ * @param model - A model defining reifications.
+ * @returns A new `Graph` object with dereified edges.
+ * @example
+ * import { PENMANCodec } from 'penman-js/codec';
+ * import { model } from 'penman-js/models/amr';
+ * import { dereifyEdges } from 'penman-js/transform';
+ *
+ * const codec = new PENMANCodec({ model });
+ * const g = codec.decode(
+ *   `(c / chapter
+ *      :ARG1-of (_ / have-mod-91
+ *                  :ARG2 7))`
+ * );
+ * const dereifiedGraph = dereifyEdges(g, model);
+ * console.log(codec.encode(dereifiedGraph));
+ * // (c / chapter
+ * //    :mod 7)
  */
+
 export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
   if (model == null) {
     model = new Model();
@@ -172,24 +171,23 @@ export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
 };
 
 /**
- * Reify all attributes in *g*.
+ * Reify all attributes in `g`.
  *
- * Args:
- *     g: a :class:`~penman.graph.Graph` object
- * Returns:
- *     A new :class:`~penman.graph.Graph` object with reified
- *     attributes.
- * Example:
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.models.amr import model
- *     >>> from penman.transform import reify_attributes
- *     >>> codec = PENMANCodec(model=model)
- *     >>> g = codec.decode('(c / chapter :mod 7)')
- *     >>> g = reify_attributes(g)
- *     >>> print(codec.encode(g))
- *     (c / chapter
- *        :mod (_ / 7))
+ * @param g - A `Graph` object.
+ * @returns A new `Graph` object with reified attributes.
+ * @example
+ * import { PENMANCodec } from 'penman-js/codec';
+ * import { model } from 'penman-js/models/amr';
+ * import { reifyAttributes } from 'penman-js/transform';
+ *
+ * const codec = new PENMANCodec(model);
+ * const g = codec.decode('(c / chapter :mod 7)');
+ * const reifiedGraph = reifyAttributes(g);
+ * console.log(codec.encode(reifiedGraph));
+ * // (c / chapter
+ * //    :mod (_ / 7))
  */
+
 export const reifyAttributes = (g: Graph): Graph => {
   const variables = g.variables();
   const newEpidata = new EpidataMap(g.epidata.entries());
@@ -223,39 +221,37 @@ export const reifyAttributes = (g: Graph): Graph => {
 };
 
 /**
- * Insert TOP triples in *g* indicating the tree structure.
+ * Insert TOP triples in `g` indicating the tree structure.
  *
- * Note:
- *     This depends on *g* containing the epigraphical layout markers
- *     from parsing; it will not work with programmatically
- *     constructed Graph objects or those whose epigraphical data
- *     were removed.
+ * Note: This depends on `g` containing the epigraphical layout markers
+ * from parsing; it will not work with programmatically
+ * constructed Graph objects or those whose epigraphical data
+ * were removed.
  *
- * Args:
- *     g: a :class:`~penman.graph.Graph` object
- *     model: a model defining the TOP role
- * Returns:
- *     A new :class:`~penman.graph.Graph` object with TOP roles
- *     indicating tree branches.
- * Example:
- *     >>> from penman.codec import PENMANCodec
- *     >>> from penman.models.amr import model
- *     >>> from penman.transform import indicate_branches
- *     >>> codec = PENMANCodec(model=model)
- *     >>> g = codec.decode('''
- *     ... (w / want-01
- *     ...    :ARG0 (b / boy)
- *     ...    :ARG1 (g / go-02
- *     ...             :ARG0 b))''')
- *     >>> g = indicate_branches(g, model)
- *     >>> print(codec.encode(g))
- *     (w / want-01
- *        :TOP b
- *        :ARG0 (b / boy)
- *        :TOP g
- *        :ARG1 (g / go-02
- *                 :ARG0 b))
+ * @param g - A `Graph` object.
+ * @param model - A model defining the TOP role.
+ * @returns A new `Graph` object with TOP roles indicating tree branches.
+ * @example
+ * import { PENMANCodec } from 'penman-js/codec';
+ * import { model } from 'penman-js/models/amr';
+ * import { indicateBranches } from 'penman-js/transform';
+ *
+ * const codec = new PENMANCodec(model);
+ * const g = codec.decode(`
+ *   (w / want-01
+ *      :ARG0 (b / boy)
+ *      :ARG1 (g / go-02
+ *               :ARG0 b))`);
+ * const branchedGraph = indicateBranches(g, model);
+ * console.log(codec.encode(branchedGraph));
+ * // (w / want-01
+ * //    :TOP b
+ * //    :ARG0 (b / boy)
+ * //    :TOP g
+ * //    :ARG1 (g / go-02
+ * //             :ARG0 b))
  */
+
 export const indicateBranches = (g: Graph, model: Model): Graph => {
   const newTriples: BasicTriple[] = [];
   for (const t of g.triples) {
@@ -282,20 +278,23 @@ type _SplitMarkers = [Push | null, Pop[], Epidata, Epidata];
 /**
  * Return epigraphical markers broken down by function.
  *
- * When a relation is reified the original triple disappears so its
- * epigraphical data needs to be moved and sometimes altered.
- * Consider the following, which has surface alignment markers::
+ * When a relation is reified, the original triple disappears, so its
+ * epigraphical data needs to be moved and sometimes altered. For example,
+ * consider a case with surface alignment markers:
  *
  *     (a :role~1 b~2)
  *
- * Under edge reification, the desired outcome is::
+ * Under edge reification, the desired outcome is:
  *
  *     (a :ARG1-of (_ / role-label~1 :ARG2 b~2))
  *
- * Under attribute reification, it is::
+ * Under attribute reification, it is:
  *
  *     (a :role~1 (_ / b~2))
+ *
+ * @returns Epigraphical markers categorized by their function.
  */
+
 const _reifiedMarkers = (epidata: Epidata): _SplitMarkers => {
   let push: Push | null = null;
   const pops: Pop[] = [];

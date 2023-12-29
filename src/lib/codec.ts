@@ -226,13 +226,11 @@ export function _encode(
 }
 
 /**
- * Deserialize a list of PENMAN-encoded graphs from *source*.
-
- * Args:
- *     source: a filename to read from
- *     model: the model used for interpreting the graph
- * Returns:
- *     a list of Graph objects
+ * Deserialize a list of PENMAN-encoded graphs from `source`.
+ *
+ * @param source - A filename to read from.
+ * @param model - The model used for interpreting the graph.
+ * @returns A list of `Graph` objects.
  */
 export function _load(
   source: string,
@@ -247,13 +245,11 @@ export function _load(
 }
 
 /**
- * Deserialize a list of PENMAN-encoded graphs from *string*.
+ * Deserialize a list of PENMAN-encoded graphs from a string.
  *
- * Args:
- *     string: a string containing graph data
- *     model: the model used for interpreting the graph
- * Returns:
- *     a list of Graph objects
+ * @param string - A string containing graph data.
+ * @param model - The model used for interpreting the graph.
+ * @returns A list of `Graph` objects.
  */
 export function _loads(string: string, model?: Model): Graph[] {
   const codec = new PENMANCodec(model);
@@ -261,14 +257,13 @@ export function _loads(string: string, model?: Model): Graph[] {
 }
 
 /**
- * Serialize each graph in *graphs* to PENMAN and write to *file*.
+ * Serialize each graph in `graphs` to PENMAN notation and write to `file`.
  *
- * Args:
- *     graphs: an iterable of Graph objects
- *     file: a filename to write to
- *     model: the model used for interpreting the graph
- *     indent: how to indent formatted strings
- *     compact: if ``True``, put initial attributes on the first line
+ * @param graphs - An iterable of Graph objects.
+ * @param file - A filename to write to.
+ * @param model - The model used for interpreting the graph.
+ * @param indent - How to indent formatted strings.
+ * @param compact - If `true`, put initial attributes on the first line.
  */
 export function _dump(
   graphs: Graph[],
@@ -304,15 +299,13 @@ export function _dumpStream(
 }
 
 /**
- * Serialize each graph in *graphs* to the PENMAN format.
+ * Serialize each graph in `graphs` to the PENMAN format.
  *
- * Args:
- *     graphs: an iterable of Graph objects
- *     model: the model used for interpreting the graph
- *     indent: how to indent formatted strings
- *     compact: if ``True``, put initial attributes on the first line
- * Returns:
- *     the string of serialized graphs
+ * @param graphs - An iterable of Graph objects.
+ * @param model - The model used for interpreting the graph.
+ * @param indent - How to indent formatted strings.
+ * @param compact - If `true`, put initial attributes on the first line.
+ * @returns The string of serialized graphs.
  */
 export function _dumps(
   graphs: Graph[],

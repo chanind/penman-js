@@ -19,20 +19,18 @@ export const FLOAT = Type.FLOAT; //: Float constants (e.g., :code:`(... :value 1
 export const NULL = Type.NULL; //: Empty values (e.g., :code:`(... :ARG1 )`)
 
 /**
- * Return the type of constant encoded by *constant_string*.
+ * Return the type of constant encoded by `constantString`.
  *
- * Examples:
- *     >>> from penman import constant
- *     >>> constant.type('-')
- *     <Type.SYMBOL: 'Symbol'>
- *     >>> constant.type('"foo"')
- *     <Type.STRING: 'String'>
- *     >>> constant.type('1')
- *     <Type.INTEGER: 'Integer'>
- *     >>> constant.type('1.2')
- *     <Type.FLOAT: 'Float'>
- *     >>> constant.type('')
- *     <Type.NULL: 'Null'>
+ * @param constantString - The string representation of the constant.
+ * @returns The type of the constant.
+ * @example
+ * import { type } from 'penman-js';
+ *
+ * console.log(type('-')); // Outputs: 'Symbol'
+ * console.log(type('"foo"')); // Outputs: 'String'
+ * console.log(type('1')); // Outputs: 'Integer'
+ * console.log(type('1.2')); // Outputs: 'Float'
+ * console.log(type('')); // Outputs: 'Null'
  */
 export const type = (constant_string: string | null | undefined): Type => {
   if (constant_string == null) {
@@ -61,31 +59,28 @@ export const type = (constant_string: string | null | undefined): Type => {
 };
 
 /**
- * Evaluate and return *constant_string*.
+ * Evaluate and return the value of `constantString`.
  *
- * If *constant_string* is ``None`` or an empty symbol (``''``), this
- * function returns ``None``, while an empty string constant
- * (``'""'``) returns an empty :py:class:`str` object
- * (``''``). Otherwise, symbols are returned unchanged while strings
- * get quotes removed and escape sequences are unescaped. Note that
- * this means it is impossible to recover the original type of
+ * If `constantString` is `null` or an empty symbol (`''`), this
+ * function returns `null`. An empty string constant (`'""'`) returns an empty string (`''`).
+ * Symbols are returned unchanged, while strings get quotes removed and escape sequences unescaped.
+ * Note that this means it is impossible to recover the original type of
  * strings and symbols once they have been evaluated. For integer and
- * float constants, this function returns the equivalent Python
- * :py:class:`int` or :py:class:`float` objects.
-
- * Examples:
- *     >>> from penman import constant
- *     >>> constant.evaluate('-')
- *     '-'
- *     >>> constant.evaluate('"foo"')
- *     'foo'
- *     >>> constant.evaluate('1')
- *     1
- *     >>> constant.evaluate('1.2')
- *     1.2
- *     >>> constant.evaluate('') is None
- *     True
+ * float constants, this function returns the equivalent JavaScript
+ * `Number` object.
+ *
+ * @param constantString - The string representation of the constant.
+ * @returns The evaluated value of the constant.
+ * @example
+ * import { evaluate } from 'penman-js/constant';
+ *
+ * console.log(evaluate('-')); // Outputs: '-'
+ * console.log(evaluate('"foo"')); // Outputs: 'foo'
+ * console.log(evaluate('1')); // Outputs: 1
+ * console.log(evaluate('1.2')); // Outputs: 1.2
+ * console.log(evaluate('') === null); // Outputs: true
  */
+
 export const evaluate = (
   constantString: string | null | undefined,
 ): Constant => {
@@ -117,26 +112,23 @@ export const evaluate = (
 };
 
 /**
- * Return *constant* as a quoted string.
+ * Return `constant` as a quoted string.
  *
- * If *constant* is ``None``, this function returns an empty string
- * constant (``'""'``). All other types are cast to a string and
+ * If `constant` is `null`, this function returns an empty string
+ * constant (`'""'`). All other types are cast to a string and
  * quoted.
  *
- * Examples:
- *     >>> from penman import constant
- *     >>> constant.quote(None)
- *     '""'
- *     >>> constant.quote('')
- *     '""'
- *     >>> constant.quote('foo')
- *     '"foo"'
- *     >>> constant.quote('"foo"')
- *     '"\\\\"foo\\\\""'
- *     >>> constant.quote(1)
- *     '"1"'
- *     >>> constant.quote(1.5)
- *     '"1.5"'
+ * @param constant - The value to quote.
+ * @returns The quoted string representation of the constant.
+ * @example
+ * import { quote } from 'penman-js/constant';
+ *
+ * console.log(quote(null)); // Outputs: '""'
+ * console.log(quote('')); // Outputs: '""'
+ * console.log(quote('foo')); // Outputs: '"foo"'
+ * console.log(quote('"foo"')); // Outputs: '"\\"foo\\""'
+ * console.log(quote(1)); // Outputs: '"1"'
+ * console.log(quote(1.5)); // Outputs: '"1.5"'
  */
 export const quote = (constant: Constant): string => {
   if (constant == null) {
