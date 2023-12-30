@@ -1,0 +1,46 @@
+{{#if categories}}
+
+{{#each categories}}
+
+{{#unless allChildrenHaveOwnDocument}}
+
+## {{title}}
+
+<div class="class-methods">
+
+{{#each children}}
+
+{{#unless hasOwnDocument}}
+
+{{> member}}
+
+{{/unless}}
+
+{{/each}}
+
+{{/unless}}
+
+{{/each}}
+
+{{else}}
+
+<div class="padding-left--lg">
+
+{{#each groups}}
+
+{{#unless allChildrenHaveOwnDocument}}
+
+{{> members.group}}
+
+{{#unless @last}}
+___
+{{/unless}}
+
+
+{{/unless}}
+
+{{/each}}
+
+</div>
+
+{{/if}}

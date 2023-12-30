@@ -1,0 +1,46 @@
+import FLOAT, {toc as FloatToc} from '../generated/variables/lib_constant.FLOAT.mdx'
+import INTEGER, {toc as IntegerToc} from '../generated/variables/lib_constant.INTEGER.mdx'
+import NULL, {toc as NullToc} from '../generated/variables/lib_constant.NULL.mdx'
+import STRING, {toc as StringToc} from '../generated/variables/lib_constant.STRING.mdx'
+import SYMBOL, {toc as SymbolToc} from '../generated/variables/lib_constant.SYMBOL.mdx'
+import Quote, {toc as QuoteToc} from '../generated/functions/lib_constant.quote.mdx'
+import Evaluate, {toc as EvaluateToc} from '../generated/functions/lib_constant.evaluate.mdx'
+import Type, {toc as TypeToc} from '../generated/functions/lib_constant.type-1.mdx'
+
+# constant
+
+Functions for working with constant values.
+
+When a PENMAN string is parsed to a tree or a graph, constant values
+are left as strings or, if the value is missing, as `null`. Penman
+nevertheless recognizes four datatypes commonly used in PENMAN data:
+integers, floats, strings, and symbols. A fifth type, called a "null"
+value, is used when an attribute is missing its target, but aside from
+robustness measures it is not a supported datatype.
+
+
+
+
+<Quote />
+___
+<Evaluate />
+___
+<Type />
+___
+
+<FLOAT />
+<INTEGER />
+<NULL />
+<STRING />
+<SYMBOL />
+
+export const toc = [
+  ...QuoteToc,
+  ...EvaluateToc,
+  ...TypeToc,
+  ...FloatToc,
+  ...IntegerToc,
+  ...NullToc,
+  ...StringToc,
+  ...SymbolToc,
+]

@@ -68,10 +68,12 @@ export class Tree {
    * string, traversing first to the third (index 2) branch of the
    * top node, then to the first (index 0) branch of that node:
    *
-   *     (t / try-01
-   *         :ARG0 (d / dog)
-   *         :ARG1 (b / bark-01
-   *                 :ARG0 d))
+   * ```
+   * (t / try-01
+   *     :ARG0 (d / dog)
+   *     :ARG1 (b / bark-01
+   *             :ARG0 d))
+   * ```
    *
    * The (`path`, `branch`) pairs are yielded in depth-first order
    * of the tree traversal.
@@ -173,7 +175,6 @@ function* _walk(node: Node, path: number[]) {
  * @param concept - The concept to determine the prefix for.
  * @returns The variable prefix for the given `concept`.
  * @example
- * // Assuming the function is named defaultVariablePrefix
  * console.log(defaultVariablePrefix('Alphabet')); // Outputs: 'a'
  * console.log(defaultVariablePrefix('chase-01')); // Outputs: 'c'
  * console.log(defaultVariablePrefix('"string"')); // Outputs: 's'
@@ -222,7 +223,6 @@ const _mapVars = (node: Node, varmap: VarMap): Node => {
  * @param x - The value to check.
  * @returns `true` if `x` is a valid atomic value, otherwise `false`.
  * @example
- * // Assuming the function is named isAtomic
  * console.log(isAtomic('a')); // Outputs: true
  * console.log(isAtomic(null)); // Outputs: true
  * console.log(isAtomic(3.14)); // Outputs: true

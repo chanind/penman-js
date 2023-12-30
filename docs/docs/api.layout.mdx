@@ -1,0 +1,106 @@
+import Interpret, {toc as InterpretToc} from '../generated/functions/lib_layout.interpret.mdx'
+import Rearrange, {toc as RearrangeToc} from '../generated/functions/lib_layout.rearrange.mdx'
+import Configure, {toc as ConfigureToc} from '../generated/functions/lib_layout.configure.mdx'
+import Reconfigure, {toc as ReconfigureToc} from '../generated/functions/lib_layout.reconfigure.mdx'
+import GetPushedVariable, {toc as GetPushedVariableToc} from '../generated/functions/lib_layout.getPushedVariable.mdx'
+import AppearsInverted, {toc as AppearsInvertedToc} from '../generated/functions/lib_layout.appearsInverted.mdx'
+import NodeContexts, {toc as NodeContextsToc} from '../generated/functions/lib_layout.nodeContexts.mdx'
+import LayoutMarker, {toc as LayoutMarkerToc} from '../generated/classes/lib_layout.LayoutMarker.mdx'
+import Pop, {toc as PopToc} from '../generated/classes/lib_layout.Pop.mdx'
+import Push, {toc as PushToc} from '../generated/classes/lib_layout.Push.mdx'
+import POP, {toc as POPToc} from '../generated/variables/lib_layout.POP-1.mdx'
+
+# layout
+
+Interpreting trees to graphs and configuring graphs to trees.
+
+In order to serialize graphs into the PENMAN format, a tree-like
+layout of the graph must be decided. Deciding a layout includes
+choosing the order of the edges from a node and the paths to get to a
+node definition (the position in the tree where a node's concept and
+edges are specified). For instance, the following graphs for "The dog
+barked loudly" have different edge orders on the ``b`` node:
+
+```
+(b / bark-01           (b / bark-01
+    :ARG0 (d / dog)        :mod (l / loud)
+    :mod (l / loud))       :ARG0 (d / dog))
+```
+
+With re-entrancies, there are choices about which location of a
+re-entrant node gets the full definition with its concept (node
+label), etc. For instance, the following graphs for "The dog tried to
+bark" have different locations for the definition of the ``d`` node:
+
+```
+(t / try-01              (t / try-01
+    :ARG0 (d / dog)          :ARG0 d
+    :ARG1 (b / bark-01       :ARG1 (b / bark-01
+        :ARG0 d))                :ARG0 (d / dog))
+```
+
+With inverted edges, there are even more possibilities, such as:
+
+```
+(t / try-01                (t / try-01
+    :ARG0 (d / dog             :ARG1 (b / bark-01
+        :ARG0-of b)                :ARG0 (d / dog
+    :ARG1 (b / bark-01))             :ARG0-of t)))
+```
+
+This module introduces two epigraphical markers so that a pure graph
+parsed from PENMAN can retain information about its tree layout
+without altering its graph properties. The first marker type is
+`Push`, which is put on a triple to indicate that the triple
+introduces a new node context, while the sentinel `POP`
+indicates that a triple is at the end of one or more node contexts.
+These markers only work if the triples in the graph's data are
+ordered. For instance, one of the graphs above (repeated here) has the
+following data:
+
+```
+PENMAN                 Graph                            Epigraph
+(t / try-01            [('t', ':instance', 'try-01'),   :
+   :ARG0 (d / dog)      ('t', ':ARG0', 'd'),            : Push('d')
+   :ARG1 (b / bark-01   ('d', ':instance', 'dog'),      : POP
+      :ARG0 d))         ('t', ':ARG1', 'b'),            : Push('b')
+                        ('b', ':instance', 'bark-01'),  :
+                        ('b', ':ARG0', 'd')]            : POP
+```
+
+<Interpret />
+___
+<Rearrange />
+___
+<Configure />
+___
+<Reconfigure />
+___
+<GetPushedVariable />
+___
+<AppearsInverted />
+___
+<NodeContexts />
+___
+<LayoutMarker />
+___
+<Pop />
+___
+<Push />
+___
+<POP />
+
+
+export const toc = [
+  ...InterpretToc,
+  ...RearrangeToc,
+  ...ConfigureToc,
+  ...ReconfigureToc,
+  ...GetPushedVariableToc,
+  ...AppearsInvertedToc,
+  ...NodeContextsToc,
+  ...LayoutMarkerToc,
+  ...PopToc,
+  ...PushToc,
+  ...POPToc,
+]

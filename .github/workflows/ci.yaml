@@ -11,6 +11,12 @@ jobs:
       - run: yarn install
       - run: yarn test
       - run: yarn build
+      - name: Install docs dependencies
+        run: yarn install
+        working-directory: ./docs
+      - name: Build docs
+        run: yarn build
+        working-directory: ./docs
   release:
     needs: lint_test_and_build
     permissions:
@@ -32,3 +38,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
+      - name: Install docs dependencies
+        run: yarn install
+        working-directory: ./docs
+      - name: Build docs
+        run: yarn build
+        working-directory: ./docs
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build

@@ -1,0 +1,27 @@
+import AlignmentMarker, { toc as AlignmentMarkerToc } from '../generated/classes/lib_surface.AlignmentMarker.mdx';
+import Alignment, { toc as AlignmentToc } from '../generated/classes/lib_surface.Alignment.mdx';
+import RoleAlignment, { toc as RoleAlignmentToc } from '../generated/classes/lib_surface.RoleAlignment.mdx';
+import Alignments, { toc as AlignmentsToc } from '../generated/functions/lib_surface.alignments.mdx';
+import RoleAlignments, { toc as RoleAlignmentsToc } from '../generated/functions/lib_surface.roleAlignments.mdx';
+
+# surface
+
+Surface strings, tokens, and alignments.
+
+<AlignmentMarker />
+___
+<Alignment />
+___
+<RoleAlignment />
+___
+<Alignments />
+___
+<RoleAlignments />
+
+export const toc = [
+  ...AlignmentMarkerToc,
+  ...AlignmentToc,
+  ...RoleAlignmentToc,
+  ...AlignmentsToc,
+  ...RoleAlignmentsToc,
+];
