@@ -31,3 +31,8 @@ $ yarn build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+### Customizing API docs
+
+The API documentation is generated using a modified typedoc theme, in the `typedoc-simple-mdx-theme` folder.
+This folder contains template files which can be use to control how the API docs render.
