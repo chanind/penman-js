@@ -12,7 +12,8 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "generate-api": "typedoc ../src --out generated"
   },
   "dependencies": {
     "@docusaurus/core": "3.0.1",
@@ -27,7 +28,10 @@
     "@docusaurus/module-type-aliases": "3.0.1",
     "@docusaurus/tsconfig": "3.0.1",
     "@docusaurus/types": "3.0.1",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "typedoc": "0.25.4",
+    "typedoc-plugin-markdown": "3.17.1",
+    "typedoc-plugin-no-inherit": "^1.4.0"
   },
   "browserslist": {
     "production": [
@@ -43,5 +47,17 @@
   },
   "engines": {
     "node": ">=18.0"
+  },
+  "typedocOptions": {
+    "excludePrivate": true,
+    "entryPointStrategy": "expand",
+    "exclude": "**/*.spec.ts",
+    "theme": "simple-mdx",
+    "tsconfig": "../tsconfig.json",
+    "plugin": [
+      "typedoc-plugin-no-inherit",
+      "typedoc-plugin-markdown",
+      "./typedoc-simple-mdx-theme/theme.js"
+    ]
   }
 }

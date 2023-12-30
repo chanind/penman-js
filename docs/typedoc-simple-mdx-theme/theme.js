@@ -132,5 +132,5 @@ function registerPartials() {
 }
 
 exports.load = (app) => {
-  app.renderer.defineTheme('simple-md', SimpleMdTheme);
+  app.renderer.defineTheme('simple-mdx', SimpleMdTheme);
 };

@@ -35,7 +35,7 @@
   font-weight: 400;
   opacity: 0.5;
   margin-top: 1rem;
-  padding: var(--ifm-menu-link-padding-vertical) 0;
+  padding: var(--ifm-menu-link-padding-vertical) var(--ifm-menu-link-padding-horizontal);
 }
 
 .light-image-bg {
