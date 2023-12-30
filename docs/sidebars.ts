@@ -21,6 +21,15 @@ const sidebars: SidebarsConfig = {
       className: 'sidebar-section-label',
     },
     'api.penman',
+    'api.codec',
+    'api.constant',
+    'api.exceptions',
+    'api.graph',
+    'api.layout',
+    'api.model',
+    'api.surface',
+    'api.transform',
+    'api.tree',
   ],
 
   // But you can create a sidebar manually

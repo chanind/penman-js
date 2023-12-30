@@ -68,10 +68,12 @@ export class Tree {
    * string, traversing first to the third (index 2) branch of the
    * top node, then to the first (index 0) branch of that node:
    *
-   *     (t / try-01
-   *         :ARG0 (d / dog)
-   *         :ARG1 (b / bark-01
-   *                 :ARG0 d))
+   * ```
+   * (t / try-01
+   *     :ARG0 (d / dog)
+   *     :ARG1 (b / bark-01
+   *             :ARG0 d))
+   * ```
    *
    * The (`path`, `branch`) pairs are yielded in depth-first order
    * of the tree traversal.

@@ -49,7 +49,7 @@
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
     "doc:html": "typedoc src --out build/docs",
-    "doc:md": "typedoc src --plugin typedoc-plugin-markdown --plugin ./typedoc-md-theme/theme.js --theme simple-md --out docs/generated",
+    "doc:md": "typedoc src --plugin typedoc-plugin-no-inherit --plugin typedoc-plugin-markdown --plugin ./typedoc-md-theme/theme.js --theme simple-md --out docs/generated",
     "doc:json": "typedoc src --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
@@ -100,6 +100,7 @@
     "ts-node": "^10.9.2",
     "typedoc": "^0.25.4",
     "typedoc-plugin-markdown": "^3.17.1",
+    "typedoc-plugin-no-inherit": "^1.4.0",
     "typescript": "^5.3.0"
   },
   "files": [
@@ -134,6 +135,7 @@
     ]
   },
   "typedocOptions": {
+    "excludePrivate": true,
     "entryPointStrategy": "expand",
     "exclude": "**/*.spec.ts"
   },

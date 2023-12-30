@@ -1,7 +1,14 @@
 import Tree, { toc as treeToc } from '../generated/classes/lib_tree.Tree.mdx';
 import Graph, { toc as graphToc } from '../generated/classes/lib_graph.Graph.mdx';
 import Triple, { toc as tripleToc } from '../generated/types/lib_graph.Triple.mdx';
-import PENMANCodec, { toc as PenmanCodecToc } from '../generated/classes/lib_codec.PENMANCodec.mdx';
+import Parse, { toc as parseToc } from '../generated/functions/lib__parse.parse.mdx';
+import Iterparse, { toc as iterparseToc } from '../generated/functions/lib__parse.iterparse.mdx';
+import Format, { toc as formatToc } from '../generated/functions/lib__format.format.mdx';
+import Interpret, { toc as interpretToc } from '../generated/functions/lib_layout.interpret.mdx';
+import Decode, { toc as decodeToc } from '../generated/functions/lib_codec.decode.mdx';
+import Iterdecode, { toc as iterdecodeToc } from '../generated/functions/lib_codec.iterdecode.mdx';
+import Encode, { toc as encodeToc } from '../generated/functions/lib_codec.encode.mdx';
+import Configure, { toc as configureToc } from '../generated/functions/lib_layout.configure.mdx';
 
 # penman-js
 
@@ -49,25 +56,39 @@ console.log(format(target));
 //     :ARG0 b)
 ```
 
----
-
+___
 <Tree />
-
----
-
+___
 <Triple />
-
----
-
+___
 <Graph />
-
----
-
-<PENMANCodec />
+___
+<Parse />
+___
+<Iterparse />
+___
+<Format />
+___
+<Interpret />
+___
+<Decode />
+___
+<Iterdecode />
+___
+<Encode />
+___
+<Configure />
 
 export const toc = [
   ...treeToc,
   ...graphToc,
   ...tripleToc,
-  ...PenmanCodecToc,
+  ...parseToc,
+  ...iterparseToc,
+  ...formatToc,
+  ...interpretToc,
+  ...decodeToc,
+  ...iterdecodeToc,
+  ...encodeToc,
+  ...configureToc,
 ]

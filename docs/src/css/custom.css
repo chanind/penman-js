@@ -37,3 +37,7 @@
   margin-top: 1rem;
   padding: var(--ifm-menu-link-padding-vertical) 0;
 }
+
+.class-methods {
+  padding-left: 20px;
+}

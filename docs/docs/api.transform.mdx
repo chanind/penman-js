@@ -1,0 +1,35 @@
+import CanonicalizeRoles, { toc as CanonicalizeRolesToc } from '../generated/functions/lib_transform.canonicalizeRoles.mdx';
+import ReifyEdges, { toc as ReifyEdgesToc } from '../generated/functions/lib_transform.reifyEdges.mdx';
+import DereifyEdges, { toc as DereifyEdgesToc } from '../generated/functions/lib_transform.dereifyEdges.mdx';
+import ReifyAttributes, { toc as ReifyAttributesToc } from '../generated/functions/lib_transform.reifyAttributes.mdx';
+import IndicateBranches, { toc as IndicateBranchesToc } from '../generated/functions/lib_transform.indicateBranches.mdx';
+
+# transform
+
+:::info
+The transformation functions in this module alter the content of
+the graph. Other functions may change the shape or form of the
+graph without altering its content, such as:
+
+- [layout.rearrange](api.layout#function-rearrange)
+- [layout.reconfigure](api.layout#function-reconfigure)
+- [tree.resetVariables](api.tree#tree-resetVariables)
+:::
+
+<CanonicalizeRoles />
+___
+<ReifyEdges />
+___
+<DereifyEdges />
+___
+<ReifyAttributes />
+___
+<IndicateBranches />
+
+export const toc = [
+  ...CanonicalizeRolesToc,
+  ...ReifyEdgesToc,
+  ...DereifyEdgesToc,
+  ...ReifyAttributesToc,
+  ...IndicateBranchesToc,
+]
