@@ -5,6 +5,8 @@
 
 Javascript port of [Penman Python library](https://github.com/goodmami/penman) for Abstract Meaning Representation (AMR).
 
+Full docs: [https://chanind.github.io/penman-js](https://chanind.github.io/penman-js/)
+
 ## About
 
 This library is a manual port of the Penman Python library, with identical method names and import structure. However, as Python and Javascript do have some differences, this port has the following changes:
@@ -14,8 +16,6 @@ This library is a manual port of the Penman Python library, with identical metho
 - Python dictionaries are replaced with Javascript `Map`
 - functions only support positional arguments, since Javascript doesn't support keyword arguments like Python
 - All imports use `penman-js` as the base instead of `penman`. For instance, `from penman.graph import Graph` in Python is replaced with `import { Graph } from "penman-js/graph";` in Javascript.
-
-Otherwise, refer to the [Penman Python library docs](https://penman.readthedocs.io/en/latest/index.html) for full documentation.
 
 This library is not officially part of the Penman project.
 
@@ -43,8 +43,6 @@ console.log(encode(g, undefined, undefined, 3));
 // (b / bark-01
 //    :ARG0 (d / dog))
 ```
-
-For full docs, view the [Penman Python library docs](https://penman.readthedocs.io/en/latest/index.html).
 
 ## Contributing
 
