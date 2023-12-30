@@ -15,12 +15,12 @@ const sidebars: SidebarsConfig = {
   docSidebar: [
     'intro',
     'quick-start',
+    'trees-graphs-epigraphs',
     {
       type: 'html',
       value: 'API Reference',
       className: 'sidebar-section-label',
     },
-    'api.penman',
     'api.codec',
     'api.constant',
     'api.exceptions',

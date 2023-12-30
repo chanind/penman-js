@@ -38,6 +38,7 @@
   padding: var(--ifm-menu-link-padding-vertical) 0;
 }
 
-.class-methods {
-  padding-left: 20px;
+.light-image-bg {
+  border-radius: var(--ifm-code-border-radius);
+  background-color: rgba(255, 255, 255, 0.9);
 }
