@@ -6,7 +6,7 @@
  * choosing the order of the edges from a node and the paths to get to a
  * node definition (the position in the tree where a node's concept and
  * edges are specified). For instance, the following graphs for "The dog
- * barked loudly" have different edge orders on the ``b`` node:
+ * barked loudly" have different edge orders on the `b` node:
  *
  * ```
  * (b / bark-01           (b / bark-01
@@ -17,7 +17,7 @@
  * With re-entrancies, there are choices about which location of a
  * re-entrant node gets the full definition with its concept (node
  * label), etc. For instance, the following graphs for "The dog tried to
- * bark" have different locations for the definition of the ``d`` node:
+ * bark" have different locations for the definition of the `d` node:
  *
  * ```
  * (t / try-01              (t / try-01
@@ -68,15 +68,7 @@ import { debug, log, warn } from './logger';
 import { Model } from './model';
 import { Alignment, RoleAlignment } from './surface';
 import { isAtomic, Tree } from './tree';
-import {
-  BasicTriple,
-  Branch,
-  Constant,
-  Node,
-  Role,
-  Triples,
-  Variable,
-} from './types';
+import { Branch, Node, Role, Triple, Triples, Variable } from './types';
 
 const _default_model = new Model();
 
@@ -111,6 +103,10 @@ export class Pop extends LayoutMarker {
 /** A singleton instance of `Pop`. */
 export const POP = new Pop();
 
+export interface InterpretOptions {
+  model?: Model;
+}
+
 /**
  * Interpret tree `t` as a graph using `model`.
  *
@@ -119,12 +115,13 @@ export const POP = new Pop();
  * which edges are inverted and how to deinvert them. If `model` is
  * not provided, the default model will be used.
  *
+ * The `options` param consists of an object with a single `model` property.
+ *
  * @param t - The `Tree` object to interpret.
- * @param model - The `Model` used to interpret `t`.
+ * @param options - An object with an optional `model` property, used to interpret `t`.
  * @returns The interpreted `Graph` object.
  * @example
- * import { Tree } from 'penman-js/tree';
- * import { interpret } from 'penman-js/layout';
+ * import { Tree, interpret } from 'penman-js';
  *
  * const t = new Tree('b', [
  *   ['/', 'bark-01'],
@@ -141,13 +138,8 @@ export const POP = new Pop();
  * // ['b', ':ARG0', 'd']
  * // ['d', ':instance', 'dog']
  */
-export function interpret(
-  t: Tree | null,
-  model: Model = _default_model,
-): Graph {
-  if (t == null) {
-    model = _default_model;
-  }
+export function interpret(t: Tree, options: InterpretOptions = {}): Graph {
+  const { model = _default_model } = options;
   const variables = new Set(t.nodes().map((node) => node[0]));
   const [top, triples, epidata] = _interpretNode(t.node, variables, model);
   const epimap = new EpidataMap();
@@ -158,7 +150,7 @@ export function interpret(
       epimap.set(triple, epis);
     }
   }
-  const g = new Graph(triples, top, epimap, t.metadata);
+  const g = new Graph(triples, { top, epidata: epimap, metadata: t.metadata });
   log(`Interpreted: ${g}`);
   return g;
 }
@@ -167,12 +159,12 @@ const _interpretNode = (
   t: Node,
   variables: Set<Variable>,
   model: Model,
-): [string, Triples, [BasicTriple, Epidata][]] => {
+): [string, Triples, [Triple, Epidata][]] => {
   let hasConcept = false;
   const triples: Triples = [];
-  const epidata: [BasicTriple, Epidata][] = [];
+  const epidata: [Triple, Epidata][] = [];
   const [variable, edges] = t;
-  for (const edge of edges) {
+  for (const edge of edges ?? []) {
     let role = edge[0];
     const target = edge[1];
     const epis: Epidatum[] = [];
@@ -187,7 +179,7 @@ const _interpretNode = (
     if (isAtomic(target)) {
       const [target_, target_epis] = _processAtomic(target);
       epis.push(...target_epis);
-      let triple: BasicTriple = [variable, role, target_];
+      let triple: Triple = [variable, role, target_];
       if (model.isRoleInverted(role)) {
         if (variables.has(target_)) {
           triple = model.invert(triple);
@@ -215,7 +207,7 @@ const _interpretNode = (
   }
 
   if (!hasConcept) {
-    const instance: BasicTriple = [variable, CONCEPT_ROLE, null];
+    const instance: Triple = [variable, CONCEPT_ROLE, null];
     triples.unshift(instance);
     epidata.push([instance, []]);
   }
@@ -256,6 +248,11 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
   return [target, epis];
 };
 
+export interface ConfigureOptions {
+  top?: Variable;
+  model?: Model;
+}
+
 /**
  * Create a tree from a graph by making as few decisions as possible.
  *
@@ -269,14 +266,17 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
  * deterministic, but may result in a tree different than the one
  * expected.
  *
+ * `options` consists of an object with optional `top` and `model` properties.
+ * - `top` is the variable to use as the top of the graph; if `null`, the top of `g` will be used.
+ * - `model` is the `Model` used to configure the tree.
+ *
  * @param g - The `Graph` object to configure.
- * @param top - The variable to use as the top of the graph; if `null`,
- *              the top of `g` will be used.
- * @param model - The `Model` used to configure the tree.
+ * @param options - An object with optional `top` and `model` properties.
+ *    - `top` is the variable to use as the top of the graph; if `null`, the top of `g` will be used.
+ *    - `model` is the `Model` used to configure the tree.
  * @returns The configured `Tree` object.
  * @example
- * import { Graph } from 'penman-js/graph';
- * import { configure } from 'penman-js/layout';
+ * import { Graph, configure } from 'penman-js';
  *
  * const g = new Graph([
  *   ['b', ':instance', 'bark-01'],
@@ -288,14 +288,8 @@ const _processAtomic = (target: string): [string, Epidatum[]] => {
  * console.log(t);
  * // Tree('b', [['/', 'bark-01'], [':ARG0', new Tree('d', [['/', 'dog']])]])
  */
-export function configure(
-  g: Graph,
-  top: Variable = null,
-  model: Model = null,
-): Tree {
-  if (model == null) {
-    model = _default_model;
-  }
+export function configure(g: Graph, options: ConfigureOptions = {}): Tree {
+  const { top = g.top, model = _default_model } = options;
   const configRes = _configure(g, top, model);
   const node = configRes[0];
   let data = configRes[1];
@@ -306,7 +300,7 @@ export function configure(
     data.pop();
   }
   // if any data remain, the graph was not properly annotated for a tree
-  const skipped = [];
+  const skipped: ([Triple, boolean, Epidata] | Pop)[] = [];
   while (data.length > 0) {
     const next = _findNext(data, nodemap);
     const _skipped = next[0];
@@ -320,7 +314,7 @@ export function configure(
     }
     const surprising = _configureNode(variable, data, nodemap, model)[1];
     if (data.length === dataCount && surprising) {
-      skipped.unshift(data.pop());
+      skipped.unshift(data.pop()!);
     } else if (data.length >= dataCount) {
       throw new LayoutError('unknown configuration error');
     } else {
@@ -346,18 +340,18 @@ export function configure(
  */
 function _configure(
   g: Graph,
-  top: Variable,
+  top: Variable | null,
   model: Model,
-): [Node, ([BasicTriple, boolean, Epidata] | Pop)[], _Nodemap] {
+): [Node, ([Triple, boolean, Epidata] | Pop)[], _Nodemap] {
   if (g.triples.length === 0) {
-    return [[g.top, []], [], {}];
+    return [[g.top as string, []], [], {}];
   }
   const nodemap: _Nodemap = {};
   for (const variable of g.variables()) {
     nodemap[variable] = null;
   }
   if (top == null) {
-    top = g.top;
+    throw new LayoutError(`top is not a variable: ${top}`);
   }
   if (!(top in nodemap)) {
     throw new LayoutError(`top is not a variable: ${top}`);
@@ -373,7 +367,7 @@ function _configure(
  * Also perform some basic validation.
  */
 function _preconfigure(g: Graph, model: Model) {
-  const data: ([BasicTriple, boolean, Epidata] | Pop)[] = [];
+  const data: ([Triple, boolean, Epidata] | Pop)[] = [];
   const epidata = g.epidata;
   const pushed = new Set<Variable>();
 
@@ -422,18 +416,18 @@ function _preconfigure(g: Graph, model: Model) {
  */
 function _configureNode(
   variable: Variable,
-  data: ([BasicTriple, boolean, Epidata] | Pop)[],
-  nodemap: { [key: Constant]: Node | null },
+  data: ([Triple, boolean, Epidata] | Pop)[],
+  nodemap: _Nodemap,
   model: Model,
 ): [Node, boolean] {
-  const node = nodemap[variable];
-  const edges = node[1];
+  const node = nodemap[variable]!;
+  const edges = node[1] ?? [];
   // Something is 'surprising' when a triple doesn't predictably fit
   // given the current state
   let surprising = false;
 
   while (data.length) {
-    const datum = data.pop();
+    const datum = data.pop()!;
     if (datum instanceof Pop) {
       break;
     }
@@ -482,14 +476,14 @@ function _configureNode(
  * Find the next node context; establish if necessary.
  */
 function _findNext(
-  data: ([BasicTriple, boolean, Epidata] | Pop)[],
-  nodemap: { [key: Constant]: Node | null },
+  data: ([Triple, boolean, Epidata] | Pop)[],
+  nodemap: _Nodemap,
 ): [
-  ([BasicTriple, boolean, Epidata] | Pop)[],
+  ([Triple, boolean, Epidata] | Pop)[],
   Variable,
-  ([BasicTriple, boolean, Epidata] | Pop)[],
+  ([Triple, boolean, Epidata] | Pop)[],
 ] {
-  let variable = null;
+  let variable: string | number | null = null;
   let pivot = data.length;
   for (let i = data.length - 1; i >= 0; i--) {
     const datum = data[i];
@@ -503,6 +497,7 @@ function _findNext(
       variable = source;
       break;
     } else if (
+      target != null &&
       target in nodemap &&
       _getOrEstablishSite(target as string, nodemap)
     ) {
@@ -510,18 +505,15 @@ function _findNext(
       break;
     }
   }
-  return [data.slice(pivot), variable, data.slice(0, pivot)];
+  return [data.slice(pivot), variable as string, data.slice(0, pivot)];
 }
 /**
  * Turn a variable target into a node context.
  */
-function _getOrEstablishSite(
-  variable: Variable,
-  nodemap: { [key: Constant]: Node | null },
-): boolean {
+function _getOrEstablishSite(variable: Variable, nodemap: _Nodemap): boolean {
   // first check if the var is available at all
   if (nodemap[variable] != null) {
-    const [_var, edges] = nodemap[variable];
+    const [_var, edges = []] = nodemap[variable] as Node;
     // if the mapped node's var doesn't match it can be established
     if (variable !== _var) {
       const node: Node = [variable, []];
@@ -573,16 +565,26 @@ function _processEpigraph(node: any): void {
   }
 }
 
+export interface ReconfigureOptions {
+  top?: Variable;
+  model?: Model;
+  key?: (role: Role) => any;
+}
+
 /**
  * Create a tree from a graph after any discarding layout markers.
+ *
+ * `options` consists of an object with optional `top`, `model`, and `key` properties.
  * If `key` is provided, triples are sorted according to the key.
+ *
+ * @param graph - The `Graph` object to reconfigure.
+ * @param options - An object with optional `top`, `model`, and `key` properties.
  */
 export function reconfigure(
   graph: Graph,
-  top: Variable = null,
-  model: Model = null,
-  key: (role: Role) => any = null,
+  options: ReconfigureOptions = {},
 ): Tree {
+  const { top, model, key } = options;
   const p = cloneDeep(graph);
   for (const entry of p.epidata.entries()) {
     const epilist = entry[1];
@@ -596,7 +598,12 @@ export function reconfigure(
   if (key != null) {
     p.triples = sortBy(p.triples, (x) => key(x[1]));
   }
-  return configure(p, top, model);
+  return configure(p, { top, model });
+}
+
+export interface RearrangeOptions {
+  key?: (role: Role) => any;
+  attributesFirst?: boolean;
 }
 
 /**
@@ -606,35 +613,30 @@ export function reconfigure(
  * those lists in-place using the `key` function, which accepts a role and
  * returns some sortable criterion.
  *
- * If the `attributesFirst` argument is `true`, attribute branches will
- * appear before any edges.
+ * `options` consists of an object with optional `key` and `attributesFirst` properties.
+ * - If the `attributesFirst` argument is `true`, attribute branches will appear before any edges.
+ * - `key` is a function used for sorting branches.
  *
  * Instance branches (`/`) always appear before any other branches.
  *
  * @param t - The tree to rearrange.
- * @param key - The function used for sorting branches.
- * @param attributesFirst - If `true`, attribute branches appear before edges.
+ * @param options - An object with optional `key` and `attributesFirst` properties.
  * @example
- * import { rearrange } from 'penman-js/layout';
- * import { Model } from 'penman-js/model';
- * import { PENMANCodec } from 'penman-js/codec';
+ * import { rearrange, Model, PENMANCodec } from 'penman-js';
  *
  * const c = new PENMANCodec();
  * const t = c.parse(`
  *   (s / see-01
  *      :ARG1 (c / cat)
  *      :ARG0 (d / dog))`);
- * rearrange(t, Model().canonicalOrder, true);
+ * rearrange(t, { key: Model().canonicalOrder, attributesFirst: true });
  * console.log(c.format(t));
  * // (s / see-01
  * //    :ARG0 (d / dog)
  * //    :ARG1 (c / cat))
  */
-export function rearrange(
-  t: Tree,
-  key: (role: Role) => any = null,
-  attributesFirst = false,
-): void {
+export function rearrange(t: Tree, options: RearrangeOptions = {}): void {
+  const { key = null, attributesFirst = false } = options;
   let variables = new Set();
   if (attributesFirst) {
     variables = new Set(t.nodes().map((n) => n[0]));
@@ -651,8 +653,8 @@ export function rearrange(
 }
 
 const _rearrange = (node: Node, key: (branch: Branch) => any) => {
-  const [, branches] = node;
-  let first = [];
+  const [, branches = []] = node;
+  let first: Branch[] = [];
   let rest = branches.slice();
   if (branches && branches[0][0] === '/') {
     first = branches.slice(0, 1);
@@ -673,17 +675,13 @@ const _rearrange = (node: Node, key: (branch: Branch) => any) => {
  * @param triple - The triple to check for a pushed variable.
  * @returns The variable pushed by `triple`, or `null` if none.
  * @example
- * import { decode } from 'penman-js';
- * import { getPushedVariable } from 'penman-js/layout';
+ * import { decode, getPushedVariable } from 'penman-js';
  *
  * const g = decode('(a / alpha :ARG0 (b / beta))');
  * console.log(getPushedVariable(g, ['a', ':instance', 'alpha'])); // Outputs: null
  * console.log(getPushedVariable(g, ['a', ':ARG0', 'b'])); // Outputs: 'b'
  */
-export function getPushedVariable(
-  g: Graph,
-  triple: BasicTriple,
-): Variable | null {
+export function getPushedVariable(g: Graph, triple: Triple): Variable | null {
   for (const epi of g.epidata.get(triple) ?? []) {
     if (epi instanceof Push) {
       return epi.variable;
@@ -708,7 +706,7 @@ export function getPushedVariable(
  * @param triple - The triple that does or does not appear inverted.
  * @returns `true` if `triple` appears inverted in graph `g`.
  */
-export function appearsInverted(g: Graph, triple: BasicTriple): boolean {
+export function appearsInverted(g: Graph, triple: Triple): boolean {
   const variables = g.variables();
   if (triple[1] === CONCEPT_ROLE || !variables.has(triple[2] as string)) {
     // attributes and instance triples should never be inverted
@@ -774,7 +772,7 @@ export function nodeContexts(g: Graph): Array<Variable | null> {
       eligible.push(triple[2] as Variable);
     }
 
-    if (!eligible.includes(stack[stack.length - 1])) {
+    if (!eligible.includes(stack[stack.length - 1] as string)) {
       break;
     } else {
       contexts[i] = stack[stack.length - 1];

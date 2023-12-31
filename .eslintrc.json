@@ -32,6 +32,7 @@
     "functional/immutable-data": "off",
     "functional/prefer-immutable-types": "off",
     "functional/no-throw-statements": "off",
+    "functional/no-mixed-types": "off",
     "functional/functional-parameters": "off",
     "functional/prefer-type-literal": "off",
     "no-constant-condition": "off",

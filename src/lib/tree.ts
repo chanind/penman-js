@@ -8,23 +8,32 @@ import type { Branch, Node, Variable } from './types';
 type _Step = [number[], Branch]; // see Tree.walk()
 type VarMap = { [key: string]: string };
 
+export interface TreeOptions {
+  /** Any metadata associated with the tree. */
+  metadata?: { [key: string]: string };
+}
+
 /**
  * A tree structure.
  *
  * A tree is essentially a node that contains other nodes, but this
  * Tree class is useful to contain any metadata and to provide
  * tree-based methods.
+ *
+ * `options` consists of the following:
+ *  - `metadata`: Any metadata associated with the tree.
  */
 export class Tree {
   node: Node;
   metadata: { [key: string]: string };
 
-  constructor(node: Node, metadata?: { [key: string]: string }) {
+  constructor(node: Node, options: TreeOptions = {}) {
+    const { metadata = {} } = options;
     if (!node) {
       throw new Error('Tree node cannot be null');
     }
     this.node = node;
-    this.metadata = metadata ?? {};
+    this.metadata = metadata;
   }
 
   /** @ignore */
@@ -34,6 +43,11 @@ export class Tree {
     }
     return isEqual(this.node, other);
   }
+  /**
+   * Return `true` if this tree is equal to other tree
+   *
+   * Equivalent to `__eq__` in Python
+   */
   equals(other: any): boolean {
     return this.__eq__(other);
   }
@@ -42,7 +56,8 @@ export class Tree {
   __repr__(): string {
     return `Tree(${this.node})`;
   }
-  repr(): string {
+  /** Equivalent to `__repr__` in Python */
+  pprint(): string {
     return this.__repr__();
   }
 
@@ -97,7 +112,7 @@ export class Tree {
     const varmap: VarMap = {};
     const used: Set<Variable> = new Set();
     for (const node of this.nodes()) {
-      const [variable, branches] = node;
+      const [variable, branches = []] = node;
       if (!(variable in varmap)) {
         const concept = branches.find((branch) => branch[0] === '/')?.[1];
         const pre = _defaultVariablePrefix(concept);
@@ -120,7 +135,7 @@ export class Tree {
 }
 
 const _format = (node: Node, level: number): string => {
-  const [variable, branches] = node;
+  const [variable, branches = []] = node;
   const next_level = level + 2;
   const indent = '\n' + ' '.repeat(next_level);
   const branch_strings = branches.map((branch) =>
@@ -141,7 +156,7 @@ const _formatBranch = (branch: Branch, level: number): string => {
 };
 
 const _nodes = (node: Node): Node[] => {
-  const [variable, branches] = node;
+  const [variable, branches = []] = node;
   let ns = variable ? [node] : [];
   for (const branch of branches) {
     const target = branch[1];
@@ -154,7 +169,7 @@ const _nodes = (node: Node): Node[] => {
 };
 
 function* _walk(node: Node, path: number[]) {
-  const branches = node[1];
+  const branches = node[1] ?? [];
   for (const [i, branch] of branches.entries()) {
     const curpath = path.concat([i]);
     yield [curpath, branch];
@@ -201,7 +216,7 @@ function isalpha(c: string): boolean {
 }
 
 const _mapVars = (node: Node, varmap: VarMap): Node => {
-  const [variable, branches] = node;
+  const [variable, branches = []] = node;
 
   const newbranches: Branch[] = [];
   for (const branch of branches) {

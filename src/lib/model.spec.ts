@@ -3,26 +3,23 @@ import test from 'ava';
 import { miniAmr } from './fixtures';
 import { Graph } from './graph';
 import { Model } from './model';
-import { BasicTriple } from './types';
+import { Triple } from './types';
 
 test('init', (t) => {
   const m = new Model();
   t.is(Object.keys(m.roles).length, 0);
-  const m1 = new Model(undefined, undefined, undefined, miniAmr().roles);
+  const m1 = new Model({ roles: miniAmr().roles });
   t.is(Object.keys(m1.roles).length, 7);
 });
 
 test('from_dict', (t) => {
   t.deepEqual(
     Model.fromDict(miniAmr()),
-    new Model(
-      undefined,
-      undefined,
-      undefined,
-      miniAmr().roles,
-      miniAmr().normalizations,
-      miniAmr().reifications,
-    ),
+    new Model({
+      roles: miniAmr().roles,
+      normalizations: miniAmr().normalizations,
+      reifications: miniAmr().reifications,
+    }),
   );
 });
 
@@ -259,11 +256,14 @@ test('reify', (t) => {
     ['_', ':ARG2', 'b'],
   ]);
   // ensure unique ids if variables is specified
-  t.deepEqual(m2.reify(['a', ':mod', 'b'], new Set(['a', 'b', '_'])), [
-    ['_2', ':ARG1', 'a'],
-    ['_2', ':instance', 'have-mod-91'],
-    ['_2', ':ARG2', 'b'],
-  ]);
+  t.deepEqual(
+    m2.reify(['a', ':mod', 'b'], { variables: new Set(['a', 'b', '_']) }),
+    [
+      ['_2', ':ARG1', 'a'],
+      ['_2', ':instance', 'have-mod-91'],
+      ['_2', ':ARG2', 'b'],
+    ],
+  );
 });
 
 test('isConceptDereifiable', (t) => {
@@ -279,10 +279,10 @@ test('isConceptDereifiable', (t) => {
 
 test('dereify', (t) => {
   // (a :ARG1-of (_ / age-01 :ARG2 b)) -> (a :age b)
-  const t1: BasicTriple = ['_', ':instance', 'have-mod-91'];
-  const t1b: BasicTriple = ['_', ':instance', 'chase-01'];
-  const t2: BasicTriple = ['_', ':ARG1', 'a'];
-  const t3: BasicTriple = ['_', ':ARG2', 'b'];
+  const t1: Triple = ['_', ':instance', 'have-mod-91'];
+  const t1b: Triple = ['_', ':instance', 'chase-01'];
+  const t2: Triple = ['_', ':ARG1', 'a'];
+  const t3: Triple = ['_', ':ARG2', 'b'];
   const m1 = new Model();
   t.throws(() => (m1 as any).dereify(t1));
   t.throws(() => (m1 as any).dereify(t1, t2));

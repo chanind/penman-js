@@ -1,7 +1,7 @@
 /** No-op semantic model definition. */
 
 import { Model } from '../model';
-import { BasicTriple } from '../types';
+import { Triple } from '../types';
 
 /**
  *  A no-operation model that mostly leaves things alone.
@@ -12,11 +12,11 @@ import { BasicTriple } from '../types';
  */
 class NoOpModel extends Model {
   /** Return *triple* (does not deinvert). */
-  deinvert(triple: BasicTriple): BasicTriple {
+  deinvert(triple: Triple): Triple {
     return triple;
   }
 }
 
-export const model = new NoOpModel();
+export const noopModel = new NoOpModel();
 
-export default model;
+export default noopModel;

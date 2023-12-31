@@ -17,11 +17,13 @@ const defCodec = new PENMANCodec(defModel);
 const amrCodec = new PENMANCodec(amrModel);
 
 const makeNorm =
-  (func: (x: any, model: Model) => any, model: Model) => (x: any) =>
-    func(x, model);
+  (func: (x: any, { model }: { model: Model }) => any, model: Model) =>
+  (x: any) =>
+    func(x, { model });
 
-const makeForm = (func: (x: any, indent?: number) => string) => (x: any) =>
-  func(x, null);
+const makeForm =
+  (func: (x: any, opts: { indent?: number | null }) => string) => (x: any) =>
+    func(x, { indent: null });
 
 test('canonicalize_roles_default_codec', (t) => {
   const parse = defCodec.parse;
@@ -59,8 +61,8 @@ test('canonicalize_roles_amr_codec', (t) => {
 test('reify_edges_default_codec', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = makeNorm(reifyEdges, defModel);
-  const form = makeForm((g: Graph, indent?: number) =>
-    defCodec.encode(g, undefined, indent),
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    defCodec.encode(g, { indent }),
   );
 
   let r = norm(decode('(a / alpha :mod 5)'));
@@ -73,8 +75,8 @@ test('reify_edges_default_codec', (t) => {
 test('reify_edges_amr_codec', (t) => {
   const decode = amrCodec.decode.bind(amrCodec);
   const norm = makeNorm(reifyEdges, amrModel);
-  const form = makeForm((g: Graph, indent?: number) =>
-    amrCodec.encode(g, undefined, indent),
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    amrCodec.encode(g, { indent }),
   );
 
   let r = norm(decode('(a / alpha :mod 5)'));
@@ -99,8 +101,8 @@ test('reify_edges_amr_codec', (t) => {
 test('dereify_edges_default_codec', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = makeNorm(dereifyEdges, defModel);
-  const form = makeForm((g: Graph, indent?: number) =>
-    defCodec.encode(g, undefined, indent),
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    defCodec.encode(g, { indent }),
   );
 
   let r = norm(
@@ -123,8 +125,8 @@ test('dereify_edges_default_codec', (t) => {
 test('dereify_edges_amr_codec', (t) => {
   const decode = amrCodec.decode.bind(amrCodec);
   const norm = makeNorm(dereifyEdges, amrModel);
-  const form = makeForm((g: Graph, indent?: number) =>
-    amrCodec.encode(g, undefined, indent),
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    amrCodec.encode(g, { indent }),
   );
 
   const r = norm(
@@ -146,8 +148,8 @@ test('dereify_edges_amr_codec', (t) => {
 test('reify_attributes', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = reifyAttributes;
-  const form = makeForm((g: Graph, indent?: number) =>
-    defCodec.encode(g, undefined, indent),
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    defCodec.encode(g, { indent }),
   );
 
   let r = norm(decode('(a / alpha :mod 5)'));
@@ -159,9 +161,12 @@ test('reify_attributes', (t) => {
 
 test('indicate_branches', (t) => {
   const decode = defCodec.decode.bind(defCodec);
-  const norm = makeNorm(indicateBranches, defModel);
-  const form = makeForm((g: Graph, indent?: number) =>
-    defCodec.encode(g, undefined, indent),
+  const norm = makeNorm(
+    (x, { model }: { model: Model }) => indicateBranches(x, model),
+    defModel,
+  );
+  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+    defCodec.encode(g, { indent }),
   );
 
   let r = norm(decode('(a / alpha :mod 5)'));
@@ -179,7 +184,7 @@ test('issue_35', (t) => {
   // don't want to test and guarantee some particular output
 
   let g = amrCodec.decode('(a / alpha :mod b :mod (b / beta))');
-  g = reifyEdges(g, amrModel);
+  g = reifyEdges(g, { model: amrModel });
   t.deepEqual(g.triples, [
     ['a', ':instance', 'alpha'],
     ['_', ':ARG1', 'a'],

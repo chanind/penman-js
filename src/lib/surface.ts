@@ -5,15 +5,24 @@
 import { Epidatum } from './epigraph';
 import { SurfaceError } from './exceptions';
 import { Graph } from './graph';
-import { BasicTriple } from './types';
+import { Triple } from './types';
 import { ArrayKeysMap, lstrip } from './utils';
+
+export interface AlignmentMarkerOptions {
+  prefix?: string;
+}
 
 export class AlignmentMarker extends Epidatum {
   indices: number[];
-  prefix: string | null;
+  prefix?: string;
 
-  constructor(indices: number[], prefix: string | null = null) {
+  /**
+   * `options` consists of the following:
+   *  - `prefix`: The prefix of the alignment marker.
+   */
+  constructor(indices: number[], options: AlignmentMarkerOptions = {}) {
     super();
+    const { prefix } = options;
     this.indices = indices;
     this.prefix = prefix;
   }
@@ -24,7 +33,7 @@ export class AlignmentMarker extends Epidatum {
    * @param s - The string representation of the alignment marker.
    * @returns An instance of Alignment or RoleAlignment based on the provided string.
    * @example
-   * import { Alignment, RoleAlignment } from 'penman-js/surface';
+   * import { Alignment, RoleAlignment } from 'penman-js';
    *
    * Alignment.fromString('1');
    * // Alignment([1])
@@ -34,7 +43,7 @@ export class AlignmentMarker extends Epidatum {
    */
   static fromString<T extends AlignmentMarker>(s: string): T {
     let _s = lstrip(s, '~');
-    let prefix: string | null = null;
+    let prefix: string | undefined;
     try {
       // ...~e
       if (_s[0].match(/[a-zA-Z]/)) {
@@ -57,7 +66,7 @@ export class AlignmentMarker extends Epidatum {
       throw new SurfaceError(`invalid alignments: ${s}`);
     }
 
-    const obj = new this(indices, prefix);
+    const obj = new this(indices, { prefix });
     return <T>obj;
   }
 
@@ -70,8 +79,8 @@ export class AlignmentMarker extends Epidatum {
     const name = this.constructor.name;
     return `${name}(${args})`;
   }
-
-  repr(): string {
+  /** Equivalent to `__repr__` in Python */
+  pprint(): string {
     return this.__repr__();
   }
 
@@ -92,7 +101,7 @@ export class RoleAlignment extends AlignmentMarker {
   mode = 1;
 }
 
-type _Alignments = ArrayKeysMap<BasicTriple, AlignmentMarker>;
+type _Alignments = ArrayKeysMap<Triple, AlignmentMarker>;
 
 /**
  * Return a mapping of triples to alignments in graph `g`.
@@ -100,8 +109,7 @@ type _Alignments = ArrayKeysMap<BasicTriple, AlignmentMarker>;
  * @param g - A `Graph` object containing alignment data.
  * @returns An object mapping `Triple` objects to their corresponding `Alignment` objects, if any.
  * @example
- * import { decode } from 'penman-js';
- * import { alignments } from 'penman-js/surface';
+ * import { decode, alignments } from 'penman-js';
  *
  * const g = decode(
  *   `(c / chase-01~4
@@ -125,8 +133,7 @@ export function alignments(g: Graph): _Alignments {
  * @param g - A `Graph` object containing role alignment data.
  * @returns An object mapping `Triple` objects to their corresponding `RoleAlignment` objects, if any.
  * @example
- * import { decode } from 'penman-js';
- * import { roleAlignments } from 'penman-js/surface';
+ * import { decode, roleAlignments } from 'penman-js';
  *
  * const g = decode(
  *   `(c / chase-01~4
@@ -147,7 +154,7 @@ const _getAlignments = (
   g: Graph,
   alignmentType: typeof AlignmentMarker,
 ): _Alignments => {
-  const alns = new ArrayKeysMap<BasicTriple, AlignmentMarker>();
+  const alns = new ArrayKeysMap<Triple, AlignmentMarker>();
   for (const [triple, epidata] of g.epidata) {
     for (const epidatum of epidata) {
       if (epidatum instanceof alignmentType) {

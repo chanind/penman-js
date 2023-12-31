@@ -50,7 +50,7 @@ test('__or__', (t) => {
       ['a', ':ARG', 'b'],
       ['b', ':instance', 'beta'],
     ],
-    'b',
+    { top: 'b' },
   );
   const g2 = q.__or__(r);
 
@@ -144,7 +144,7 @@ test('variables', (t) => {
     new Set(['e2', 'x1', '_1', 'e3']),
   );
   t.deepEqual(
-    new Graph([['a', ':ARG', 'b']], 'b').variables(),
+    new Graph([['a', ':ARG', 'b']], { top: 'b' }).variables(),
     new Set(['a', 'b']),
   );
 });
@@ -167,13 +167,13 @@ test('edges', (t) => {
     ['e2', ':ARG2', 'e3'],
     ['e3', ':ARG1', 'x1'],
   ]);
-  t.deepEqual(g.edges('e2'), [
+  t.deepEqual(g.edges({ source: 'e2' }), [
     ['e2', ':ARG1', 'x1'],
     ['e2', ':ARG2', 'e3'],
   ]);
-  t.deepEqual(g.edges('e3'), [['e3', ':ARG1', 'x1']]);
-  t.deepEqual(g.edges(null, null, 'e3'), [['e2', ':ARG2', 'e3']]);
-  t.deepEqual(g.edges(null, ':RSTR'), [['_1', ':RSTR', 'x1']]);
+  t.deepEqual(g.edges({ source: 'e3' }), [['e3', ':ARG1', 'x1']]);
+  t.deepEqual(g.edges({ target: 'e3' }), [['e2', ':ARG2', 'e3']]);
+  t.deepEqual(g.edges({ role: ':RSTR' }), [['_1', ':RSTR', 'x1']]);
 });
 
 test('edges_issue_81', (t) => {
@@ -192,11 +192,11 @@ test('edges_issue_81', (t) => {
 test('attributes', (t) => {
   const g = new Graph(x1()[1]);
   t.deepEqual(g.attributes(), [['x1', ':CARG', '"Abrams"']]);
-  t.deepEqual(g.attributes('x1'), [['x1', ':CARG', '"Abrams"']]);
-  t.deepEqual(g.attributes(null, null, '"Abrams"'), [
+  t.deepEqual(g.attributes({ source: 'x1' }), [['x1', ':CARG', '"Abrams"']]);
+  t.deepEqual(g.attributes({ target: '"Abrams"' }), [
     ['x1', ':CARG', '"Abrams"'],
   ]);
-  t.deepEqual(g.attributes(null, ':instance'), []);
+  t.deepEqual(g.attributes({ role: ':instance' }), []);
 });
 
 test('attributes_issue_29', (t) => {

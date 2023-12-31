@@ -2,6 +2,10 @@ import PENMANCodec, { toc as PENMANCodecToc } from '../generated/classes/lib_cod
 import Decode, { toc as decodeToc } from '../generated/functions/lib_codec.decode.mdx';
 import Iterdecode, { toc as iterdecodeToc } from '../generated/functions/lib_codec.iterdecode.mdx';
 import Encode, { toc as encodeToc } from '../generated/functions/lib_codec.encode.mdx';
+import Dump, { toc as dumpToc } from '../generated/functions/lib_codec.dump.mdx';
+import Dumps, { toc as dumpsToc } from '../generated/functions/lib_codec.dumps.mdx';
+import Load, { toc as loadToc } from '../generated/functions/lib_codec.load.mdx';
+import Loads, { toc as loadsToc } from '../generated/functions/lib_codec.loads.mdx';
 
 # codec
 
@@ -12,10 +16,23 @@ ___
 <Iterdecode />
 ___
 <PENMANCodec />
+___
+<Dump />
+___
+<Dumps />
+___
+<Load />
+___
+<Loads />
+
 
 export const toc = [
     ...encodeToc,
     ...decodeToc,
     ...iterdecodeToc,
-    ...PENMANCodecToc
+    ...PENMANCodecToc,
+    ...dumpToc,
+    ...dumpsToc,
+    ...loadToc,
+    ...loadsToc,
 ];

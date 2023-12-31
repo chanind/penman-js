@@ -3,21 +3,15 @@
 [![ci](https://img.shields.io/github/actions/workflow/status/chanind/penman-js/ci.yaml?branch=main)](https://github.com/chanind/penman-js)
 [![Npm](https://img.shields.io/npm/v/penman-js)](https://www.npmjs.com/package/penman-js)
 
-Javascript port of [Penman Python library](https://github.com/goodmami/penman) for Abstract Meaning Representation (AMR).
+Javascript port of the [Penman Python library](https://github.com/goodmami/penman) for Abstract Meaning Representation (AMR).
 
 Full docs: [https://chanind.github.io/penman-js](https://chanind.github.io/penman-js/)
 
 ## About
 
-This library is a manual port of the Penman Python library, with identical method names and import structure. However, as Python and Javascript do have some differences, this port has the following changes:
+This library is a manual port of the [Penman Python library](https://github.com/goodmami/penman), with similar method names and import structure. All functionality available in the original library should also be available in this library, with similar usage and semantics. The Python library should still be considered the main project for new features.
 
-- all snake-case function names from the Python library are renamed using camel-case to fit Javascript naming conventions. For example, the function `get_pushed_variable` from Python is renamed to `getPushedVariable` in Javascript.
-- Python tuples are replaced with Javascript arrays
-- Python dictionaries are replaced with Javascript `Map`
-- functions only support positional arguments, since Javascript doesn't support keyword arguments like Python
-- All imports use `penman-js` as the base instead of `penman`. For instance, `from penman.graph import Graph` in Python is replaced with `import { Graph } from "penman-js/graph";` in Javascript.
-
-This library is not officially part of the Penman project.
+The goal of this project is to bring the power of the Penman Python library's AMR parsing and generation to the browser and Node.js. This project does not provide a CLI interface for manipulating AMR, since the Python library already provides that functionality.
 
 ## Installation
 
@@ -29,20 +23,43 @@ npm install penman-js
 
 ## Basic usage
 
+The most faithful representation of AMR text in the library is the `Tree` class. The `parse` function turns an AMR text string into a `Tree`, and `format` does the reverse, turning a `Tree` back into a string.
+
+```js
+import { parse, format } from 'penman-js';
+
+const t = penman.parse('(w / want-01 :ARG0 (b / boy) :ARG1 (g / go :ARG0 b))');
+const [variable, branches] = t.node;
+console.log(variable); // ouput: 'w'
+console.log(branches.length); // output: 3
+const [role, target] = branches[2];
+console.log(role); // output: ':ARG1'
+console.log(format(target));
+// (g / go
+//     :ARG0 b)
+```
+
+Users wanting to interact with graphs might find the `decode` and
+`encode` functions a good place to start.
+
 ```js
 import { encode, decode } from 'penman-js';
+const g = penman.decode('(w / want-01 :ARG0 (b / boy) :ARG1 (g / go :ARG0 b))');
+console.log(g.top);
+// 'w'
+console.log(g.triples.length);
+// 6
+console.log(g.instances().map((instance) => instance[2]));
+// ['want-01', 'boy', 'go']
 
-g = decode('(b / bark-01 :ARG0 (d / dog))');
-g.triples;
-// [('b', ':instance', 'bark-01'), ('b', ':ARG0', 'd'), ('d', ':instance', 'dog')]
-g.edges();
-// [Edge(source='b', role=':ARG0', target='d')]
-
-// JS doesn't support keyword parameters, so `undefined` must be passed for optional params
-console.log(encode(g, undefined, undefined, 3));
-// (b / bark-01
-//    :ARG0 (d / dog))
+console.log(encode(g, { top: 'b' }));
+// (b / boy
+//    :ARG0-of (w / want-01
+//                :ARG1 (g / go
+//                         :ARG0 b)))
 ```
+
+See [https://chanind.github.io/penman-js](https://chanind.github.io/penman-js/) for full docs.
 
 ## Contributing
 

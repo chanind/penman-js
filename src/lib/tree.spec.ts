@@ -48,7 +48,7 @@ test('_init__', (t) => {
   t.deepEqual(t1.node, empty_node());
   t.deepEqual(t1.metadata, {});
 
-  const t2 = new Tree(simple_node(), { snt: 'Alpha.' });
+  const t2 = new Tree(simple_node(), { metadata: { snt: 'Alpha.' } });
   t.deepEqual(t2.node, simple_node());
   t.deepEqual(t2.metadata, { snt: 'Alpha.' });
 });

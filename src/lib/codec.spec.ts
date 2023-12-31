@@ -166,7 +166,7 @@ test('decode_alignments', (t) => {
   const expectedRoleAlignments = new ArrayKeysMap();
   expectedRoleAlignments.set(
     ['a', ':ARG', 'b'],
-    new surface.RoleAlignment([1, 2], 'e.'),
+    new surface.RoleAlignment([1, 2], { prefix: 'e.' }),
   );
   t.deepEqual(surface.roleAlignments(g2), expectedRoleAlignments);
 
@@ -239,7 +239,7 @@ test('encode', (t) => {
   t.is(codec.encode(g), '()');
 
   // unlabeled single node
-  g = new Graph([], 'a');
+  g = new Graph([], { top: 'a' });
   t.is(codec.encode(g), '(a)');
 
   // labeled node
@@ -255,11 +255,11 @@ test('encode', (t) => {
   t.is(codec.encode(g), '(a : b)');
   const epidata = new EpidataMap();
   epidata.set(['a', ':', 'b'], [new layout.Push('b')]);
-  g = new Graph([['a', ':', 'b']], undefined, epidata);
+  g = new Graph([['a', ':', 'b']], { epidata });
   t.is(codec.encode(g), '(a : (b))');
 
   // inverted unlabeled edge
-  g = new Graph([['a', '', 'b']], 'b');
+  g = new Graph([['a', '', 'b']], { top: 'b' });
   t.is(codec.encode(g), '(b :-of a)');
 
   // labeled edge to unlabeled node
@@ -267,7 +267,7 @@ test('encode', (t) => {
   t.is(codec.encode(g), '(a :ARG b)');
 
   // inverted edge
-  g = new Graph([['a', 'ARG', 'b']], 'b');
+  g = new Graph([['a', 'ARG', 'b']], { top: 'b' });
   t.is(codec.encode(g), '(b :ARG-of a)');
 });
 
@@ -304,9 +304,9 @@ test('encode issue 61', (t) => {
       ['i', ':instance', 'i'],
       ['i2', ':ARG0', 'i'],
     ],
-    'i2',
+    { top: 'i2' },
   );
-  t.is(codec.encode(g, undefined, null), '(i2 / i :ARG0 (i / i))');
+  t.is(codec.encode(g, { indent: null }), '(i2 / i :ARG0 (i / i))');
 });
 
 test('encode issue 67', (t) => {
@@ -318,13 +318,13 @@ test('encode issue 67', (t) => {
     ['h', ':ARG2', 'a'],
   ];
   t.is(
-    codec.encode(new Graph(triples, 'a')),
+    codec.encode(new Graph(triples, { top: 'a' })),
     `(a / activist
    :ARG0-of (h / have-org-role-91)
    :ARG2-of h)`,
   );
   t.is(
-    codec.encode(new Graph(triples, 'h')),
+    codec.encode(new Graph(triples, { top: 'h' })),
     `(h / have-org-role-91
    :ARG0 (a / activist)
    :ARG2 a)`,
