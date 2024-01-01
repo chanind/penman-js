@@ -39,8 +39,7 @@ console.log(g.triples.length);
 console.log(g.instances().map((instance) => instance[2]));
 // ['want-01', 'boy', 'go']
 
-// JS doesn't support keyword parameters, so `undefined` must be passed for optional params
-console.log(encode(g, undefined, undefined, 'b'));
+console.log(encode(g, { top: 'b' }));
 // (b / boy
 //    :ARG0-of (w / want-01
 //                :ARG1 (g / go

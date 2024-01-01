@@ -1,13 +1,25 @@
 import { isAtomic, Tree } from './tree';
-import { BasicTriple, Branch, Node } from './types';
+import { Branch, Node, Triple } from './types';
 import { lstrip } from './utils';
+
+export interface FormatOptions {
+  /** How to indent formatted strings. */
+  indent?: number | null;
+  /** If `true`, put initial attributes on the first line. */
+  compact?: boolean;
+}
 
 /**
  * Format a `Tree` object into a PENMAN string.
  *
+ * `options` consists of the following:
+ *  - `indent`: How to indent formatted strings.
+ *  - `compact`: If `true`, put initial attributes on the first line.
+ *
  * @param tree - A Tree object.
- * @param indent - How to indent formatted strings.
- * @param compact - If `true`, put initial attributes on the first line.
+ * @param options - Optional arguments.
+ * @param options.indent - How to indent formatted strings.
+ * @param options.compact - If `true`, put initial attributes on the first line.
  * @returns The PENMAN-serialized string of the `Tree` object.
  * @example
  * import { format } from 'penman-js';
@@ -22,9 +34,9 @@ import { lstrip } from './utils';
  */
 export const format = (
   tree: Tree | Node,
-  indent: number | null | undefined = -1,
-  compact = false,
+  options: FormatOptions = {},
 ): string => {
+  const { indent = -1, compact = false } = options;
   if (!(tree instanceof Tree)) {
     tree = new Tree(tree);
   }
@@ -36,11 +48,20 @@ export const format = (
   return parts.join('\n');
 };
 
+export interface FormatTriplesOptions {
+  /** whether or not to indent the results, default true */
+  indent?: boolean;
+}
+
 /**
  * Return the formatted triple conjunction of `triples`.
  *
+ * `options` consists of the following:
+ *  - `indent`: Whether or not to indent the results, default true.
+ *
  * @param triples - An iterable of triples.
- * @param indent - How to indent formatted strings.
+ * @param options - Optional arguments.
+ * @param options.indent - Whether or not to indent the results, default true.
  * @returns The serialized triple conjunction of `triples`.
  * @example
  * import { decode, formatTriples } from 'penman-js';
@@ -52,9 +73,10 @@ export const format = (
  * // instance(d, dog)
  */
 export const formatTriples = (
-  triples: BasicTriple[],
-  indent = true,
+  triples: Triple[],
+  options: FormatTriplesOptions = {},
 ): string => {
+  const { indent = true } = options;
   const delim = indent ? ' ^\n' : ' ^ ';
   // need to remove initial : on roles for triples
   const conjunction = triples.map(
@@ -76,7 +98,7 @@ const _formatNode = (
   if (!variable) {
     return '()'; // empty node
   }
-  if (!edges.length) {
+  if (!edges?.length) {
     return `(${variable})`; // var-only node
   }
   // determine appropriate joiner based on value of indent
@@ -118,7 +140,7 @@ const _formatNode = (
  */
 const _formatEdge = (
   edge: Branch,
-  indent: number | null,
+  indent: number | null | undefined,
   column: number,
   vars: Set<string>,
 ): string => {

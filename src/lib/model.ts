@@ -4,12 +4,25 @@
 
 import { ModelError } from './exceptions';
 import { CONCEPT_ROLE, Graph } from './graph';
-import { BasicTriple, Constant, Role, Target, Variable } from './types';
+import { Constant, Role, Target, Triple, Variable } from './types';
 
 export type _ReificationSpec = [Role, Constant, Role, Role];
 type _Reified = [Constant, Role, Role];
 type _Dereified = [Role, Role, Role];
-type _Reification = [BasicTriple, BasicTriple, BasicTriple];
+type _Reification = [Triple, Triple, Triple];
+
+export interface ModelOptions {
+  topVariable?: Variable;
+  topRole?: Role;
+  conceptRole?: Role;
+  roles?: { [key: Role]: any };
+  normalizations?: { [key: Role]: Role };
+  reifications?: Array<_ReificationSpec>;
+}
+
+export interface ModelReifyOptions {
+  variables?: Set<Variable>;
+}
 
 /**
  * Represents a semantic model for Penman graphs.
@@ -17,8 +30,8 @@ type _Reification = [BasicTriple, BasicTriple, BasicTriple];
  * The model defines elements such as valid roles and transformations.
  */
 export class Model {
-  reifications: { [key: Role]: Array<_Reified> };
-  dereifications: { [key: Constant]: Array<_Dereified> };
+  reifications: Map<Role, Array<_Reified>>;
+  dereifications: Map<Constant, Array<_Dereified>>;
   topVariable: Variable;
   topRole: Role;
   conceptRole: Role;
@@ -27,52 +40,55 @@ export class Model {
   private _roleRe: RegExp;
 
   /**
-   * @param topVariable - The variable of the graph's top.
-   * @param topRole - The role linking the graph's top to the top node.
-   * @param conceptRole - The role associated with node concepts.
-   * @param roles - A mapping of roles to associated data.
-   * @param normalizations - A mapping of roles to normalized roles.
-   * @param reifications - An array of 4-tuples used to define reifications.
+   * `options` consists of the following:
+   *  - `topVariable`: The variable of the graph's top.
+   *  - `topRole`: The role linking the graph's top to the top node.
+   *  - `conceptRole`: The role associated with node concepts.
+   *  - `roles`: A mapping of roles to associated data.
+   *  - `normalizations`: A mapping of roles to normalized roles.
+   *  - `reifications`: An array of 4-tuples used to define reifications.
+   *
+   * @param options - Optional arguments.
+   * @param options.topVariable - The variable of the graph's top.
+   * @param options.topRole - The role linking the graph's top to the top node.
+   * @param options.conceptRole - The role associated with node concepts.
+   * @param options.roles - A mapping of roles to associated data.
+   * @param options.normalizations - A mapping of roles to normalized roles.
+   * @param options.reifications - An array of 4-tuples used to define reifications.
    */
-  constructor(
-    topVariable: Variable = 'top',
-    topRole: Role = ':TOP',
-    conceptRole: Role = CONCEPT_ROLE,
-    roles: { [key: Role]: any } | null = null,
-    normalizations: { [key: Role]: Role } | null = null,
-    reifications: Array<_ReificationSpec> | null = null,
-  ) {
+  constructor(options: ModelOptions = {}) {
+    const {
+      topVariable = 'top',
+      topRole = ':TOP',
+      conceptRole = CONCEPT_ROLE,
+      roles,
+      normalizations,
+      reifications,
+    } = options;
     this.topVariable = topVariable;
     this.topRole = topRole;
     this.conceptRole = conceptRole;
 
-    if (roles) {
-      roles = { ...roles };
-    }
     this.roles = roles ? { ...roles } : {};
     this._roleRe = new RegExp(
       '^(' +
         Object.keys(this.roles).concat([topRole, conceptRole]).join('|') +
         ')$',
     );
+    this.normalizations = normalizations ? { ...normalizations } : {};
 
-    if (normalizations) {
-      normalizations = { ...normalizations };
-    }
-    this.normalizations = normalizations || {};
-
-    const reifs: { [key: Role]: Array<_Reified> } = {};
-    const deifs: { [key: Constant]: Array<_Dereified> } = {};
+    const reifs: Map<Role, Array<_Reified>> = new Map();
+    const deifs: Map<Constant, Array<_Dereified>> = new Map();
     if (reifications) {
       for (const [role, concept, source, target] of reifications) {
         if (reifs[role] === undefined) {
           reifs[role] = [];
         }
         reifs[role].push([concept, source, target]);
-        if (deifs[concept] === undefined) {
-          deifs[concept] = [];
+        if (!deifs.has(concept)) {
+          deifs.set(concept, []);
         }
-        deifs[concept].push([role, source, target]);
+        deifs.get(concept)!.push([role, source, target]);
       }
     }
     this.reifications = reifs;
@@ -97,14 +113,14 @@ export class Model {
    * Instantiate a model from a dictionary.
    */
   static fromDict(d: { [key: string]: any }): Model {
-    return new Model(
-      d.topVariable,
-      d.topRole,
-      d.conceptRole,
-      d.roles,
-      d.normalizations,
-      d.reifications,
-    );
+    return new Model({
+      topVariable: d.topVariable,
+      topRole: d.topRole,
+      conceptRole: d.conceptRole,
+      roles: d.roles,
+      normalizations: d.normalizations,
+      reifications: d.reifications,
+    });
   }
 
   /**
@@ -158,7 +174,7 @@ export class Model {
    * @param triple - The triple to invert.
    * @returns The inverted or deinverted triple.
    */
-  invert(triple: BasicTriple): BasicTriple {
+  invert(triple: Triple): Triple {
     const [source, role, target] = triple;
     const inverse = this.invertRole(role);
     // casting is just for the benefit of the type checker; it does
@@ -178,7 +194,7 @@ export class Model {
    * @param triple - The triple to de-invert if necessary.
    * @returns The de-inverted triple, or the original triple if it wasn't inverted.
    */
-  deinvert(triple: BasicTriple): BasicTriple {
+  deinvert(triple: Triple): Triple {
     if (this.isRoleInverted(triple[1])) {
       triple = this.invert(triple);
     }
@@ -232,7 +248,7 @@ export class Model {
    * @param triple - The triple to be canonicalized.
    * @returns The canonicalized triple.
    */
-  canonicalize(triple: BasicTriple): BasicTriple {
+  canonicalize(triple: Triple): Triple {
     const [source, role, target] = triple;
     const canonical = this.canonicalizeRole(role);
     return [source, canonical, target];
@@ -256,14 +272,18 @@ export class Model {
    * If the role of `triple` does not have a defined reification,
    * a `ModelError` exception is raised.
    *
+   * `options` consists of the following:
+   *  - `variables`: A set of variables that should not be used for the reified node's variable.
+   *
    * @param triple - The triple to reify.
-   * @param variables - A set of variables that should not be used for
-   *                    the reified node's variable.
+   * @param options - Optional arguments.
+   * @param options.variables - A set of variables that should not be used for the reified node's variable.
    * @returns The 3-tuple of triples that reify `triple`.
    * @throws {ModelError} - If the role of `triple` does not have a defined reification.
    */
 
-  reify(triple: BasicTriple, variables?: Set<Variable>): _Reification {
+  reify(triple: Triple, options: ModelReifyOptions = {}): _Reification {
+    const { variables } = options;
     const [source, role, target] = triple;
     if (!(role in this.reifications)) {
       throw new ModelError(`'${role}' cannot be reified`);
@@ -287,10 +307,10 @@ export class Model {
   }
 
   /**
-   * Return ``True`` if *concept* can be dereified.
+   * Return `true` if `concept` can be dereified.
    */
   isConceptDereifiable(concept: Target): boolean {
-    return concept in this.dereifications;
+    return this.dereifications.has(concept);
   }
 
   /**
@@ -311,10 +331,10 @@ export class Model {
    * @throws {ValueError} - If `instanceTriple` is not valid or if any triple has a different source.
    */
   dereify(
-    instanceTriple: BasicTriple,
-    sourceTriple: BasicTriple,
-    targetTriple: BasicTriple,
-  ): BasicTriple {
+    instanceTriple: Triple,
+    sourceTriple: Triple,
+    targetTriple: Triple,
+  ): Triple {
     if (instanceTriple[1] !== CONCEPT_ROLE) {
       throw new Error('second argument is not an instance triple');
     }
@@ -329,10 +349,10 @@ export class Model {
     const sourceRole = sourceTriple[1];
     const targetRole = targetTriple[1];
 
-    if (!(concept in this.dereifications)) {
+    if (!this.dereifications.has(concept)) {
       throw new ModelError(`${concept} cannot be dereified`);
     }
-    for (const [role, source, target] of this.dereifications[concept]) {
+    for (const [role, source, target] of this.dereifications.get(concept)!) {
       if (source === sourceRole && target === targetRole) {
         return [sourceTriple[2] as Variable, role, targetTriple[2]];
       } else if (target === sourceRole && source === targetRole) {
@@ -392,8 +412,7 @@ export class Model {
    * @param graph - The graph to check for errors.
    * @returns An object describing detected model errors in the graph.
    * @example
-   * import { model } from 'penman-js/models/amr';
-   * import { Graph } from 'penman-js/graph';
+   * import { amrModel, Graph } from 'penman-js';
    *
    * const g = new Graph([
    *   ['a', ':instance', 'alpha'],
@@ -401,7 +420,7 @@ export class Model {
    *   ['b', ':instance', 'beta']
    * ]);
    *
-   * for (const [context, errors] of Object.entries(model.errors(g))) {
+   * for (const [context, errors] of Object.entries(amrModel.errors(g))) {
    *   console.log(context, errors);
    * }
    *
@@ -413,7 +432,7 @@ export class Model {
     if (graph.triples.length === 0) {
       err[''] = ['graph is empty'];
     } else {
-      const g: { [key: string]: BasicTriple[] } = {};
+      const g: { [key: string]: Triple[] } = {};
       for (const triple of graph.triples) {
         const [variable, role] = triple;
         if (!this.hasRole(role)) {
@@ -427,10 +446,10 @@ export class Model {
       if (!graph.top) {
         err[''] = ['top is not set'];
       }
-      if (!(graph.top in g)) {
+      if (!((graph.top as string) in g)) {
         err[''] = ['top is not a variable in the graph'];
       }
-      const reachable = _dfs(g, graph.top);
+      const reachable = _dfs(g, graph.top as string);
       const unreachable = Object.keys(g).filter((k) => !reachable.has(k));
       for (const uvar of unreachable) {
         for (const triple of g[uvar]) {
@@ -443,7 +462,7 @@ export class Model {
   }
 }
 
-function _dfs(g: { [key: string]: BasicTriple[] }, top: string): Set<string> {
+function _dfs(g: { [key: string]: Triple[] }, top: string): Set<string> {
   // just keep source and target of edge relations
   const q: { [key: string]: Set<string> } = {};
   for (const [variable, triples] of Object.entries(g)) {
@@ -464,7 +483,7 @@ function _dfs(g: { [key: string]: BasicTriple[] }, top: string): Set<string> {
   const visited = new Set<string>();
   const agenda = [top];
   while (agenda.length > 0) {
-    const cur = agenda.pop();
+    const cur = agenda.pop()!;
     if (!visited.has(cur)) {
       visited.add(cur);
       for (const t of q[cur]) {

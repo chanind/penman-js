@@ -160,13 +160,13 @@ const reifications: _ReificationSpec[] = [
  * The AMR model is an instance of `Model` using
  * the roles, normalizations, and reifications defined in this module.
  */
-export const model = new Model(
-  'top',
-  ':TOP',
-  ':instance',
+export const amrModel = new Model({
+  topVariable: 'top',
+  topRole: ':TOP',
+  conceptRole: ':instance',
   roles,
   normalizations,
   reifications,
-);
+});
 
-export default model;
+export default amrModel;

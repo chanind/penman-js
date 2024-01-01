@@ -1,7 +1,7 @@
 import test from 'ava';
 
-import { format, formatTriples } from './_format';
-import { BasicTriple, Node } from './types';
+import { format, formatTriples } from './format';
+import { Node, Triple } from './types';
 
 test('format', (t) => {
   const input: Node = [
@@ -16,7 +16,7 @@ test('format', (t) => {
 });
 
 test('format_triples', (t) => {
-  const triples: BasicTriple[] = [
+  const triples: Triple[] = [
     ['b', 'instance', 'bark-01'],
     ['b', 'ARG0', 'd'],
     ['d', 'instance', 'dog'],

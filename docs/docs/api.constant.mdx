@@ -1,11 +1,7 @@
-import FLOAT, {toc as FloatToc} from '../generated/variables/lib_constant.FLOAT.mdx'
-import INTEGER, {toc as IntegerToc} from '../generated/variables/lib_constant.INTEGER.mdx'
-import NULL, {toc as NullToc} from '../generated/variables/lib_constant.NULL.mdx'
-import STRING, {toc as StringToc} from '../generated/variables/lib_constant.STRING.mdx'
-import SYMBOL, {toc as SymbolToc} from '../generated/variables/lib_constant.SYMBOL.mdx'
-import Quote, {toc as QuoteToc} from '../generated/functions/lib_constant.quote.mdx'
-import Evaluate, {toc as EvaluateToc} from '../generated/functions/lib_constant.evaluate.mdx'
-import Type, {toc as TypeToc} from '../generated/functions/lib_constant.type-1.mdx'
+import ConstantTypeEnum, {toc as ConstantTypeEnumToc} from '../generated/enums/lib_constant.ConstantType.mdx'
+import QuoteConstant, {toc as QuoteConstantToc} from '../generated/functions/lib_constant.quoteConstant.mdx'
+import EvaluateConstant, {toc as EvaluateConstantToc} from '../generated/functions/lib_constant.evaluateConstant.mdx'
+import ConstantType, {toc as ConstantTypeToc} from '../generated/functions/lib_constant.constantType-1.mdx'
 
 # constant
 
@@ -19,28 +15,17 @@ value, is used when an attribute is missing its target, but aside from
 robustness measures it is not a supported datatype.
 
 
-
-
-<Quote />
+<QuoteConstant />
 ___
-<Evaluate />
+<EvaluateConstant />
 ___
-<Type />
+<ConstantType />
 ___
-
-<FLOAT />
-<INTEGER />
-<NULL />
-<STRING />
-<SYMBOL />
+<ConstantTypeEnum />
 
 export const toc = [
-  ...QuoteToc,
-  ...EvaluateToc,
-  ...TypeToc,
-  ...FloatToc,
-  ...IntegerToc,
-  ...NullToc,
-  ...StringToc,
-  ...SymbolToc,
+  ...QuoteConstantToc,
+  ...EvaluateConstantToc,
+  ...ConstantTypeToc,
+  ...ConstantTypeEnumToc,
 ]

@@ -8,8 +8,23 @@ import { log } from './logger';
 import { Model } from './model';
 import { Alignment, alignments, RoleAlignment } from './surface';
 import { isAtomic, Tree } from './tree';
-import { BasicTriple, Branch, Node, Target, Variable } from './types';
+import { Branch, Node, Target, Triple, Variable } from './types';
 import { partition } from './utils';
+
+export interface CanonicalizeRolesOptions {
+  /** A model defining role normalizations. */
+  model?: Model;
+}
+
+export interface ReifyEdgesOptions {
+  /** A model defining reifications. */
+  model?: Model;
+}
+
+export interface DereifyEdgesOptions {
+  /** A model defining reifications. */
+  model?: Model;
+}
 
 /**
  * Normalize roles in `t` so they are canonical according to `model`.
@@ -18,35 +33,35 @@ import { partition } from './utils';
  * because the orientation of the pure graph's triples is not decided
  * until the graph is configured into a tree.
  *
+ * `options` consists of the following:
+ *  - `model`: A model defining role normalizations.
+ *
  * @param t - A `Tree` object.
- * @param model - A model defining role normalizations.
+ * @param options - Optional arguments.
+ * @param options.model - A model defining role normalizations.
  * @returns A new `Tree` object with canonicalized roles.
  * @example
- * import { PENMANCodec } from 'penman-js/codec';
- * import { model } from 'penman-js/models/amr';
- * import { canonicalizeRoles } from 'penman-js/transform';
+ * import { PENMANCodec, amrModel, canonicalizeRoles } from 'penman-js';
  *
  * const codec = new PENMANCodec();
  * const t = codec.parse('(c / chapter :domain-of 7)');
- * const canonicalizedTree = canonicalizeRoles(t, model);
+ * const canonicalizedTree = canonicalizeRoles(t, { model: amrModel });
  * console.log(codec.format(canonicalizedTree));
  * // (c / chapter
  * //    :mod 7)
  */
 export const canonicalizeRoles = (
   t: Tree,
-  model: Model | null = null,
+  options: CanonicalizeRolesOptions = {},
 ): Tree => {
-  if (model == null) {
-    model = new Model();
-  }
+  const { model = new Model() } = options;
   const tree = new Tree(_canonicalizeNode(t.node, model), t.metadata);
   log(`Canonicalized roles: ${tree}`);
   return tree;
 };
 
 const _canonicalizeNode = (node: Node, model: Model): Node => {
-  const [variable, edges] = node;
+  const [variable, edges = []] = node;
   const canonicalEdges: [string, Branch[]][] = [];
   for (const edge of edges) {
     const rawRole = edge[0];
@@ -65,32 +80,35 @@ const _canonicalizeNode = (node: Node, model: Model): Node => {
 /**
  * Reify all edges in `g` that have reifications in `model`.
  *
+ * `options` consists of the following:
+ *  - `model`: A model defining reifications.
+ *
  * @param g - A `Graph` object.
- * @param model - A model defining reifications.
+ * @param options - Optional arguments.
+ * @param options.model - A model defining reifications.
  * @returns A new `Graph` object with reified edges.
  * @example
- * import { PENMANCodec } from 'penman-js/codec';
- * import { model } from 'penman-js/models/amr';
- * import { reifyEdges } from 'penman-js/transform';
+ * import { PENMANCodec, amrModel, reifyEdges } from 'penman-js';
  *
  * const codec = new PENMANCodec(model);
  * const g = codec.decode('(c / chapter :mod 7)');
- * const reifiedGraph = reifyEdges(g, model);
+ * const reifiedGraph = reifyEdges(g, { model: amrModel });
  * console.log(codec.encode(reifiedGraph));
  * // (c / chapter
  * //    :ARG1-of (_ / have-mod-91
  * //                :ARG2 7))
  */
-export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
-  const vars = g.variables();
-  if (model == null) {
-    model = new Model();
-  }
+export const reifyEdges = (
+  g: Graph,
+  options: ReifyEdgesOptions = {},
+): Graph => {
+  const { model = new Model() } = options;
+  const variables = g.variables();
   const newEpidata = new EpidataMap(g.epidata.entries());
-  const newTriples: BasicTriple[] = [];
+  const newTriples: Triple[] = [];
   for (const triple of g.triples) {
     if (model.isRoleReifiable(triple[1])) {
-      const reified = model.reify(triple, vars);
+      const reified = model.reify(triple, { variables });
       let inTriple = reified[0];
       const nodeTriple = reified[1];
       let outTriple = reified[2];
@@ -99,7 +117,7 @@ export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
       }
       newTriples.push(inTriple, nodeTriple, outTriple);
       const variable = nodeTriple[0];
-      vars.add(variable);
+      variables.add(variable);
       // manage epigraphical markers
       newEpidata.set(inTriple, [new Push(variable)]);
       const oldEpis = newEpidata.has(triple) ? newEpidata.pop(triple) : [];
@@ -112,7 +130,7 @@ export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
       newTriples.push(triple);
     }
   }
-  g = new Graph(newTriples, null, newEpidata, g.metadata);
+  g = new Graph(newTriples, { epidata: newEpidata, metadata: g.metadata });
   log(`Reified edges: ${g}`);
   return g;
 };
@@ -120,36 +138,39 @@ export const reifyEdges = (g: Graph, model: Model | null = null): Graph => {
 /**
  * Dereify edges in `g` that have reifications in `model`.
  *
+ * `options` consists of the following:
+ *  - `model`: A model defining reifications.
+ *
  * @param g - A `Graph` object.
- * @param model - A model defining reifications.
+ * @param options - Optional arguments.
+ * @param options.model - A model defining reifications.
  * @returns A new `Graph` object with dereified edges.
  * @example
- * import { PENMANCodec } from 'penman-js/codec';
- * import { model } from 'penman-js/models/amr';
- * import { dereifyEdges } from 'penman-js/transform';
+ * import { PENMANCodec, amrModel, dereifyEdges } from 'penman-js';
  *
- * const codec = new PENMANCodec({ model });
+ * const codec = new PENMANCodec({ model: amrModel });
  * const g = codec.decode(
  *   `(c / chapter
  *      :ARG1-of (_ / have-mod-91
  *                  :ARG2 7))`
  * );
- * const dereifiedGraph = dereifyEdges(g, model);
+ * const dereifiedGraph = dereifyEdges(g, { model: amrModel });
  * console.log(codec.encode(dereifiedGraph));
  * // (c / chapter
  * //    :mod 7)
  */
-export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
-  if (model == null) {
-    model = new Model();
-  }
+export const dereifyEdges = (
+  g: Graph,
+  options: DereifyEdgesOptions = {},
+): Graph => {
+  const { model = new Model() } = options;
   const agenda: _Dereification = _dereifyAgenda(g, model);
   const newEpidata = new EpidataMap(g.epidata.entries());
-  const newTriples: BasicTriple[] = [];
+  const newTriples: Triple[] = [];
   for (const triple of g.triples) {
     const variable = triple[0];
     if (agenda.has(variable)) {
-      const [first, dereified, epidata] = agenda.get(variable);
+      const [first, dereified, epidata] = agenda.get(variable)!;
       // only insert at the first triple so the dereification
       // appears in the correct location
       if (triple === first) {
@@ -163,7 +184,7 @@ export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
       newTriples.push(triple);
     }
   }
-  g = new Graph(newTriples, null, newEpidata, g.metadata);
+  g = new Graph(newTriples, { epidata: newEpidata, metadata: g.metadata });
   log(`Dereified edges: ${g}`);
   return g;
 };
@@ -174,11 +195,9 @@ export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
  * @param g - A `Graph` object.
  * @returns A new `Graph` object with reified attributes.
  * @example
- * import { PENMANCodec } from 'penman-js/codec';
- * import { model } from 'penman-js/models/amr';
- * import { reifyAttributes } from 'penman-js/transform';
+ * import { PENMANCodec, amrModel, reifyAttributes } from 'penman-js';
  *
- * const codec = new PENMANCodec(model);
+ * const codec = new PENMANCodec(amrModel);
  * const g = codec.decode('(c / chapter :mod 7)');
  * const reifiedGraph = reifyAttributes(g);
  * console.log(codec.encode(reifiedGraph));
@@ -188,7 +207,7 @@ export const dereifyEdges = (g: Graph, model: Model | null = null): Graph => {
 export const reifyAttributes = (g: Graph): Graph => {
   const variables = g.variables();
   const newEpidata = new EpidataMap(g.epidata.entries());
-  const newTriples: BasicTriple[] = [];
+  const newTriples: Triple[] = [];
   let i = 2;
   for (const triple of g.triples) {
     const [source, role, target] = triple;
@@ -200,8 +219,8 @@ export const reifyAttributes = (g: Graph): Graph => {
         i += 1;
       }
       variables.add(variable);
-      const roleTriple: BasicTriple = [source, role, variable];
-      const nodeTriple: BasicTriple = [variable, CONCEPT_ROLE, target];
+      const roleTriple: Triple = [source, role, variable];
+      const nodeTriple: Triple = [variable, CONCEPT_ROLE, target];
       newTriples.push(roleTriple, nodeTriple);
       // manage epigraphical markers
       const oldEpis = newEpidata.has(triple) ? newEpidata.pop(triple) : [];
@@ -212,7 +231,7 @@ export const reifyAttributes = (g: Graph): Graph => {
       newTriples.push(triple);
     }
   }
-  g = new Graph(newTriples, null, newEpidata, g.metadata);
+  g = new Graph(newTriples, { epidata: newEpidata, metadata: g.metadata });
   log(`Reified attributes: ${g}`);
   return g;
 };
@@ -229,17 +248,15 @@ export const reifyAttributes = (g: Graph): Graph => {
  * @param model - A model defining the TOP role.
  * @returns A new `Graph` object with TOP roles indicating tree branches.
  * @example
- * import { PENMANCodec } from 'penman-js/codec';
- * import { model } from 'penman-js/models/amr';
- * import { indicateBranches } from 'penman-js/transform';
+ * import { PENMANCodec, amrModel, indicateBranches } from 'penman-js';
  *
- * const codec = new PENMANCodec(model);
+ * const codec = new PENMANCodec(amrModel);
  * const g = codec.decode(`
  *   (w / want-01
  *      :ARG0 (b / boy)
  *      :ARG1 (g / go-02
  *               :ARG0 b))`);
- * const branchedGraph = indicateBranches(g, model);
+ * const branchedGraph = indicateBranches(g, amrModel);
  * console.log(codec.encode(branchedGraph));
  * // (w / want-01
  * //    :TOP b
@@ -249,7 +266,7 @@ export const reifyAttributes = (g: Graph): Graph => {
  * //             :ARG0 b))
  */
 export const indicateBranches = (g: Graph, model: Model): Graph => {
-  const newTriples: BasicTriple[] = [];
+  const newTriples: Triple[] = [];
   for (const t of g.triples) {
     const push = g.epidata.get(t)?.find((epi) => epi instanceof Push) as Push;
     if (push != null) {
@@ -264,7 +281,7 @@ export const indicateBranches = (g: Graph, model: Model): Graph => {
     }
     newTriples.push(t);
   }
-  g = new Graph(newTriples, null, g.epidata, g.metadata);
+  g = new Graph(newTriples, { epidata: g.epidata, metadata: g.metadata });
   log(`Indicated branches: ${g}`);
   return g;
 };
@@ -320,7 +337,7 @@ const _edgeMarkers = (epidata: Epidata): [Epidata, Epidata] => {
   const nodeEpis: Epidatum[] = [];
   for (const epi of roleEpis) {
     if (epi instanceof RoleAlignment) {
-      nodeEpis.push(new Alignment(epi.indices, epi.prefix));
+      nodeEpis.push(new Alignment(epi.indices, { prefix: epi.prefix }));
     } else {
       // discard things we can't convert
     }
@@ -339,8 +356,8 @@ const _edgeMarkers = (epidata: Epidata): [Epidata, Epidata] => {
 type _Dereification = Map<
   Variable,
   [
-    BasicTriple, // inverted triple of reification
-    BasicTriple, // dereified triple
+    Triple, // inverted triple of reification
+    Triple, // dereified triple
     Epidatum[], // computed epidata
   ]
 >;
@@ -349,8 +366,8 @@ const _dereifyAgenda = (g: Graph, model: Model): _Dereification => {
   const alns = alignments(g);
   const agenda: _Dereification = new Map();
   const fixed: Set<Target> = new Set([g.top]);
-  const inst: Map<Variable, BasicTriple> = new Map();
-  const other: Map<Variable, BasicTriple[]> = new Map();
+  const inst: Map<Variable, Triple> = new Map();
+  const other: Map<Variable, Triple[]> = new Map();
 
   for (const triple of g.triples) {
     const [variable, role, tgt] = triple;
@@ -374,7 +391,7 @@ const _dereifyAgenda = (g: Graph, model: Model): _Dereification => {
     ) {
       // passed initial checks
       // now figure out which other edge is the first one
-      let [first, second] = other.get(variable);
+      let [first, second] = other.get(variable)!;
       if (getPushedVariable(g, second) === variable) {
         [first, second] = [second, first];
       }
@@ -384,7 +401,7 @@ const _dereifyAgenda = (g: Graph, model: Model): _Dereification => {
         const epidata: Epidatum[] = [];
         if (alns.has(instance)) {
           const aln = alns.get(instance);
-          epidata.push(new RoleAlignment(aln.indices, aln.prefix));
+          epidata.push(new RoleAlignment(aln.indices, { prefix: aln.prefix }));
         }
         epidata.push(
           ...(g.epidata

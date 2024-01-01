@@ -25,7 +25,9 @@ const amrModel = () => {
 
 test('interpret', (t) => {
   const t1 = codec.parse('(a / A)');
-  t.true(interpret(t1).equals(new Graph([['a', ':instance', 'A']], 'a')));
+  t.true(
+    interpret(t1).equals(new Graph([['a', ':instance', 'A']], { top: 'a' })),
+  );
 
   const t2 = codec.parse('(a / A :consist-of (b / B))');
   t.true(
@@ -36,19 +38,19 @@ test('interpret', (t) => {
           ['b', ':consist', 'a'],
           ['b', ':instance', 'B'],
         ],
-        'a',
+        { top: 'a' },
       ),
     ),
   );
   t.true(
-    interpret(t2, amrModel()).equals(
+    interpret(t2, { model: amrModel() }).equals(
       new Graph(
         [
           ['a', ':instance', 'A'],
           ['a', ':consist-of', 'b'],
           ['b', ':instance', 'B'],
         ],
-        'a',
+        { top: 'a' },
       ),
     ),
   );
@@ -62,7 +64,7 @@ test('rearrange', (t) => {
                       :ARG1 (d / delta))
             :ARG0-of d
             :ARG1 (e / epsilon))`);
-  rearrange(t1, model.originalOrder);
+  rearrange(t1, { key: model.originalOrder });
   t.is(
     codec.format(t1),
     `(a / alpha
@@ -73,7 +75,7 @@ test('rearrange', (t) => {
    :ARG1 (e / epsilon))`,
   );
 
-  rearrange(t1, model.canonicalOrder.bind(model));
+  rearrange(t1, { key: model.canonicalOrder.bind(model) });
   t.is(
     codec.format(t1),
     `(a / alpha
@@ -87,7 +89,7 @@ test('rearrange', (t) => {
 test('configure', (t) => {
   const g = codec.decode('(a / A)');
   t.deepEqual(configure(g), new Tree(['a', [['/', 'A']]]));
-  t.throws(() => configure(g, 'A'), { instanceOf: LayoutError });
+  t.throws(() => configure(g, { top: 'A' }), { instanceOf: LayoutError });
 
   const g1 = codec.decode('(a / A :consist-of (b / B))');
   t.deepEqual(
@@ -101,7 +103,7 @@ test('configure', (t) => {
     ]),
   );
   t.deepEqual(
-    configure(g1, 'b'),
+    configure(g1, { top: 'b' }),
     new Tree([
       'b',
       [
@@ -114,7 +116,7 @@ test('configure', (t) => {
   const amrCodec = new PENMANCodec(amrModel());
   const g2 = amrCodec.decode('(a / A :consist-of (b / B))');
   t.deepEqual(
-    configure(g2, undefined, amrModel()),
+    configure(g2, { model: amrModel() }),
     new Tree([
       'a',
       [
@@ -124,7 +126,7 @@ test('configure', (t) => {
     ]),
   );
   t.deepEqual(
-    configure(g2, 'b', amrModel()),
+    configure(g2, { top: 'b', model: amrModel() }),
     new Tree([
       'b',
       [
@@ -222,7 +224,7 @@ test('reconfigure', (t) => {
   // canonical order reconfiguration can also shift things like
   // inverted arguments
   t.deepEqual(
-    reconfigure(g, undefined, undefined, model.canonicalOrder.bind(model)),
+    reconfigure(g, { key: model.canonicalOrder.bind(model) }),
     new Tree([
       'a',
       [
@@ -251,7 +253,7 @@ test('issue 90', (t) => {
       ['i2', ':instance', 'i'],
       ['i', ':ARG0', 'i2'],
     ],
-    'i',
+    { top: 'i' },
   );
   t.deepEqual(
     reconfigure(g),
@@ -343,7 +345,7 @@ test('issue 92', (t) => {
     ]),
   );
   t.deepEqual(
-    configure(g, 'b'),
+    configure(g, { top: 'b' }),
     new Tree([
       'b',
       [

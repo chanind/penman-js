@@ -27,25 +27,14 @@ export class LayoutError extends PenmanError {}
  * @noInheritDoc
  */
 export class DecodeError extends PenmanError {
-  message: string;
-  filename: string;
-  lineno: number;
-  offset: number;
-  text: string;
-
   constructor(
-    message: string = null,
-    filename: string = null,
-    lineno: number = null,
-    offset: number = null,
-    text: string = null,
+    message: string,
+    public filename?: string,
+    public lineno?: number,
+    public offset?: number,
+    public text?: string,
   ) {
     super(message);
-    this.message = message;
-    this.filename = filename;
-    this.lineno = lineno;
-    this.offset = offset;
-    this.text = text;
   }
 
   toString(): string {

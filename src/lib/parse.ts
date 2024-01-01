@@ -1,7 +1,7 @@
 import { lex, PENMAN_RE, Token, TokenIterator, TRIPLE_RE } from './_lexer';
 import { debug, warn } from './logger';
 import { Tree } from './tree';
-import { BasicTriple, Branch, Node, Target } from './types';
+import { Branch, Node, Target, Triple } from './types';
 
 /**
  * Parse a PENMAN-notation string `s` into its tree structure.
@@ -66,7 +66,7 @@ export function* iterparse(
  * }
  */
 
-export const parseTriples = (s: string): BasicTriple[] => {
+export const parseTriples = (s: string): Triple[] => {
   const tokens = lex(s, TRIPLE_RE);
   return _parseTriples(tokens);
 };
@@ -113,7 +113,7 @@ const _parseNode = (tokens: TokenIterator): Node => {
 
   let variable: string | null = null;
   let concept: string | null = null;
-  const edges = [];
+  const edges: Branch[] = [];
 
   if (tokens.peek()[0] !== 'RPAREN') {
     variable = tokens.expect('SYMBOL')[1];
@@ -137,7 +137,7 @@ const _parseNode = (tokens: TokenIterator): Node => {
   }
 
   tokens.expect('RPAREN');
-  return [variable, edges];
+  return [variable as string, edges];
 };
 
 /**
@@ -172,9 +172,9 @@ const _parseEdge = (tokens: TokenIterator): Branch => {
   return [role, target];
 };
 
-const _parseTriples = (tokens: TokenIterator): BasicTriple[] => {
+const _parseTriples = (tokens: TokenIterator): Triple[] => {
   let target: Target;
-  const triples = [];
+  const triples: Triple[] = [];
   let stripCaret = false;
   while (true) {
     let role = tokens.expect('SYMBOL')[1];

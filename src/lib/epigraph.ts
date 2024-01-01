@@ -1,6 +1,6 @@
 /** Base classes for epigraphical markers. */
 
-import { BasicTriple } from './types';
+import { Triple } from './types';
 import { ArrayKeysMap } from './utils';
 
 export class Epidatum {
@@ -16,4 +16,4 @@ export class Epidatum {
 
 export type Epidata = Epidatum[];
 
-export class EpidataMap extends ArrayKeysMap<BasicTriple, Epidata> {}
+export class EpidataMap extends ArrayKeysMap<Triple, Epidata> {}

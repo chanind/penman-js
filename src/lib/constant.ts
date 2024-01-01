@@ -3,20 +3,13 @@
 import { ConstantError } from './exceptions';
 import { Constant } from './types';
 
-export enum Type {
-  SYMBOL = 'Symbol',
-  STRING = 'String',
-  INTEGER = 'Integer',
-  FLOAT = 'Float',
-  NULL = 'Null',
+export enum ConstantType {
+  SYMBOL = 'Symbol', //: Symbol constants (e.g., :code:`(... :polarity -)`)
+  STRING = 'String', //: String constants (e.g., :code:`(... :op1 "Kim")`)
+  INTEGER = 'Integer', //: Integer constants (e.g., :code:`(... :value 12)`)
+  FLOAT = 'Float', //: Float constants (e.g., :code:`(... :value 1.2)`)
+  NULL = 'Null', //: Empty values (e.g., :code:`(... :ARG1 )`)
 }
-
-// Make them available at the module level
-export const SYMBOL = Type.SYMBOL; //: Symbol constants (e.g., :code:`(... :polarity -)`)
-export const STRING = Type.STRING; //: String constants (e.g., :code:`(... :op1 "Kim")`)
-export const INTEGER = Type.INTEGER; //: Integer constants (e.g., :code:`(... :value 12)`)
-export const FLOAT = Type.FLOAT; //: Float constants (e.g., :code:`(... :value 1.2)`)
-export const NULL = Type.NULL; //: Empty values (e.g., :code:`(... :ARG1 )`)
 
 /**
  * Return the type of constant encoded by `constantString`.
@@ -24,36 +17,38 @@ export const NULL = Type.NULL; //: Empty values (e.g., :code:`(... :ARG1 )`)
  * @param constantString - The string representation of the constant.
  * @returns The type of the constant.
  * @example
- * import { type } from 'penman-js';
+ * import { constantType } from 'penman-js';
  *
- * console.log(type('-')); // Outputs: 'Symbol'
- * console.log(type('"foo"')); // Outputs: 'String'
- * console.log(type('1')); // Outputs: 'Integer'
- * console.log(type('1.2')); // Outputs: 'Float'
- * console.log(type('')); // Outputs: 'Null'
+ * console.log(constantType('-')); // Outputs: 'Symbol'
+ * console.log(constantType('"foo"')); // Outputs: 'String'
+ * console.log(constantType('1')); // Outputs: 'Integer'
+ * console.log(constantType('1.2')); // Outputs: 'Float'
+ * console.log(constantType('')); // Outputs: 'Null'
  */
-export const type = (constant_string: string | null | undefined): Type => {
+export const constantType = (
+  constant_string: string | null | undefined,
+): ConstantType => {
   if (constant_string == null) {
-    return Type.NULL;
+    return ConstantType.NULL;
   } else {
-    const value = evaluate(constant_string);
+    const value = evaluateConstant(constant_string);
     if (
       typeof value === 'string' &&
       constant_string.startsWith('"') &&
       constant_string.endsWith('"')
     ) {
-      return Type.STRING;
+      return ConstantType.STRING;
     } else if (typeof value === 'string') {
-      return Type.SYMBOL;
+      return ConstantType.SYMBOL;
     } else if (typeof value === 'number') {
       // check for integer
       if (value % 1 === 0) {
-        return Type.INTEGER;
+        return ConstantType.INTEGER;
       } else {
-        return Type.FLOAT;
+        return ConstantType.FLOAT;
       }
     } else {
-      return Type.NULL;
+      return ConstantType.NULL;
     }
   }
 };
@@ -72,18 +67,18 @@ export const type = (constant_string: string | null | undefined): Type => {
  * @param constantString - The string representation of the constant.
  * @returns The evaluated value of the constant.
  * @example
- * import { evaluate } from 'penman-js/constant';
+ * import { evaluateConstant } from 'penman-js';
  *
- * console.log(evaluate('-')); // Outputs: '-'
- * console.log(evaluate('"foo"')); // Outputs: 'foo'
- * console.log(evaluate('1')); // Outputs: 1
- * console.log(evaluate('1.2')); // Outputs: 1.2
- * console.log(evaluate('') === null); // Outputs: true
+ * console.log(evaluateConstant('-')); // Outputs: '-'
+ * console.log(evaluateConstant('"foo"')); // Outputs: 'foo'
+ * console.log(evaluateConstant('1')); // Outputs: 1
+ * console.log(evaluateConstant('1.2')); // Outputs: 1.2
+ * console.log(evaluateConstant('') === null); // Outputs: true
  */
-export const evaluate = (
+export const evaluateConstant = (
   constantString: string | null | undefined,
 ): Constant => {
-  let value: Constant = constantString;
+  let value: Constant = constantString ?? null;
   if (constantString == null || constantString === '') {
     value = null;
   } else {
@@ -120,16 +115,16 @@ export const evaluate = (
  * @param constant - The value to quote.
  * @returns The quoted string representation of the constant.
  * @example
- * import { quote } from 'penman-js/constant';
+ * import { quoteConstant } from 'penman-js';
  *
- * console.log(quote(null)); // Outputs: '""'
- * console.log(quote('')); // Outputs: '""'
- * console.log(quote('foo')); // Outputs: '"foo"'
- * console.log(quote('"foo"')); // Outputs: '"\\"foo\\""'
- * console.log(quote(1)); // Outputs: '"1"'
- * console.log(quote(1.5)); // Outputs: '"1.5"'
+ * console.log(quoteConstant(null)); // Outputs: '""'
+ * console.log(quoteConstant('')); // Outputs: '""'
+ * console.log(quoteConstant('foo')); // Outputs: '"foo"'
+ * console.log(quoteConstant('"foo"')); // Outputs: '"\\"foo\\""'
+ * console.log(quoteConstant(1)); // Outputs: '"1"'
+ * console.log(quoteConstant(1.5)); // Outputs: '"1.5"'
  */
-export const quote = (constant: Constant): string => {
+export const quoteConstant = (constant: Constant): string => {
   if (constant == null) {
     return '""';
   } else {

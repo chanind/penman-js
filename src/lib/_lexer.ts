@@ -120,6 +120,9 @@ export class TokenIterator {
       this._next = null;
     }
     this._last = current;
+    if (current == null) {
+      throw new Error('Unexpected end of input');
+    }
     return current;
   }
 
@@ -155,7 +158,7 @@ export class TokenIterator {
   }
 
   error(message: string, token?: Token): DecodeError {
-    let line: string | null = null;
+    let line: string | undefined;
     let lineno: number;
     let offset: number;
     if (token == null) {
@@ -226,7 +229,7 @@ const _lex = function* (
             `capturing group:\n${regex.source}`,
         );
       }
-      const token: Token = [typ, val, i, m.index, line];
+      const token: Token = [typ, val, i, m.index ?? 0, line];
       debug(`${token}`);
       yield token;
     }

@@ -9,10 +9,12 @@ import isEqual from 'lodash.isequal';
 import { EpidataMap } from './epigraph';
 import { GraphError } from './exceptions';
 import type {
-  BasicTriple,
+  Attribute,
   Constant,
+  Edge,
+  Instance,
   Role,
-  Target,
+  Triple,
   Triples,
   Variable,
 } from './types';
@@ -20,29 +22,30 @@ import { defaultdictPlusEqual } from './utils';
 
 export const CONCEPT_ROLE = ':instance';
 
-/**
- * Represents a relation between nodes or between a node and a constant.
- */
-export type Triple = [source: Variable, role: Role, target: Target];
-
-/**
- * A relation indicating the concept of a node.
- */
-export type Instance = [source: Variable, role: Role, target: Constant];
-
-/**
- * A relation between nodes.
- */
-export type Edge = [source: Variable, role: Role, target: Variable];
-
-/**
- * A relation between a node and a constant.
- */
-export type Attribute = [source: Variable, role: Role, target: Constant];
-
 // hacky way to get a unique id for each graph
 // since JS has no id() function like Python
 let graphIdCounter = 0;
+
+export interface GraphOptions {
+  /** The variable of the top node; if unspecified, the source of the first triple is used. */
+  top?: Variable | null;
+  /** A mapping of triples to epigraphical markers. */
+  epidata?: EpidataMap;
+  /** A mapping of metadata types to descriptions. */
+  metadata?: Record<string, string>;
+}
+
+export interface GraphAttributesOptions {
+  source?: Variable;
+  role?: Role;
+  target?: Constant;
+}
+
+export interface GraphEdgesOptions {
+  source?: Variable;
+  role?: Role;
+  target?: Constant;
+}
 
 /**
  * Represents a basic class for modeling a rooted, directed acyclic graph.
@@ -68,19 +71,28 @@ let graphIdCounter = 0;
 export class Graph {
   private _id: number;
   private _top: Variable | null;
+  epidata: EpidataMap;
+  metadata: Record<string, string>;
 
   /**
+   * `options` consists of the following:
+   *  - `top`: The variable of the top node; if unspecified, the source of the first triple is used.
+   *  - `epidata`: A mapping of triples to epigraphical markers.
+   *  - `metadata`: A mapping of metadata types to descriptions.
+   *
    * @param triples - An iterable of triples (either `Triple` objects or 3-tuples).
-   * @param top - The variable of the top node; if unspecified, the source of the first triple is used.
-   * @param epidata - A mapping of triples to epigraphical markers.
-   * @param metadata - A mapping of metadata types to descriptions.
+   * @param options - Optional arguments.
+   * @param options.top - The variable of the top node; if unspecified, the source of the first triple is used.
+   * @param options.epidata - A mapping of triples to epigraphical markers.
+   * @param options.metadata - A mapping of metadata types to descriptions.
    */
   constructor(
     public triples: Triples = [],
-    top: Variable = null,
-    public epidata: EpidataMap = new EpidataMap(),
-    public metadata: Record<string, string> = {},
+    options: GraphOptions = {},
   ) {
+    const { top = null, epidata = new EpidataMap(), metadata = {} } = options;
+    this.metadata = metadata;
+    this.epidata = epidata;
     this._top = top;
     // the following (a) creates a new list (b) validates that
     // they are triples, and (c) ensures roles begin with :
@@ -98,7 +110,8 @@ export class Graph {
     const name = this.constructor.name;
     return `<${name} object (top=${this.top}) at ${this._id}>`;
   }
-  repr() {
+  /** Equivalent to `__repr__` in Python */
+  pprint() {
     return this.__repr__();
   }
 
@@ -110,6 +123,11 @@ export class Graph {
     return `Graph(\n  ${triples},\n  epidata=${epidata})`;
   }
 
+  /**
+   * Return `true` if this graph is equal to other graph
+   *
+   * Equivalent to `__eq__` in Python
+   */
   equals(other: any) {
     if (!(other instanceof Graph)) {
       return false;
@@ -189,10 +207,10 @@ export class Graph {
       }
       const possible_sources = this.triples.map((t) => t[0]);
       const possible_targets = this.triples.map((t) => t[2]);
-      const possible_variables = new Set(
+      const possibleVariables = new Set(
         possible_targets.concat(possible_sources),
       );
-      if (!possible_variables.has(this._top)) {
+      if (!possibleVariables.has(this._top)) {
         this._top = null;
       }
       return this;
@@ -237,12 +255,14 @@ export class Graph {
   /**
    * Return edges filtered by their *source*, *role*, or *target*.
    * Edges don't include terminal triples (concepts or attributes).
+   *
+   * `options` consists of the following:
+   *  - `source`: The source variable to filter by.
+   *  - `role`: The role to filter by.
+   *  - `target`: The target variable to filter by.
    */
-  edges(
-    source: Variable | null = null,
-    role: Role | null = null,
-    target: Variable | null = null,
-  ): Edge[] {
+  edges(options: GraphEdgesOptions = {}): Edge[] {
+    const { source, role, target } = options;
     const variables = this.variables();
     return this._filterTriples(source, role, target).filter(
       ([_, rel, tgt]) => rel !== CONCEPT_ROLE && variables.has(tgt as any),
@@ -253,12 +273,14 @@ export class Graph {
    * Return attributes filtered by their *source*, *role*, or *target*.
    * Attributes don't include concept triples or those where the
    * target is a nonterminal.
+   *
+   * `options` consists of the following:
+   *  - `source`: The source variable to filter by.
+   *  - `role`: The role to filter by.
+   *  - `target`: The target constant to filter by.
    */
-  attributes(
-    source: Variable | null = null,
-    role: Role | null = null,
-    target: Constant | null = null,
-  ): Attribute[] {
+  attributes(options: GraphAttributesOptions = {}): Attribute[] {
+    const { source, role, target } = options;
     const variables = this.variables();
     return this._filterTriples(source, role, target).filter(
       ([_, rel, tgt]) => rel !== CONCEPT_ROLE && !variables.has(tgt as any),
@@ -268,11 +290,10 @@ export class Graph {
   /** Filter triples based on their source, role, and/or target. */
   private _filterTriples(
     // TODO: use proper typescript optional types instead of 'null'
-    source: Variable | null = null,
-    role: Role | null = null,
-    target: Constant | null = null,
-  ): BasicTriple[] {
-    // TODO: check for undefined OR null
+    source?: Variable | null,
+    role?: Role | null,
+    target?: Constant | null,
+  ): Triple[] {
     if (source == null && role == null && target == null) {
       return this.triples.slice();
     } else {
