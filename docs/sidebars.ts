@@ -27,6 +27,7 @@ const sidebars: SidebarsConfig = {
     'api.graph',
     'api.layout',
     'api.model',
+    'api.models',
     'api.surface',
     'api.transform',
     'api.tree',

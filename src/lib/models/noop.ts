@@ -3,13 +3,6 @@
 import { Model } from '../model';
 import { Triple } from '../types';
 
-/**
- *  A no-operation model that mostly leaves things alone.
- *
- *  This model is like the default `Model` except
- *  that `NoOpModel.deinvert` always returns the original
- *  triple, even if it was inverted.
- */
 class NoOpModel extends Model {
   /** Return *triple* (does not deinvert). */
   deinvert(triple: Triple): Triple {
@@ -17,6 +10,13 @@ class NoOpModel extends Model {
   }
 }
 
+/**
+ *  A no-operation model that mostly leaves things alone.
+ *
+ *  This model is like the default `Model` except
+ *  that `NoOpModel.deinvert` always returns the original
+ *  triple, even if it was inverted.
+ */
 export const noopModel = new NoOpModel();
 
 export default noopModel;
