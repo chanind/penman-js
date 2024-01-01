@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/chanind/penman-js/compare/v1.0.2...v2.0.0) (2024-01-01)
+
+
+* making API more javascripty (#2) ([cc75de2](https://github.com/chanind/penman-js/commit/cc75de27efee6afbb0566040ea9d87f5c5f1c0b4)), closes [#2](https://github.com/chanind/penman-js/issues/2)
+
+
+### BREAKING CHANGES
+
+* This PR removes all submodules, and instead exports everything only from the main index.ts entry point
+* This PR replaces any functions that have multiple optional parameters with an optional options object instead, to avoid needing to pass undefined for unused function arguments
+* This PR renames all constant module functions and exports by adding the word Constant to their names
+
 ## [1.0.2](https://github.com/chanind/penman-js/compare/v1.0.1...v1.0.2) (2023-12-26)
 
 
