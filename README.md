@@ -9,7 +9,7 @@ Full docs: [https://chanind.github.io/penman-js](https://chanind.github.io/penma
 
 ## About
 
-This library is a manual port of the [Penman Python library](https://github.com/goodmami/penman), with similar method names and import structure. All functionality available in the original library should also be available in this library, with similar usage and semantics. The Python library should still be considered the main project for new features.
+This library, including documentation, is a manual port of the [Penman Python library](https://github.com/goodmami/penman). All functionality available in the original library should also be available in this library, with similar usage and semantics. The Python library should still be considered the main project for new features. If you find that behavior differs between these libraries, please [open an issue](https://github.com/chanind/penman-js/issues).
 
 The goal of this project is to bring the power of the Penman Python library's AMR parsing and generation to the browser and Node.js. This project does not provide a CLI interface for manipulating AMR, since the Python library already provides that functionality.
 
