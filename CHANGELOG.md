@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/chanind/penman-js/compare/v2.0.0...v2.0.1) (2024-01-01)
+
+
+### Bug Fixes
+
+* stricter type checking ([ca276d8](https://github.com/chanind/penman-js/commit/ca276d89be32ce4dcf7cff0f937d433006893f70))
+
 # [2.0.0](https://github.com/chanind/penman-js/compare/v1.0.2...v2.0.0) (2024-01-01)
 
 
