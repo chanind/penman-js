@@ -71,4 +71,4 @@ This project is written in Typescript, using yarn for dependency management, esl
 
 ## Acknowledgements
 
-This library is a manual port of the Penman Python library, and as such, all credit for the original code goes to [github.com/goodmami/penman](https://github.com/goodmami/penman).
+This library, including documentation, is a manual port of the Penman Python library, and as such, all credit for the original code and docs work goes to [github.com/goodmami/penman](https://github.com/goodmami/penman).
