@@ -8,7 +8,7 @@ import { debug } from './logger';
 // These are the regex patterns for parsing. They must not have any
 // capturing groups. They are used during lexing and will be
 // checked by name during parsing.
-const PATTERNS = {
+const PATTERNS: { [key: string]: string } = {
   COMMENT: '#.*$',
   STRING: '"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"',
   ALIGNMENT: '~(?:[a-z].?)?[0-9]+(?:,[0-9]+)*',

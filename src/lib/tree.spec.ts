@@ -214,7 +214,7 @@ test('walk', (t) => {
 //         assert _vars(t) == ['a', 'b']
 
 test('reset_variables', (t) => {
-  const _vars = (t) => t.nodes().map(([v]) => v);
+  const _vars = (t: Tree) => t.nodes().map(([v]) => v);
 
   const t1 = new Tree(one_arg_node());
   t.deepEqual(_vars(t1), ['a', 'b']);

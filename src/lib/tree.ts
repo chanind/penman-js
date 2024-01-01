@@ -168,7 +168,7 @@ const _nodes = (node: Node): Node[] => {
   return ns;
 };
 
-function* _walk(node: Node, path: number[]) {
+function* _walk(node: Node, path: number[]): Generator<_Step> {
   const branches = node[1] ?? [];
   for (const [i, branch] of branches.entries()) {
     const curpath = path.concat([i]);

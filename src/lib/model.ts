@@ -81,10 +81,10 @@ export class Model {
     const deifs: Map<Constant, Array<_Dereified>> = new Map();
     if (reifications) {
       for (const [role, concept, source, target] of reifications) {
-        if (reifs[role] === undefined) {
-          reifs[role] = [];
+        if (!reifs.has(role)) {
+          reifs.set(role, []);
         }
-        reifs[role].push([concept, source, target]);
+        reifs.get(role)!.push([concept, source, target]);
         if (!deifs.has(concept)) {
           deifs.set(concept, []);
         }
@@ -258,7 +258,7 @@ export class Model {
    * Return `true` if `role` can be reified.
    */
   isRoleReifiable(role: Role): boolean {
-    return role in this.reifications;
+    return this.reifications.has(role);
   }
 
   /**
@@ -285,10 +285,10 @@ export class Model {
   reify(triple: Triple, options: ModelReifyOptions = {}): _Reification {
     const { variables } = options;
     const [source, role, target] = triple;
-    if (!(role in this.reifications)) {
+    if (!this.reifications.has(role)) {
       throw new ModelError(`'${role}' cannot be reified`);
     }
-    const [concept, sourceRole, targetRole] = this.reifications[role][0];
+    const [concept, sourceRole, targetRole] = this.reifications.get(role)![0];
 
     let variable = '_';
     if (variables) {

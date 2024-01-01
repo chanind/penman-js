@@ -61,7 +61,7 @@ test('canonicalize_roles_amr_codec', (t) => {
 test('reify_edges_default_codec', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = makeNorm(reifyEdges, defModel);
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     defCodec.encode(g, { indent }),
   );
 
@@ -75,7 +75,7 @@ test('reify_edges_default_codec', (t) => {
 test('reify_edges_amr_codec', (t) => {
   const decode = amrCodec.decode.bind(amrCodec);
   const norm = makeNorm(reifyEdges, amrModel);
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     amrCodec.encode(g, { indent }),
   );
 
@@ -101,7 +101,7 @@ test('reify_edges_amr_codec', (t) => {
 test('dereify_edges_default_codec', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = makeNorm(dereifyEdges, defModel);
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     defCodec.encode(g, { indent }),
   );
 
@@ -125,7 +125,7 @@ test('dereify_edges_default_codec', (t) => {
 test('dereify_edges_amr_codec', (t) => {
   const decode = amrCodec.decode.bind(amrCodec);
   const norm = makeNorm(dereifyEdges, amrModel);
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     amrCodec.encode(g, { indent }),
   );
 
@@ -148,7 +148,7 @@ test('dereify_edges_amr_codec', (t) => {
 test('reify_attributes', (t) => {
   const decode = defCodec.decode.bind(defCodec);
   const norm = reifyAttributes;
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     defCodec.encode(g, { indent }),
   );
 
@@ -165,7 +165,7 @@ test('indicate_branches', (t) => {
     (x, { model }: { model: Model }) => indicateBranches(x, model),
     defModel,
   );
-  const form = makeForm((g: Graph, { indent }: { indent?: number }) =>
+  const form = makeForm((g: Graph, { indent }: { indent?: number | null }) =>
     defCodec.encode(g, { indent }),
   );
 
