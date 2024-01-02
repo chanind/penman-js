@@ -1,8 +1,13 @@
 /** Definitions of tree structures. */
 
 import isEqual from 'lodash.isequal';
-import format from 'string-format';
+import formatString from 'string-format';
 
+import { format } from './format';
+import { Graph } from './graph';
+import { interpret } from './layout';
+import { Model } from './model';
+import { parse } from './parse';
 import type { Branch, Node, Variable } from './types';
 
 type _Step = [number[], Branch]; // see Tree.walk()
@@ -11,6 +16,17 @@ type VarMap = { [key: string]: string };
 export interface TreeOptions {
   /** Any metadata associated with the tree. */
   metadata?: { [key: string]: string };
+}
+
+export interface TreeToPenmanOptions {
+  /** How to indent formatted strings. */
+  indent?: number | null;
+  /** If `true`, put initial attributes on the first line. */
+  compact?: boolean;
+}
+
+export interface TreeToGraphOptions {
+  model?: Model;
 }
 
 /**
@@ -43,6 +59,95 @@ export class Tree {
     }
     return isEqual(this.node, other);
   }
+
+  /**
+   * Parse a penman-formatted string into a Tree.
+   *
+   * This is equivalent to the `parse()` function in the Python library
+   *
+   * @param penmanString - A string containing a single PENMAN-serialized tree.
+   * @example
+   * import { Tree } from 'penman-js';
+   *
+   * const tree = Tree.fromPenman(`
+   * (t / try-01
+   *     :ARG0 (d / dog)
+   *     :ARG1 (b / bark-01
+   *             :ARG0 d))
+   * `)
+   */
+  static fromPenman(penmanString: string): Tree {
+    return parse(penmanString);
+  }
+
+  /**
+   * Return this `Tree` as a PENMAN string.
+   *
+   * This is equivalent to `format()` in the Python library
+   *
+   * `options` consists of the following:
+   *  - `indent`: How to indent formatted strings.
+   *  - `compact`: If `true`, put initial attributes on the first line.
+   *
+   * @param options - Optional arguments.
+   * @param options.indent - How to indent formatted strings.
+   * @param options.compact - If `true`, put initial attributes on the first line.
+   * @returns The PENMAN-serialized string of the `Tree` object.
+   * @example
+   * import { Tree } from 'penman-js';
+   *
+   * const tree = new Tree(
+   *   ['b', [['/', 'bark-01'],
+   *          [':ARG0', ['d', [['/', 'dog']]]]]
+   *   ]
+   * );
+   *
+   * console.log(tree.toPenman());
+   * // (b / bark-01
+   * //   :ARG0 (d / dog))
+   */
+  toPenman(options: TreeToPenmanOptions = {}): string {
+    return format(this, options);
+  }
+
+  /**
+   * Return this tree as a graph using `model`.
+   *
+   * Tree interpretation is the process of transforming the nodes and
+   * edges of a tree into a directed graph. A semantic model determines
+   * which edges are inverted and how to deinvert them. If `model` is
+   * not provided, the default model will be used.
+   *
+   * This is equivalent to `interpret()` in the Python library.
+   *
+   * `options` consists of the following:
+   *  - `model`: a model to use for the transformation
+   *
+   * @param options - Optional arguments.
+   * @param options.model - a model to use for the transformation
+   * @returns The interpreted `Graph` object.
+   * @example
+   * import { Tree } from 'penman-js';
+   *
+   * const t = new Tree(['b', [
+   *   ['/', 'bark-01'],
+   *   ['ARG0', ['d', [
+   *     ['/', 'dog']
+   *   ]]]
+   * ]]);
+   *
+   * const g = t.toGraph();
+   * for (const triple of g.triples) {
+   *   console.log(triple);
+   * }
+   * // ['b', ':instance', 'bark-01']
+   * // ['b', ':ARG0', 'd']
+   * // ['d', ':instance', 'dog']
+   */
+  toGraph(options: TreeToGraphOptions = {}): Graph {
+    return interpret(this, options);
+  }
+
   /**
    * Return `true` if this tree is equal to other tree
    *
@@ -119,7 +224,7 @@ export class Tree {
         let i = 0;
         let newvar: string | null = null;
         while (newvar == null || used.has(newvar)) {
-          newvar = format(fmt, {
+          newvar = formatString(fmt, {
             prefix: pre,
             i: i,
             j: i === 0 ? '' : `${i + 1}`,
@@ -141,7 +246,7 @@ const _format = (node: Node, level: number): string => {
   const branch_strings = branches.map((branch) =>
     _formatBranch(branch, next_level),
   );
-  return format(
+  return formatString(
     '({}, [{}{}])',
     variable,
     indent,

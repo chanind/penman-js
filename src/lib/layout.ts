@@ -123,12 +123,12 @@ export interface InterpretOptions {
  * @example
  * import { Tree, interpret } from 'penman-js';
  *
- * const t = new Tree('b', [
+ * const t = new Tree(['b', [
  *   ['/', 'bark-01'],
- *   ['ARG0', new Tree('d', [
+ *   ['ARG0', ['d', [
  *     ['/', 'dog']
- *   ])]
- * ]);
+ *   ]]]
+ * ]]);
  *
  * const g = interpret(t);
  * for (const triple of g.triples) {
@@ -286,7 +286,7 @@ export interface ConfigureOptions {
  *
  * const t = configure(g);
  * console.log(t);
- * // Tree('b', [['/', 'bark-01'], [':ARG0', new Tree('d', [['/', 'dog']])]])
+ * // Tree('b', [['/', 'bark-01'], [':ARG0', ['d', [['/', 'dog']]]]])
  */
 export function configure(g: Graph, options: ConfigureOptions = {}): Tree {
   const { top = g.top, model = _default_model } = options;
