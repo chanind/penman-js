@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/chanind/penman-js/compare/v2.0.1...v2.0.2) (2024-01-02)
+
+
+### Bug Fixes
+
+* add author field to package.json ([1b94a6c](https://github.com/chanind/penman-js/commit/1b94a6c621e690e3bd8ddcb5aaabfd7d9b007074))
+
 ## [2.0.1](https://github.com/chanind/penman-js/compare/v2.0.0...v2.0.1) (2024-01-01)
 
 
