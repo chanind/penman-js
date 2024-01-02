@@ -6,6 +6,7 @@
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": "https://github.com/chanind/penman-js",
+  "author": "David Chanin <chanindav@gmail.com>",
   "license": "MIT",
   "keywords": [
     "AMR",
