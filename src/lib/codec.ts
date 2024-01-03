@@ -226,7 +226,7 @@ export class PENMANCodec {
  *
  * @param s - A string containing a single PENMAN-serialized graph.
  * @param options - Optional arguments.
- *   - `model` - The model used for interpreting the graph.
+ * @param options.model - The model used for interpreting the graph.
  * @returns The Graph object described by `s`.
  * @example
  * import { decode } from 'penman-js';
@@ -247,7 +247,7 @@ export function decode(s: string, options: DecodeOptions = {}): Graph {
  *
  * @param lines - A string or open file containing PENMAN-serialized graphs.
  * @param options - Optional arguments.
- *   - `model` - The model used for interpreting the graph.
+ * @param options.model - The model used for interpreting the graph.
  * @returns An iterator yielding `Graph` objects described in `lines`.
  * @example
  * import { iterdecode } from 'penman-js';
