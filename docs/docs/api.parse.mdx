@@ -1,0 +1,17 @@
+import Parse, {toc as ParseToc} from '../generated/functions/lib_parse.parse.mdx'
+import Iterparse, {toc as IterparseToc} from '../generated/functions/lib_parse.iterparse.mdx'
+import ParseTriples, {toc as ParseTriplesToc} from '../generated/functions/lib_parse.parseTriples.mdx'
+
+# parse
+
+<Parse />
+___
+<Iterparse />
+___
+<ParseTriples />
+
+export const toc = [
+  ...ParseToc,
+  ...IterparseToc,
+  ...ParseTriplesToc,
+]

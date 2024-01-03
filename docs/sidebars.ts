@@ -21,6 +21,8 @@ const sidebars: SidebarsConfig = {
       value: 'API Reference',
       className: 'sidebar-section-label',
     },
+    'api.parse',
+    'api.format',
     'api.codec',
     'api.constant',
     'api.exceptions',
