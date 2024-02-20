@@ -18,6 +18,16 @@ string is **formatting**, while the whole process is called
 ![The three stages of PENMAN structure](/img/representations.png)
 </div>
 
+These functions for moving between Penman notation, trees, and graphs are also
+available in Penman JS as methods on `Graph` and `Tree` objects, as below:
+
+- `Graph.fromPenman()`: equivalent of `decode()` above
+- `graph.toPenman()`: equivalent of `encode()` above
+- `graph.toTree()`: equivalent of `configure()` above
+- `Tree.fromPenman()`: equivalent of `parse()` above
+- `tree.toPenman()`: equivalent of `format()` above
+- `tree.toGraph()`: equivalent of `interpret()` above
+
 Conversion from a PENMAN string to a `Tree`, and
 vice versa, is straightforward and lossless. Conversion to a
 `Graph`, however, is potentially lossy as the

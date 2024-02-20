@@ -53,6 +53,46 @@ test('_init__', (t) => {
   t.deepEqual(t2.metadata, { snt: 'Alpha.' });
 });
 
+test('Tree.fromPenman', (t) => {
+  const tree = Tree.fromPenman('(b / bark-01 :ARG0 (d / dog))');
+  t.deepEqual(tree.node, [
+    'b',
+    [
+      ['/', 'bark-01'],
+      [':ARG0', ['d', [['/', 'dog']]]],
+    ],
+  ]);
+});
+
+test('toGraph', (t) => {
+  const tree = new Tree([
+    'b',
+    [
+      ['/', 'bark-01'],
+      ['ARG0', ['d', [['/', 'dog']]]],
+    ],
+  ]);
+
+  const g = tree.toGraph();
+  t.deepEqual(g.triples, [
+    ['b', ':instance', 'bark-01'],
+    ['b', ':ARG0', 'd'],
+    ['d', ':instance', 'dog'],
+  ]);
+});
+
+test('toPenman', (t) => {
+  const tree = new Tree([
+    'b',
+    [
+      ['/', 'bark-01'],
+      [':ARG0', ['d', [['/', 'dog']]]],
+    ],
+  ]);
+
+  t.deepEqual(tree.toPenman(), '(b / bark-01\n   :ARG0 (d / dog))');
+});
+
 //     def test_nodes(self, one_arg_node, reentrant):
 //         t = tree.Tree(one_arg_node)
 //         assert t.nodes() == [one_arg_node, ('b', [('/', 'beta')])]

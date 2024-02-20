@@ -6,8 +6,12 @@ import cloneDeep from 'lodash.clonedeep';
 import differenceWith from 'lodash.differencewith';
 import isEqual from 'lodash.isequal';
 
+import { decode, encode } from './codec';
 import { EpidataMap } from './epigraph';
 import { GraphError } from './exceptions';
+import { configure } from './layout';
+import { Model } from './model';
+import { Tree } from './tree';
 import type {
   Attribute,
   Constant,
@@ -45,6 +49,28 @@ export interface GraphEdgesOptions {
   source?: Variable;
   role?: Role;
   target?: Constant;
+}
+
+export interface GraphFromPenmanOptions {
+  /** The model used for interpreting the graph. */
+  model?: Model;
+}
+
+export interface GraphToTreeOptions {
+  /** If given, the node to use as the top in serialization.  */
+  top?: Variable;
+  /** The model used for interpreting the graph. */
+  model?: Model;
+}
+export interface GraphToPenmanOptions {
+  /** The model used for interpreting the graph. */
+  model?: Model;
+  /** If given, the node to use as the top in serialization.  */
+  top?: Variable;
+  /** How to indent formatted strings. */
+  indent?: number | null;
+  /** If `true`, put initial attributes on the first line. */
+  compact?: boolean;
 }
 
 /**
@@ -103,6 +129,99 @@ export class Graph {
     ]);
 
     this._id = graphIdCounter++;
+  }
+
+  /**
+   * Deserialize PENMAN-serialized string `s` into its Graph object.
+   *
+   * This is equivalent to `decode()` in the Python library
+   *
+   * `options` consists of the following:
+   *   - `model` - The model used for interpreting the graph.
+   *
+   * @param penmanString - A string containing a single PENMAN-serialized graph.
+   * @param options - Optional arguments.
+   * @param options.model - The model used for interpreting the graph.
+   * @returns The Graph object described by `penmanString`.
+   * @example
+   * import { Graph } from 'penman-js';
+   *
+   * const graph = Graph.fromPenman('(b / bark-01 :ARG0 (d / dog))');
+   */
+  static fromPenman(
+    penmanString: string,
+    options: GraphFromPenmanOptions = {},
+  ): Graph {
+    return decode(penmanString, options);
+  }
+
+  /**
+   * Create a tree from the graph by making as few decisions as possible.
+   *
+   * A graph created from a valid tree will
+   * contain epigraphical markers that describe how the triples of a
+   * graph are to be expressed in a tree, and thus configuring this
+   * tree requires only a single pass through the list of triples. If
+   * the markers are missing or out of order, or if the graph has been
+   * modified, then the process of creating the tree will have to make
+   * decisions about where to insert tree branches. These decisions are
+   * deterministic, but may result in a tree different than the one
+   * expected.
+   *
+   * This is equivalent to `configure()` in the Python library.
+   *
+   * `options` consists of the following:
+   * - `top` is the variable to use as the top of the graph; if `null`, the top of `g` will be used.
+   * - `model` is the `Model` used to configure the tree.
+   *
+   * @param options - Optional arguments.
+   * @param options.top` is the variable to use as the top of the graph; if `null`, the top of `g` will be used.
+   * @param options.model` is the `Model` used to configure the tree.
+   * @returns The `Tree` object.
+   * @example
+   * import { Graph } from 'penman-js';
+   *
+   * const g = new Graph([
+   *   ['b', ':instance', 'bark-01'],
+   *   ['b', ':ARG0', 'd'],
+   *   ['d', ':instance', 'dog']
+   * ]);
+   *
+   * const t = g.toTree());
+   * console.log(t);
+   * // Tree(['b', [['/', 'bark-01'], [':ARG0', ['d', [['/', 'dog']]]]]])
+   */
+  toTree(options: GraphToTreeOptions = {}): Tree {
+    return configure(this, options);
+  }
+
+  /**
+   * Serialize the graph from `top` to PENMAN notation.
+   *
+   * This is equivalent to `encode()` in the Python library.
+   *
+   * `options` consists of the following:
+   *   - `top` - If given, the node to use as the top in serialization.
+   *   - `indent` - How to indent formatted strings.
+   *   - `compact` - If `true`, put initial attributes on the first line.
+   *   - `model` - The model used for interpreting the graph.
+   *
+   * @param options - Optional arguments.
+   * @param options.top - If given, the node to use as the top in serialization.
+   * @param options.indent - How to indent formatted strings.
+   * @param options.compact - If `true`, put initial attributes on the first line.
+   * @param options.model - The model used for interpreting the graph.
+   * @returns The PENMAN-serialized string of the graph.
+   * @example
+   * import { Graph } from 'penman-js';
+   *
+   * const g = new Graph([['h', 'instance', 'hi']]);
+   *
+   * console.log(g.toPenman());
+   * // '(h / hi)'
+   */
+  toPenman(options: GraphToPenmanOptions = {}): string {
+    return encode(this, options);
   }
 
   /** @ignore */

@@ -31,6 +31,79 @@ test('init', (t) => {
   t.is(g3.top, 'b');
 });
 
+test('Graph.fromPenman', (t) => {
+  // unlabeled single node
+  let g = Graph.fromPenman('(a)');
+  t.is(g.top, 'a');
+  t.deepEqual(g.triples, [['a', ':instance', null]]);
+
+  // labeled node
+  g = Graph.fromPenman('(a / alpha)');
+  t.is(g.top, 'a');
+  t.deepEqual(g.triples, [['a', ':instance', 'alpha']]);
+
+  // unlabeled edge to unlabeled node
+  g = Graph.fromPenman('(a : (b))');
+  t.is(g.top, 'a');
+  t.deepEqual(g.triples, [
+    ['a', ':instance', null],
+    ['a', ':', 'b'],
+    ['b', ':instance', null],
+  ]);
+
+  // inverted unlabeled edge
+  g = Graph.fromPenman('(b :-of (a))');
+  t.is(g.top, 'b');
+  t.deepEqual(g.triples, [
+    ['b', ':instance', null],
+    ['a', ':', 'b'],
+    ['a', ':instance', null],
+  ]);
+
+  // labeled edge to unlabeled node
+  g = Graph.fromPenman('(a :ARG (b))');
+  t.is(g.top, 'a');
+  t.deepEqual(g.triples, [
+    ['a', ':instance', null],
+    ['a', ':ARG', 'b'],
+    ['b', ':instance', null],
+  ]);
+
+  // inverted edge
+  g = Graph.fromPenman('(b :ARG-of (a))');
+  t.is(g.top, 'b');
+  t.deepEqual(g.triples, [
+    ['b', ':instance', null],
+    ['a', ':ARG', 'b'],
+    ['a', ':instance', null],
+  ]);
+
+  // fuller examples
+  t.deepEqual(Graph.fromPenman(x1()[0]).triples, x1()[1]);
+});
+
+test('toTree', (t) => {
+  const g = new Graph([
+    ['b', ':instance', 'bark-01'],
+    ['b', ':ARG0', 'd'],
+    ['d', ':instance', 'dog'],
+  ]);
+
+  const tree = g.toTree();
+  t.deepEqual(tree.node, [
+    'b',
+    [
+      ['/', 'bark-01'],
+      [':ARG0', ['d', [['/', 'dog']]]],
+    ],
+  ]);
+});
+
+test('toPenman', (t) => {
+  const g = new Graph([['h', 'instance', 'hi']]);
+  t.deepEqual(g.toPenman(), '(h / hi)');
+});
+
 test('__or__', (t) => {
   const p = new Graph();
   const g = p.__or__(p);
